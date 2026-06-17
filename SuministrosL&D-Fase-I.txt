@@ -1,0 +1,81 @@
+CATALOGO DIGITAL - FASE I
+SUMINISTROS L&D
+www.codetechjr.com
+
+Documento de Arquitectura Web
+y Alcance Técnico
+Fase 1: Levantamiento Estratégico y Definición del Sistema
+Cliente: Orlando - Suministros L&D 2023, C.A.
+Modelo de Plataforma: E-Commerce Dinámico + "WhatsApp Checkout" Híbrido B2B
+
+1. Objetivo Principal del Proyecto
+El propósito de este proyecto es desarrollar una plataforma e-commerce de alto rendimiento
+enfocada en la venta de material eléctrico. Esta plataforma combinará ventas al detal y
+contrataciones de alto volumen (B2B). A diferencia de un simple catálogo, el sistema mostrará
+precios reales en tiempo real, completando el ciclo de ventas a través de un asistente inteligente
+que transfiere los pedidos cobrados directamente al WhatsApp corporativo de la tienda física en
+Charallave.
+
+2. Posicionamiento Visual de la Marca
+Según las entrevistas realizadas, el diseño web reflejará los valores fundamentales del negocio:
+Identidad / Personalidad: Máxima Calidad en Insumos, Gran Variedad y los Mejores
+Precios de los Valles del Tuy.
+El "Hook" de Bienvenida (Copy principal del Home): "Tu aliado en iluminación y
+materiales eléctricos de todo los Valles del Tuy".
+Acelerador Financiero Visibles (Banners): El diseño incluirá secciones destacadas que
+anuncian dos facilidades para compras voluminosas: un sistema de pago a cuotas mediante
+Cashea y la conversión limpia de montos utilizando siempre como base legal la tasa oficial
+del BCV.
+
+3. Mapa de Experiencia e Interfaz (UI/UX) y Productos
+
+Portada (Página de Inicio): Botones gráficos inmediatos para "Productos de Alta Rotación",
+enfocados en lo diario como iluminación LED, elementos de conexión, y control de fuerza:
+Luminaria Led (Paneles, reflectores, bombillos).
+Sistema de Control Eléctrico (Brekeras).
+Sistema de Cableado y Material pesado (Rollos de cable y tubos).
+Búsqueda Estratégica Mixta: Un motor de búsqueda que permite a los usuarios y
+vendedores buscar por "nombre de la pieza" o "código interno/SKU", acelerando la gestión
+del catálogo frente al mostrador.
+Pantalla Individual del Producto: Cada producto contendrá información precisa para
+ahorrar la asesoría pesada. Mostrará imágenes e indicaciones visuales como [Llévate x caja
+entera a descuento / Consulta descuento a mayorista] en pro a la captación de grandes
+obras.
+Exhibición Estratégica (Volume Pricing): Tarjetas de producto que motivan tanto a
+electricistas contratistas como a compradores caseros, priorizando los incentivos de B2B.
+
+4. Ingeniería de Cobros y Módulo "WhatsApp Checkout"
+Motor Transaccional Especializado: Al agregar productos al carrito y procesar el pedido, el
+sistema desplegará un motor transaccional antes de dirigir al chat, evitando cotizaciones
+prolongadas y facilitando las liquidaciones de pago.
+Monitor Inteligente Cambiario: Calcula el total de la orden en divisas fuertes e importes
+BCV mediante un API actualizado diariamente.
+Opciones de Cierre Convencional: Visibilidad clara de opciones de pago mediante Zelle,
+Binance Pay, Pago Móvil, y Retiro por Mostrador.
+Captura Inteligente de Auditoría: Requiere que el comprador inserte números de
+referencias bancarias para reducir tiempos de espera.
+Motor Transaccional B2B Mixto: Permite pagos multi-parte para obras grandes,
+consolidando todo automáticamente mediante recibos por chat.
+Logística Inteligente y Expandida: Inclusión de selectores obligatorios para la recepción
+de la compra en el proceso final. La plataforma informará transparentemente la cobertura
+hacia toda la región:
+Retiro físico y Delivery a Zona Céntrica (Charallave) marcado como beneficio de entrega
+GRATUITO.
+Delivery Ampliado al resto de Valles del Tuy (Cúa, Ocumare, Santa Teresa, etc.) con etiqueta
+de “Costo de Flete Adicional” para extender la captación de grandes obras y construcciones
+más allá del radio inmediato de la tienda.
+
+5. Especificaciones de Infraestructura (Backend & Rendimiento)
+
+Para garantizar un despliegue eficiente bajo los marcos modernos, el producto se basará en
+infraestructura React & Next.js, permitiendo una navegación rápida incluso con señales
+celulares deficientes en Venezuela. Las bases de datos serán gestionadas centralmente con
+Supabase (BaaS), con tecnología preparada para futuras expansiones.
+
+Cierre de Especificaciones
+Toda la configuración recopilada es resultado de nuestra entrevista directa, la cual fue pilar
+inicial sobre el pago en su fase de planificación. El ok escrito por WhatsApp validará los límites
+para concentrar esfuerzos precisos, iniciando la línea temporal productiva para el desarrollo
+visual.
+
+
