@@ -274,24 +274,34 @@ export function CartDrawer() {
               <div className="flex flex-col gap-5">
                 {/* 1. Identification section */}
                 <div className="flex flex-col gap-3">
-                  <h3 className="text-xs font-bold font-mono tracking-wider text-accent-electric uppercase">
-                    --- Identificación ---
-                  </h3>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 my-2">
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                    <h3 className="text-[10px] font-bold font-mono tracking-widest text-accent-electric uppercase whitespace-nowrap">
+                      Identificación
+                    </h3>
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                  </div>
+                  <div className="flex flex-col gap-3.5">
                     <Input
-                      placeholder="Nombre o Razón Social *"
+                      id="fullName"
+                      label="Nombre o Razón Social *"
+                      placeholder="Ej: Inversiones Tuy, C.A."
                       value={form.fullName}
                       onChange={(e) => handleInputChange("fullName", e.target.value)}
                       error={errors.fullName}
                     />
                     <Input
-                      placeholder="Cédula / RIF *"
+                      id="rifOrId"
+                      label="Cédula / RIF *"
+                      placeholder="Ej: J-12345678-9 o V-12345678"
                       value={form.rifOrId}
                       onChange={(e) => handleInputChange("rifOrId", e.target.value)}
                       error={errors.rifOrId}
                     />
                     <Input
-                      placeholder="Teléfono Móvil *"
+                      id="phone"
+                      label="Teléfono Móvil *"
+                      placeholder="Ej: 04121234567"
                       type="tel"
                       value={form.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
@@ -302,9 +312,13 @@ export function CartDrawer() {
 
                 {/* 2. Dispatch type */}
                 <div className="flex flex-col gap-3">
-                  <h3 className="text-xs font-bold font-mono tracking-wider text-accent-electric uppercase">
-                    --- Distribución ---
-                  </h3>
+                  <div className="flex items-center gap-3 my-2">
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                    <h3 className="text-[10px] font-bold font-mono tracking-widest text-accent-electric uppercase whitespace-nowrap">
+                      Distribución
+                    </h3>
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                  </div>
                   <div className="grid grid-cols-1 gap-2">
                     {/* Retiro */}
                     <button
@@ -358,7 +372,9 @@ export function CartDrawer() {
                   {/* Delivery address input */}
                   {form.deliveryType !== "retiro" && (
                     <Input
-                      placeholder="Dirección Completa de Entrega *"
+                      id="deliveryAddress"
+                      label="Dirección Completa de Entrega *"
+                      placeholder="Av. Bolívar, Res. Tuy, Apto 4B, Charallave"
                       value={form.deliveryAddress}
                       onChange={(e) => handleInputChange("deliveryAddress", e.target.value)}
                       error={errors.deliveryAddress}
@@ -369,9 +385,13 @@ export function CartDrawer() {
 
                 {/* 3. Payment Method */}
                 <div className="flex flex-col gap-3">
-                  <h3 className="text-xs font-bold font-mono tracking-wider text-accent-electric uppercase">
-                    --- Forma de Pago ---
-                  </h3>
+                  <div className="flex items-center gap-3 my-2">
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                    <h3 className="text-[10px] font-bold font-mono tracking-widest text-accent-electric uppercase whitespace-nowrap">
+                      Forma de Pago
+                    </h3>
+                    <span className="h-px bg-accent-electric/25 flex-1" />
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     {/* Pago movil */}
                     <button
@@ -429,7 +449,9 @@ export function CartDrawer() {
                   {/* Payment Reference field (not for cash) */}
                   {form.paymentMethod !== "efectivo" && (
                     <Input
-                      placeholder="Número de Referencia Bancaria *"
+                      id="paymentReference"
+                      label="Número de Referencia Bancaria *"
+                      placeholder="Ej: 002345 (últimos 6 dígitos)"
                       value={form.paymentReference}
                       onChange={(e) => handleInputChange("paymentReference", e.target.value)}
                       error={errors.paymentReference}

@@ -3,14 +3,21 @@ import { cn } from "@/lib/utils/cn";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
   error?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = "text", error, ...props }, ref) => {
+  ({ className, type = "text", label, error, id, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-1.5">
+        {label && (
+          <label htmlFor={id} className="text-xs font-semibold text-text-secondary select-none">
+            {label}
+          </label>
+        )}
         <input
+          id={id}
           type={type}
           ref={ref}
           className={cn(

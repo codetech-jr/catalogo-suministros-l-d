@@ -42,7 +42,7 @@ export default function Home() {
             </Badge>
 
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none text-text-primary">
-              Tu aliado en iluminación y materiales eléctricos de todo los{" "}
+              Tu aliado en iluminación y materiales eléctricos de todos los{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-electric to-[#33ffaa]">
                 Valles del Tuy
               </span>

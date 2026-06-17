@@ -31,13 +31,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "iluminacion":
-        return <Lightbulb className="h-12 w-12 text-accent-electric opacity-60" />;
+        return <Lightbulb className="h-12 w-12 text-accent-electric/80 drop-shadow-[0_0_12px_rgba(0,229,255,0.45)] animate-pulse" />;
       case "control":
-        return <Zap className="h-12 w-12 text-accent-amber opacity-60" />;
+        return <Zap className="h-12 w-12 text-accent-amber/80 drop-shadow-[0_0_12px_rgba(255,179,0,0.45)] animate-pulse" />;
       default:
         // cableado
         return (
-          <svg className="h-12 w-12 text-text-muted opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+          <svg className="h-12 w-12 text-text-muted/80 drop-shadow-[0_0_12px_rgba(113,113,122,0.3)] animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.656 48.656 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3M3 12a9 9 0 0 1 15-6.708M3 12l3 3m-3-3-3 3" />
           </svg>
         );
@@ -68,10 +68,13 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Product Image Area */}
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-canvas-elevated flex items-center justify-center border border-hairline/50">
           {product.image === "" || imageError ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               {/* Grid background pattern */}
               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:14px_24px]" />
               {getCategoryIcon(product.category)}
+              <span className="text-[9px] text-text-muted font-mono tracking-widest uppercase select-none opacity-80">
+                Imagen en edición
+              </span>
               <div className="absolute h-24 w-24 rounded-full bg-accent-electric/[0.02] filter blur-xl" />
             </div>
           ) : (
