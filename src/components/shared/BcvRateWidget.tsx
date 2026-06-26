@@ -9,6 +9,11 @@ export function BcvRateWidget() {
   const { rate, source, updatedAt, isLoading, fetchRate, setManualRate } = useBcvStore();
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(rate.toString());
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Keep input value in sync with rate when not editing
   React.useEffect(() => {
@@ -40,15 +45,15 @@ export function BcvRateWidget() {
   };
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-full bg-canvas-card border border-hairline px-3 py-1 text-xs select-none">
-      <span className="text-text-muted font-mono font-medium tracking-tight">BCV:</span>
+    <div className="inline-flex items-center gap-2 rounded-lg bg-slate-950/40 border border-slate-800 px-3 py-1 text-xs select-none">
+      <span className="text-slate-400 font-mono font-medium tracking-tight">BCV:</span>
       
       {isEditing ? (
         <div className="flex items-center gap-1">
           <input
             type="number"
             step="0.01"
-            className="w-16 bg-canvas-elevated text-text-primary px-1.5 py-0.5 rounded border border-accent-electric/40 outline-none font-mono text-center text-xs"
+            className="w-16 bg-slate-900 text-slate-100 px-1.5 py-0.5 rounded border border-slate-700 outline-none font-mono text-center text-xs"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -56,7 +61,7 @@ export function BcvRateWidget() {
           />
           <button
             onClick={handleSave}
-            className="text-success hover:text-green-400 p-0.5 cursor-pointer"
+            className="text-emerald-500 hover:text-emerald-450 p-0.5 cursor-pointer"
             title="Guardar tasa"
           >
             <Check className="h-3.5 w-3.5" />
@@ -66,7 +71,7 @@ export function BcvRateWidget() {
               setInputValue(rate.toString());
               setIsEditing(false);
             }}
-            className="text-danger hover:text-red-400 p-0.5 cursor-pointer"
+            className="text-rose-500 hover:text-rose-400 p-0.5 cursor-pointer"
             title="Cancelar"
           >
             <X className="h-3.5 w-3.5" />
@@ -74,17 +79,17 @@ export function BcvRateWidget() {
         </div>
       ) : (
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-bold text-accent-amber">
+          <span className="font-mono font-bold text-slate-200">
             {formatVES(rate)}
           </span>
           {source === "manual_override" && (
-            <span className="text-[9px] bg-accent-amber/10 text-accent-amber border border-accent-amber/20 px-1 rounded font-mono scale-90">
+            <span className="text-[9px] bg-amber-500/10 text-amber-400/80 border border-amber-500/20 px-1.5 rounded font-mono scale-90">
               MANUAL
             </span>
           )}
           <button
             onClick={() => setIsEditing(true)}
-            className="text-text-muted hover:text-accent-electric transition-colors p-0.5 cursor-pointer"
+            className="text-slate-500 hover:text-slate-350 transition-colors p-0.5 cursor-pointer"
             title="Editar tasa manualmente"
           >
             <Edit2 className="h-3 w-3" />
@@ -95,12 +100,12 @@ export function BcvRateWidget() {
       <button
         onClick={() => fetchRate()}
         disabled={isLoading}
-        className={`text-text-muted hover:text-accent-electric transition-colors p-0.5 cursor-pointer ${
-          isLoading ? "animate-spin text-accent-electric" : ""
+        className={`text-slate-500 hover:text-slate-350 transition-colors p-0.5 cursor-pointer ${
+          isLoading ? "animate-spin text-slate-450" : ""
         }`}
-        title={`Actualizar tasa. Origen: ${source}. Último fetch: ${new Date(
+        title={mounted ? `Actualizar tasa. Origen: ${source}. Último fetch: ${new Date(
           updatedAt
-        ).toLocaleTimeString()}`}
+        ).toLocaleTimeString()}` : "Actualizar tasa"}
       >
         <RefreshCw className="h-3.5 w-3.5" />
       </button>

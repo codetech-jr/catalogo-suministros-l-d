@@ -221,5 +221,71 @@ export const PRODUCTS: Product[] = [
       label: "fardo de 30 tubos"
     },
     stock: 300
+  },
+  {
+    id: "prod-10",
+    sku: "LD-CON-TEI3M",
+    name: "Caja de Teipe Eléctrico Temflex 3M (10 Rollos)",
+    slug: "caja-teipe-electrico-temflex-3m",
+    description: "Caja de cinta aislante de PVC de alta calidad. Resistente al fuego, humedad y tensiones hasta 600V.",
+    category: "cableado",
+    categoryLabel: "Consumibles",
+    price: 12.00,
+    image: "/images/teipe-3m.webp",
+    specs: [
+      { label: "Cantidad", value: "10 rollos" },
+      { label: "Material", value: "PVC aislante" },
+      { label: "Marca", value: "3M Temflex" }
+    ],
+    volumeDiscount: {
+      threshold: 5,
+      discountPrice: 9.90,
+      label: "bulto de 5 cajas (50 rollos)"
+    },
+    stock: 200
+  },
+  {
+    id: "prod-11",
+    sku: "LD-CON-TIRNYL",
+    name: "Tirras de Nylon 30cm (Paquete x 100 unds)",
+    slug: "tirras-nylon-30cm-paquete-100",
+    description: "Tirras plásticas de alta resistencia para sujeción y ordenamiento de cableado eléctrico y estructurado.",
+    category: "control",
+    categoryLabel: "Consumibles",
+    price: 3.50,
+    image: "/images/tirras-nylon.webp",
+    specs: [
+      { label: "Cantidad", value: "100 unidades" },
+      { label: "Longitud", value: "30 cm" },
+      { label: "Resistencia", value: "50 lbs" }
+    ],
+    volumeDiscount: {
+      threshold: 10,
+      discountPrice: 2.80,
+      label: "bulto de 10 paquetes"
+    },
+    stock: 400
+  },
+  {
+    id: "prod-12",
+    sku: "LD-CON-TEROJO",
+    name: "Terminales de Cobre Ojo 1/4\" (Paquete x 100 unds)",
+    slug: "terminales-cobre-ojo-paquete-100",
+    description: "Terminales de compresión tipo ojo fabricados en cobre electrolítico de alta conductividad.",
+    category: "control",
+    categoryLabel: "Consumibles",
+    price: 15.00,
+    image: "/images/terminales-ojo.webp",
+    specs: [
+      { label: "Cantidad", value: "100 unidades" },
+      { label: "Tamaño ojo", value: "1/4\"" },
+      { label: "Material", value: "Cobre electrolítico" }
+    ],
+    volumeDiscount: {
+      threshold: 5,
+      discountPrice: 12.50,
+      label: "caja de 5 paquetes"
+    },
+    stock: 120
   }
 ];

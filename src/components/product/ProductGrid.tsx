@@ -7,12 +7,24 @@ import { ProductCard } from "./ProductCard";
 
 interface ProductGridProps {
   searchQuery: string;
+  categoryFilter?: string;
+  onCategoryFilterChange?: (category: "all" | "iluminacion" | "control" | "cableado") => void;
 }
 
 type CategoryFilter = "all" | "iluminacion" | "control" | "cableado";
 
-export function ProductGrid({ searchQuery }: ProductGridProps) {
-  const [activeCategory, setActiveCategory] = React.useState<CategoryFilter>("all");
+export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChange }: ProductGridProps) {
+  const [localCategory, setLocalCategory] = React.useState<CategoryFilter>("all");
+
+  const activeCategory = (categoryFilter as CategoryFilter) || localCategory;
+  
+  const setActiveCategory = (cat: CategoryFilter) => {
+    if (onCategoryFilterChange) {
+      onCategoryFilterChange(cat);
+    } else {
+      setLocalCategory(cat);
+    }
+  };
 
   const categories = [
     { id: "all" as CategoryFilter, label: "Todos" },
@@ -41,17 +53,17 @@ export function ProductGrid({ searchQuery }: ProductGridProps) {
   return (
     <section id="catalogo" className="w-full flex flex-col gap-6 py-8">
       {/* Filters & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-hairline pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         {/* Category Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 text-xs font-bold font-mono tracking-wider uppercase rounded-full border transition-all duration-200 cursor-pointer snap-start ${
+              className={`px-4 py-2 text-xs font-bold font-mono tracking-wider uppercase rounded-lg border transition-all duration-200 cursor-pointer snap-start ${
                 activeCategory === cat.id
-                  ? "bg-accent-electric/10 border-accent-electric text-accent-electric animate-none"
-                  : "bg-canvas-card border-hairline text-text-secondary hover:border-text-secondary hover:text-text-primary"
+                  ? "bg-slate-100 border-slate-100 text-slate-950"
+                  : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-100"
               }`}
             >
               {cat.label}
@@ -60,8 +72,8 @@ export function ProductGrid({ searchQuery }: ProductGridProps) {
         </div>
 
         {/* Counter */}
-        <div className="text-xs text-text-muted font-mono self-end md:self-auto">
-          Mostrando <span className="text-text-primary font-bold">{filteredProducts.length}</span> productos
+        <div className="text-xs text-slate-500 font-mono self-end md:self-auto">
+          Mostrando <span className="text-slate-200 font-bold">{filteredProducts.length}</span> productos
         </div>
       </div>
 
@@ -73,9 +85,9 @@ export function ProductGrid({ searchQuery }: ProductGridProps) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-xl bg-canvas-card border border-hairline">
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-xl bg-slate-950/20 border border-slate-800">
           <svg
-            className="h-12 w-12 text-text-muted mb-3"
+            className="h-12 w-12 text-slate-600 mb-3"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -87,10 +99,10 @@ export function ProductGrid({ searchQuery }: ProductGridProps) {
               d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
             />
           </svg>
-          <h4 className="font-display text-base font-bold text-text-primary mb-1">
+          <h4 className="font-display text-base font-bold text-slate-200 mb-1">
             No se encontraron productos
           </h4>
-          <p className="text-xs text-text-muted max-w-xs leading-relaxed">
+          <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
             Intenta buscando otros términos o seleccionando otra categoría de artículos.
           </p>
         </div>

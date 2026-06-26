@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas-primary: #08090c;
-  --color-canvas-elevated: #0e1117;
-  --color-canvas-card: #12141c;
-  --color-text-primary: #f4f5f6;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
-  --color-accent-electric: #00e5ff;
-  --color-accent-amber: #ffb300;
-  --color-success: #22c55e;
-  --color-danger: #ef4444;
-  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-canvas-primary: #0f172a;
+  --color-canvas-elevated: #1e293b;
+  --color-canvas-card: #1e293b;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-accent-electric: #f8fafc;
+  --color-accent-amber: #e2e8f0;
+  --color-success: #10b981;
+  --color-danger: #f43f5e;
+  --color-hairline: rgba(255, 255, 255, 0.06);
 
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
@@ -29,26 +29,27 @@ body {
 
 /* Glassmorphism helpers */
 .glass-navbar {
-  background: rgba(8, 9, 12, 0.75);
+  background: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .glass-card {
-  background: var(--color-canvas-card);
+  background: rgba(30, 41, 59, 0.4);
   border: 1px solid var(--color-hairline);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(0, 229, 255, 0.3);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.05);
-  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .glass-drawer {
-  background: rgba(14, 17, 23, 0.9);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-left: 1px solid var(--color-hairline);
@@ -65,12 +66,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent-electric);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Glow Radial Effect for Hero Background */
@@ -79,11 +80,12 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, rgba(255, 179, 0, 0.02) 50%, rgba(0, 0, 0, 0) 100%);
-  filter: blur(80px);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 70%);
+  filter: blur(100px);
   pointer-events: none;
   z-index: 0;
 }
+
 

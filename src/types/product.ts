@@ -4,7 +4,7 @@ export interface VolumeDiscount {
   label: string; // e.g., "caja de 20 unidades"
 }
 
-export interface Product {
+export interface ISuministrosProduct {
   id: string;
   sku: string;
   name: string;
@@ -21,3 +21,5 @@ export interface Product {
   volumeDiscount?: VolumeDiscount;
   stock: number;
 }
+
+export type Product = ISuministrosProduct;

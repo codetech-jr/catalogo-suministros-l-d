@@ -1,6 +1,7 @@
-import { Product } from "./product";
+import { ISuministrosProduct } from "./product";
 
 export interface CartItem {
-  product: Product;
+  product: ISuministrosProduct;
   quantity: number;
+  activePrice: number; // Computed unit price based on volume tier
 }

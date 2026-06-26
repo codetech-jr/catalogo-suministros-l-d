@@ -1,12 +1,20 @@
 import { CartItem } from "@/types/cart";
-import { CheckoutForm } from "@/types/checkout";
+import { CheckoutForm, PaymentMethod } from "@/types/checkout";
 import { formatUSD, formatVES } from "./format-currency";
+
+export interface ISplitPayment {
+  method: PaymentMethod;
+  amountUsd: number;
+  ref: string;
+}
 
 export function buildWhatsAppMessage(
   items: CartItem[],
   form: CheckoutForm,
   bcvRate: number,
-  totals: { subtotal: number; total: number; savings: number }
+  totals: { subtotal: number; total: number; savings: number },
+  splitPayments?: ISplitPayment[],
+  isQuoteOnly?: boolean
 ): string {
   const deliveryLabel = {
     retiro: "Retiro por Mostrador (Gratis)",
@@ -18,16 +26,45 @@ export function buildWhatsAppMessage(
     pago_movil: "PAGO MÓVIL",
     zelle: "ZELLE",
     binance: "BINANCE PAY",
-    efectivo: "EFECTIVO POR TAQUILLA",
+    efectivo: "EFECTIVO USD POR TAQUILLA",
+    efectivo_bs: "EFECTIVO BS POR TAQUILLA",
+    transferencia: "TRANSFERENCIA BANCARIA NACIONAL",
+    mixto: "PAGO MIXTO / MULTI-PAGO",
   }[form.paymentMethod];
 
   const addressLine = form.deliveryType !== "retiro"
     ? `*Dirección:* ${form.deliveryAddress}\n`
     : "";
 
-  const referenceLine = form.paymentMethod !== "efectivo"
+  let paymentDetails = "";
+  if (form.paymentMethod === "mixto" && splitPayments && splitPayments.length > 0) {
+    paymentDetails = "\n*Desglose de Multi-Pago:*\n";
+    splitPayments.forEach((payment) => {
+      const methodLabel = {
+        pago_movil: "Pago Móvil",
+        zelle: "Zelle",
+        binance: "Binance Pay",
+        efectivo: "Efectivo USD",
+        efectivo_bs: "Efectivo Bs",
+        transferencia: "Transferencia Bs",
+        mixto: "Pago Mixto",
+      }[payment.method];
+      
+      const isBs = payment.method === "pago_movil" || payment.method === "transferencia" || payment.method === "efectivo_bs";
+      const amountStr = isBs 
+        ? `${formatUSD(payment.amountUsd)} (≈ ${formatVES(payment.amountUsd * bcvRate)} Bs)`
+        : formatUSD(payment.amountUsd);
+        
+      const refStr = (payment.method !== "efectivo" && payment.method !== "efectivo_bs") ? ` [Ref: ${payment.ref}]` : "";
+      paymentDetails += `- *${methodLabel}*: ${amountStr}${refStr}\n`;
+    });
+  }
+
+  const referenceLine = form.paymentMethod !== "efectivo" && form.paymentMethod !== "efectivo_bs" && form.paymentMethod !== "mixto"
     ? `*Referencia de Pago:* ${form.paymentReference}\n`
     : "";
+
+  const splitPaymentLine = form.paymentMethod === "mixto" ? paymentDetails : "";
 
   let itemDetails = "";
   items.forEach((item) => {
@@ -49,14 +86,25 @@ export function buildWhatsAppMessage(
 
   const totalVES = totals.total * bcvRate;
 
-  const text = `*NUEVO PEDIDO — SUMINISTROS L&D*
+  const title = isQuoteOnly 
+    ? `*SOLICITUD DE COTIZACIÓN — SUMINISTROS L&D*`
+    : `*NUEVO PEDIDO — SUMINISTROS L&D*`;
+
+  const paymentSection = isQuoteOnly
+    ? `*Método de Pago:* COTIZACIÓN / PAGO POR TAQUILLA (Presupuesto sin pago preventivo)`
+    : `${referenceLine}*Método de Pago:* ${paymentLabel}${splitPaymentLine ? "\n" + splitPaymentLine : ""}`;
+
+  const footer = isQuoteOnly
+    ? `*Por favor confirme disponibilidad de los materiales y envíe el presupuesto formal firmado.*`
+    : `*Por favor confirme el cobro y coordine el despacho.*`;
+
+  const text = `${title}
 ---
 *Cliente:* ${form.fullName}
 *Cédula/RIF:* ${form.rifOrId}
 *Teléfono:* ${form.phone}
 *Despacho:* ${deliveryLabel}
-${addressLine}${referenceLine}*Método de Pago:* ${paymentLabel}
-
+${addressLine}${paymentSection}
 ---
 *Detalle del Pedido:*
 
@@ -67,7 +115,7 @@ ${itemDetails.trim()}
 *Total VES (BCV):* ${formatVES(totalVES)}
 *Tasa Aplicada (BCV):* ${formatVES(bcvRate)}/$
 ---
-*Por favor confirme el cobro y coordine el despacho.*`;
+${footer}`;
 
   return text;
 }
