@@ -79,7 +79,7 @@ export function buildWhatsAppMessage(
       : item.product.price;
 
     const itemTotal = unitPrice * qty;
-    const volumeTag = isVolume ? " (Tasa Mayorista B2B)" : "";
+    const volumeTag = isVolume ? " (Tasa Mayorista)" : "";
 
     itemDetails += `- *${qty}x* ${item.product.name} [${item.product.sku}]\n  ${formatUSD(unitPrice)} c/u${volumeTag} = *${formatUSD(itemTotal)}*\n\n`;
   });

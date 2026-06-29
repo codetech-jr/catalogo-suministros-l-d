@@ -79,7 +79,7 @@ export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChang
 
       {/* Grid */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex overflow-x-auto gap-4 px-4 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible pb-8 snap-x snap-mandatory scroll-smooth scrollbar-hide">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

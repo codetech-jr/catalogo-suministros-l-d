@@ -7,6 +7,7 @@ import { Product } from "@/types/product";
 import { useCart, useCartStore } from "@/store/cart-store";
 import { useBcvStore } from "@/store/bcv-store";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
+import { useCurrencyStore } from "@/store/currency-store";
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +17,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const rate = useBcvStore((state) => state.rate);
   const addItem = useCartStore((state) => state.addItem);
   const items = useCart((state) => state.items);
+  const globalCurrencyMode = useCurrencyStore((state) => state.globalCurrencyMode);
+  const switchCount = useCurrencyStore((state) => state.switchCount);
   
   const [added, setAdded] = React.useState(false);
   const [imageError, setImageError] = React.useState(false);
@@ -56,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
     : 0;
 
   return (
-    <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50 transition-all hover:bg-slate-800/80 p-4 gap-4 shadow-sm min-h-[480px]">
+    <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50 transition-all hover:bg-slate-800/80 p-4 gap-4 shadow-sm min-h-[480px] flex-none w-[85vw] sm:w-[320px] md:w-auto snap-center md:snap-align-none">
       
       {/* Upper Content Area */}
       <div className="flex flex-col gap-3.5 flex-grow">
@@ -143,7 +146,11 @@ export function ProductCard({ product }: ProductCardProps) {
                   Ahorro Corporativo
                 </span>
                 <span className="text-xs font-medium text-slate-200 mt-0.5 leading-snug">
-                  Desde <span className="font-mono font-bold text-emerald-400">{product.volumeDiscount.threshold}</span> Und. &rarr; <span className="font-mono font-bold text-slate-100">{formatUSD(product.volumeDiscount.discountPrice)}</span> /c/u
+                  Desde <span className="font-mono font-bold text-emerald-400">{product.volumeDiscount.threshold}</span> Und. &rarr; <span className="font-mono font-bold text-slate-100">
+                    {globalCurrencyMode === "VES" 
+                      ? formatVES(product.volumeDiscount.discountPrice * rate) 
+                      : formatUSD(product.volumeDiscount.discountPrice)}
+                  </span> /c/u
                 </span>
               </div>
             </div>
@@ -152,7 +159,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 Ahorras
               </span>
               <span className="text-[10px] font-mono text-emerald-400 font-bold tracking-tight block">
-                -{formatUSD(savingsPerUnit)} c/u
+                -{globalCurrencyMode === "VES" 
+                  ? formatVES(savingsPerUnit * rate) 
+                  : formatUSD(savingsPerUnit)} c/u
               </span>
             </div>
           </div>
@@ -164,13 +173,26 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex flex-col gap-1 border-t border-slate-700/40 pt-3 mt-1">
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-slate-400 font-medium">Unitario:</span>
-            <div className="flex flex-col items-end">
-              <span className="font-display text-lg font-bold text-slate-100">
-                {formatUSD(product.price)}
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                ≈ {formatVES(bcvPrice)} (BCV)
-              </span>
+            <div key={switchCount} className="flex flex-col items-end animate-blur-pop">
+              {globalCurrencyMode === "VES" ? (
+                <>
+                  <span className="font-display text-lg font-bold text-slate-100">
+                    {formatVES(bcvPrice)}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    Ref: {formatUSD(product.price)}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="font-display text-lg font-bold text-slate-100">
+                    {formatUSD(product.price)}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    ≈ {formatVES(bcvPrice)} (BCV)
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>

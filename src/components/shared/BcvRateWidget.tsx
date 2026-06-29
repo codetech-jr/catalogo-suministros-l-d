@@ -45,15 +45,15 @@ export function BcvRateWidget() {
   };
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-lg bg-slate-950/40 border border-slate-800 px-3 py-1 text-xs select-none">
-      <span className="text-slate-400 font-mono font-medium tracking-tight">BCV:</span>
+    <div className="hidden lg:flex text-sm text-slate-300 bg-slate-900 px-3 py-1.5 rounded-md border border-slate-800 font-mono tracking-widest shadow-inner items-center gap-2 select-none">
+      <span className="text-slate-400 font-medium">BCV:</span>
       
       {isEditing ? (
         <div className="flex items-center gap-1">
           <input
             type="number"
             step="0.01"
-            className="w-16 bg-slate-900 text-slate-100 px-1.5 py-0.5 rounded border border-slate-700 outline-none font-mono text-center text-xs"
+            className="w-16 bg-slate-950 text-slate-100 px-1.5 py-0.5 rounded border border-slate-700 outline-none font-mono text-center text-xs"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -61,7 +61,7 @@ export function BcvRateWidget() {
           />
           <button
             onClick={handleSave}
-            className="text-emerald-500 hover:text-emerald-450 p-0.5 cursor-pointer"
+            className="text-emerald-500 hover:text-emerald-400 p-0.5 cursor-pointer"
             title="Guardar tasa"
           >
             <Check className="h-3.5 w-3.5" />
@@ -71,7 +71,7 @@ export function BcvRateWidget() {
               setInputValue(rate.toString());
               setIsEditing(false);
             }}
-            className="text-rose-500 hover:text-rose-400 p-0.5 cursor-pointer"
+            className="text-rose-500 hover:text-rose-450 p-0.5 cursor-pointer"
             title="Cancelar"
           >
             <X className="h-3.5 w-3.5" />
@@ -79,20 +79,20 @@ export function BcvRateWidget() {
         </div>
       ) : (
         <div className="flex items-center gap-1.5">
-          <span className="font-mono font-bold text-slate-200">
+          <span className="font-bold text-slate-100">
             {formatVES(rate)}
           </span>
           {source === "manual_override" && (
-            <span className="text-[9px] bg-amber-500/10 text-amber-400/80 border border-amber-500/20 px-1.5 rounded font-mono scale-90">
+            <span className="text-[9px] bg-amber-500/10 text-amber-400/80 border border-amber-500/20 px-1.5 rounded font-mono scale-90 tracking-normal">
               MANUAL
             </span>
           )}
           <button
             onClick={() => setIsEditing(true)}
-            className="text-slate-500 hover:text-slate-350 transition-colors p-0.5 cursor-pointer"
+            className="text-slate-500 hover:text-slate-300 transition-colors p-0.5 cursor-pointer"
             title="Editar tasa manualmente"
           >
-            <Edit2 className="h-3 w-3" />
+            <Edit2 className="h-3.5 w-3.5" />
           </button>
         </div>
       )}
@@ -101,7 +101,7 @@ export function BcvRateWidget() {
         onClick={() => fetchRate()}
         disabled={isLoading}
         className={`text-slate-500 hover:text-slate-350 transition-colors p-0.5 cursor-pointer ${
-          isLoading ? "animate-spin text-slate-450" : ""
+          isLoading ? "animate-spin" : ""
         }`}
         title={mounted ? `Actualizar tasa. Origen: ${source}. Último fetch: ${new Date(
           updatedAt

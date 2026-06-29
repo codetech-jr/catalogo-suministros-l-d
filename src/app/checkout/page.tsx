@@ -247,7 +247,7 @@ export default function CheckoutPage() {
                           <span className="text-[10px] text-text-muted font-mono tracking-wider">{item.product.sku}</span>
                           {isVolume && (
                             <span className="text-[8px] bg-accent-electric/10 text-accent-electric border border-accent-electric/25 px-1.5 py-0.5 rounded font-mono font-bold">
-                              TASA B2B APLICADA
+                              TASA MAYORISTA APLICADA
                             </span>
                           )}
                         </div>
@@ -269,7 +269,7 @@ export default function CheckoutPage() {
               <div className="flex flex-col gap-2.5">
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between items-baseline text-xs text-success font-semibold">
-                    <span>Ahorro Mayorista B2B:</span>
+                    <span>Ahorro Mayorista:</span>
                     <span className="font-mono font-bold tracking-tight tabular-nums">-{formatUSD(totals.savingsUsd)}</span>
                   </div>
                 )}
@@ -369,7 +369,7 @@ export default function CheckoutPage() {
                   <div>
                     <div className="text-sm font-bold text-slate-200">Zelle</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                      Pagos directos en dólares para importes B2B o detal.
+                      Pagos directos en dólares para compras al mayor o detal.
                     </div>
                   </div>
                 </button>
@@ -800,7 +800,7 @@ export default function CheckoutPage() {
                       <td className="py-2 px-1 font-mono text-[10px] text-slate-500">{item.product.sku}</td>
                       <td className="py-2 px-2 font-semibold text-slate-800">
                         {item.product.name}
-                        {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa B2B)</span>}
+                        {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa Mayorista)</span>}
                       </td>
                       <td className="py-2 px-2 text-center font-mono">{item.quantity}</td>
                       <td className="py-2 px-2 text-right font-mono">{formatUSD(item.activePrice)}</td>
@@ -816,7 +816,7 @@ export default function CheckoutPage() {
               <div className="w-[300px] border border-slate-300 rounded p-3 text-xs bg-slate-50/50">
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between py-1 text-green-700 font-bold">
-                    <span>Ahorro Mayorista B2B:</span>
+                    <span>Ahorro Mayorista:</span>
                     <span className="font-mono">-{formatUSD(totals.savingsUsd)}</span>
                   </div>
                 )}

@@ -331,7 +331,7 @@ export function CartDrawer() {
                               </span>
                               {isVolume && (
                                 <span className="text-[8px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">
-                                  TASA B2B
+                                  AL MAYOR
                                 </span>
                               )}
                             </div>
@@ -1247,7 +1247,7 @@ export function CartDrawer() {
               <div className="flex flex-col gap-1.5 border-b border-[#1b212f]/50 pb-3">
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between text-xs text-cyan-400 font-medium">
-                    <span className="flex items-center gap-1"><Percent className="h-3 w-3" /> Ahorro Mayorista B2B:</span>
+                    <span className="flex items-center gap-1"><Percent className="h-3 w-3" /> Ahorro Mayorista:</span>
                     <span className="font-mono tabular-nums">-{formatUSD(totals.savingsUsd)}</span>
                   </div>
                 )}
@@ -1449,7 +1449,7 @@ export function CartDrawer() {
                     <td className="py-2 px-1 font-mono text-[10px] text-slate-500">{item.product.sku}</td>
                     <td className="py-2 px-2 font-semibold text-slate-800">
                       {item.product.name}
-                      {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa B2B)</span>}
+                      {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa Mayorista)</span>}
                     </td>
                     <td className="py-2 px-2 text-center font-mono">{item.quantity}</td>
                     <td className="py-2 px-2 text-right font-mono">{formatUSD(item.activePrice)}</td>
@@ -1465,7 +1465,7 @@ export function CartDrawer() {
             <div className="w-[300px] border border-slate-300 rounded p-3 text-xs bg-slate-50/50">
               {totals.savingsUsd > 0 && (
                 <div className="flex justify-between py-1 text-green-700 font-bold">
-                  <span>Ahorro Mayorista B2B:</span>
+                  <span>Ahorro Mayorista:</span>
                   <span className="font-mono">-{formatUSD(totals.savingsUsd)}</span>
                 </div>
               )}
