@@ -30,18 +30,7 @@ export function Footer() {
             </p>
             <div className="flex gap-4 mt-2 justify-center md:justify-start">
               <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-500 hover:text-[#0ee0d5] transition-colors"
-                aria-label="Facebook"
-              >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/suministros2023ld/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-slate-500 hover:text-[#0ee0d5] transition-colors"
@@ -49,17 +38,6 @@ export function Footer() {
               >
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                   <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.008 3.792.052 1.03.048 1.83.21 2.455.452a4.722 4.722 0 011.666 1.086 4.72 4.72 0 011.086 1.666c.242.624.404 1.424.452 2.454.044 1.008.052 1.362.052 3.792s-.008 2.784-.052 3.792c-.048 1.03-.21 1.83-.452 2.455a4.72 4.72 0 01-1.086 1.666 4.722 4.722 0 01-1.666 1.086c-.624.242-1.424.404-2.454.452-1.008.044-1.362.052-3.792.052s-2.784-.008-3.792-.052c-1.03-.048-1.83-.21-2.455-.452a4.72 4.72 0 01-1.666-1.086 4.72 4.72 0 01-1.086-1.666c-.242-.624-.404-1.424-.452-2.454C2.008 15.284 2 14.93 2 12.5s.008-2.784.052-3.792c.048-1.03.21-1.83.452-2.455a4.72 4.72 0 011.086-1.666 4.72 4.72 0 011.666-1.086c.624-.242 1.424-.404 2.454-.452C9.53 2.008 9.884 2 12.315 2zm-1.108 8.122A3 3 0 1013.07 15.02a3 3 0 00-1.863-4.898zm0-1.674a4.674 4.674 0 110 9.348 4.674 4.674 0 010-9.348zm5.883-1.207a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-500 hover:text-[#0ee0d5] transition-colors"
-                aria-label="LinkedIn"
-              >
-                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" />
                 </svg>
               </a>
             </div>
