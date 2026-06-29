@@ -51,7 +51,7 @@ export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChang
   }, [activeCategory, searchQuery]);
 
   return (
-    <section id="catalogo" className="w-full flex flex-col gap-6 py-8">
+    <section id="catalogo" className="w-full max-w-full overflow-hidden flex flex-col gap-6 py-8">
       {/* Filters & Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         {/* Category Tabs */}

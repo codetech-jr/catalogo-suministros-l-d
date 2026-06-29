@@ -399,7 +399,7 @@ export default function Home() {
           </section>
 
           {/* SECCIÓN 3: FlashVolumeRotator (Compra Rápida de Consumibles) */}
-          <section className="w-full py-2 border-b border-slate-800/80">
+          <section className="w-full max-w-full overflow-hidden py-2 border-b border-slate-800/80">
             <div className="flex flex-col gap-2 mb-8 text-center items-center">
               <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 justify-center">
                 <Sparkles className="h-3 w-3 text-[#0ee0d5]" /> MAYORISTAS Y CONTRATISTAS

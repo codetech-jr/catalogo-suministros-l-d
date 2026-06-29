@@ -41,7 +41,7 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-900 text-slate-100 font-sans selection:bg-slate-800/50 selection:text-slate-100 pb-16 md:pb-0">
+      <body className="min-h-full flex flex-col bg-slate-900 text-slate-100 font-sans selection:bg-slate-800/50 selection:text-slate-100 pb-16 md:pb-0 overflow-x-hidden w-full relative">
         {children}
         <CartDrawer />
         <MobileDock />

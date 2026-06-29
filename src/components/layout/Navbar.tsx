@@ -221,7 +221,8 @@ export function Navbar({ onSearch }: NavbarProps) {
                       : "font-semibold text-slate-400 hover:text-slate-200"
                   )}
                 >
-                  $ USD
+                  <span className="md:hidden">$</span>
+                  <span className="hidden md:inline">$ USD</span>
                 </button>
                 <button
                   onClick={() => setCurrencyMode("VES")}
@@ -232,7 +233,8 @@ export function Navbar({ onSearch }: NavbarProps) {
                       : "font-semibold text-slate-400 hover:text-slate-200"
                   )}
                 >
-                  Bs VES
+                  <span className="md:hidden">Bs</span>
+                  <span className="hidden md:inline">Bs VES</span>
                 </button>
               </div>
 

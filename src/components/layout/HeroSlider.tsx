@@ -95,22 +95,22 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
             </div>
 
             {/* Fast Value Propositions */}
-            <div className="grid grid-cols-3 gap-4 max-w-lg mt-4 border-t border-slate-800/60 pt-6 justify-center mx-auto w-full">
-              <div className="flex flex-col gap-1 items-center text-center">
+            <div className="flex flex-wrap gap-y-6 md:gap-y-0 w-full overflow-hidden px-2 justify-center max-w-lg mt-4 border-t border-slate-800/60 pt-6 mx-auto">
+              <div className="flex flex-col gap-1 items-center text-center flex-1 min-w-[100px]">
                 <span className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
                   <Shield className="h-3 w-3 text-slate-500" />
                   Garantía
                 </span>
                 <span className="text-xs text-slate-300">Materiales Certificados</span>
               </div>
-              <div className="flex flex-col gap-1 border-l border-slate-800/80 pl-4 items-center text-center">
+              <div className="flex flex-col gap-1 md:border-l md:border-slate-800/80 md:pl-4 items-center text-center flex-1 min-w-[100px]">
                 <span className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
                   <CreditCard className="h-3 w-3 text-slate-500" />
                   Financiado
                 </span>
                 <span className="text-xs text-slate-300">Paga con Cashea</span>
               </div>
-              <div className="flex flex-col gap-1 border-l border-slate-800/80 pl-4 items-center text-center">
+              <div className="flex flex-col gap-1 md:border-l md:border-slate-800/80 md:pl-4 items-center text-center flex-1 min-w-[100px]">
                 <span className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
                   <Compass className="h-3 w-3 text-slate-500" />
                   Ubicación
