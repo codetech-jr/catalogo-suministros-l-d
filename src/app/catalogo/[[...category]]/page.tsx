@@ -504,10 +504,10 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
           <div className="flex-grow w-full">
             
             {/* Header del Catálogo (Command Top Area) */}
-            <div className="flex flex-col gap-3 pb-6 border-b border-slate-800/80 mb-6">
+            <div className="w-full max-w-full px-4 md:px-0 flex flex-col gap-4 overflow-hidden box-border pb-6 border-b border-slate-800/80 mb-6">
               
               {/* Flex row for breadcrumbs and mobile filter button */}
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-wrap md:flex-nowrap justify-between items-start gap-y-4 gap-x-2 w-full">
                 {getBreadcrumbs()}
                 
                 {/* Mobile Filter Toggle Button */}
@@ -528,7 +528,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
               {/* H1 and Sort Select Layout Row (Flex Between) */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                 <div>
-                  <h1 className="font-display text-2xl md:text-3xl font-extrabold leading-none text-slate-100 tracking-tight">
+                  <h1 className="font-display text-2xl sm:text-3xl font-bold break-words whitespace-normal text-left max-w-full leading-tight text-slate-100 tracking-tight">
                     {getHeaderTitle()}
                   </h1>
                 </div>
