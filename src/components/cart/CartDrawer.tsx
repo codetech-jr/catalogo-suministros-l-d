@@ -232,14 +232,14 @@ export function CartDrawer() {
     <>
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 overflow-hidden print:hidden">
+          <div className="fixed inset-0 z-[200] overflow-hidden print:hidden">
         {/* Backdrop con desenfoque medio y opacidad balanceada */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closeDrawer}
-          className="fixed inset-0 bg-black/40 backdrop-blur-md cursor-pointer transition-opacity duration-200"
+          className="fixed inset-0 bg-black/40 backdrop-blur-md cursor-pointer transition-opacity duration-200 z-[200]"
         />
 
         {/* Panel del Drawer con transición rápida y lineal sin rebote */}
@@ -248,7 +248,7 @@ export function CartDrawer() {
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "tween", ease: "easeOut", duration: 0.2 }}
-          className="fixed inset-y-0 right-0 flex w-full max-w-md flex-col bg-[#0b0e14] border-l border-[#1b212f] shadow-none"
+          className="fixed inset-y-0 right-0 flex w-full max-w-md flex-col bg-[#0b0e14] border-l border-[#1b212f] shadow-none z-[200]"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#1b212f] px-4 py-4">
@@ -557,51 +557,56 @@ export function CartDrawer() {
                   <div className={`grid grid-cols-2 gap-2 transition-all duration-200 ${isQuoteOnly ? "opacity-30 pointer-events-none" : ""}`}>
                     <button
                       onClick={() => handleInputChange("paymentMethod", "pago_movil")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "pago_movil"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <CreditCard className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "pago_movil" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current" viewBox="0 0 24 24" aria-label="Pago Móvil">
+                        <path d="M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zm3 18a1 1 0 100-2 1 1 0 000 2zm-3-4h10V5H7v11z" />
+                        <path d="M14 9l-2 2 2 2V9zM10 9v4l2-2-2-2z" />
+                      </svg>
                       <span className="text-xs font-bold text-slate-200">Pago Móvil</span>
                     </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "zelle")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "zelle"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <svg className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "zelle" ? "text-[#0ee0d5]" : "text-slate-500"}`} fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.29 11.29c-.39.39-1.02.39-1.41 0L9.3 10.7a.996.996 0 1 1 1.41-1.41l1.79 1.79 4.29-4.3a.996.996 0 1 1 1.41 1.41l-5 5z" />
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current" viewBox="0 0 48 48" aria-label="Zelle">
+                        <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
                       </svg>
                       <span className="text-xs font-bold text-slate-200">Zelle</span>
                     </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "binance")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "binance"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <span className={`text-[10px] font-mono font-extrabold border rounded px-1.5 py-0.5 transition-colors ${form.paymentMethod === "binance" ? "border-[#0ee0d5] text-[#0ee0d5]" : "border-slate-700 text-slate-400"}`}>BINANCE</span>
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current" viewBox="0 0 20 20" aria-label="Binance">
+                        <path d="M10 2L5 7l2 2 3-3 3 3 2-2-5-5zm0 14l-3-3-2 2 5 5 5-5-2-2-3 3zm-6-6l-2 2 2 2 2-2-2-2zm12 0l-2 2 2 2 2-2-2-2zm-6-2l-2 2 2 2 2-2-2-2z" />
+                      </svg>
                       <span className="text-xs font-bold text-slate-200">Binance Pay</span>
                     </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "transferencia")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "transferencia"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <svg className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "transferencia" ? "text-[#0ee0d5]" : "text-slate-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                       <span className="text-xs font-bold text-slate-200">Transferencia</span>
@@ -609,37 +614,45 @@ export function CartDrawer() {
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "efectivo")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "efectivo"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <Store className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "efectivo" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                        <rect x="2" y="6" width="20" height="12" rx="2" />
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M12 10v4M10 12h4" />
+                      </svg>
                       <span className="text-xs font-bold text-slate-200">Efectivo USD</span>
                     </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "efectivo_bs")}
-                      className={`flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "efectivo_bs"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <Store className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "efectivo_bs" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                        <rect x="2" y="6" width="20" height="12" rx="2" />
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M12 10v4M10 12h4" />
+                      </svg>
                       <span className="text-xs font-bold text-slate-200">Efectivo Bs</span>
                     </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "mixto")}
-                      className={`col-span-2 flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
+                      className={`group col-span-2 flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "mixto"
                           ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <svg className={`h-4.5 w-4.5 transition-colors ${form.paymentMethod === "mixto" ? "text-[#0ee0d5]" : "text-slate-500"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span className="text-xs font-bold text-slate-200">Pago Mixto</span>
@@ -1242,7 +1255,7 @@ export function CartDrawer() {
 
           {/* Footer Totals & Action CTA */}
           {items.length > 0 && (
-            <div className="border-t border-[#1b212f] bg-[#0e1420] px-4 py-4 flex flex-col gap-3 shadow-none">
+            <div className="border-t border-[#1b212f] bg-[#0e1420] px-4 pt-4 pb-12 flex flex-col gap-3 shadow-none">
               {/* Pricing breakdown */}
               <div className="flex flex-col gap-1.5 border-b border-[#1b212f]/50 pb-3">
                 {totals.savingsUsd > 0 && (
@@ -1304,7 +1317,10 @@ export function CartDrawer() {
                       onClick={handleCasheaWhatsapp}
                       className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
                     >
-                      <Zap className="h-3.5 w-3.5 fill-current" /> Cashéalo vía WhatsApp ➔
+                      <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
+                        <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
+                      </svg>
+                      <span>Cashéalo vía WhatsApp ➔</span>
                     </button>
                   )}
                 </div>
@@ -1335,7 +1351,10 @@ export function CartDrawer() {
                       onClick={handleCasheaWhatsapp}
                       className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
                     >
-                      <Zap className="h-3.5 w-3.5 fill-current" /> Cashéalo vía WhatsApp ➔
+                      <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
+                        <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
+                      </svg>
+                      <span>Cashéalo vía WhatsApp ➔</span>
                     </button>
                   )}
                 </div>

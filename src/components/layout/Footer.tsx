@@ -205,7 +205,7 @@ export function Footer() {
               © 2026 Suministros L&D 2023, C.A. Todos los derechos reservados.
             </span>
             <span className="text-[10px] text-slate-600">
-              Hecho por Suministros / Tailwind + Next
+              Hecho por Codetech Jr / Desarrollador Web
             </span>
           </div>
 

@@ -338,13 +338,16 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => handleInputChange("paymentMethod", "pago_movil")}
-                  className={`flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "pago_movil"
                       ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <CreditCard className={`h-5 w-5 mt-0.5 transition-colors ${form.paymentMethod === "pago_movil" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current mt-0.5 shrink-0" viewBox="0 0 24 24" aria-label="Pago Móvil">
+                    <path d="M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zm3 18a1 1 0 100-2 1 1 0 000 2zm-3-4h10V5H7v11z" />
+                    <path d="M14 9l-2 2 2 2V9zM10 9v4l2-2-2-2z" />
+                  </svg>
                   <div>
                     <div className="text-sm font-bold text-slate-200">Pago Móvil</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
@@ -357,14 +360,14 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => handleInputChange("paymentMethod", "zelle")}
-                  className={`flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "zelle"
                       ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <svg className={`h-5 w-5 mt-0.5 transition-colors ${form.paymentMethod === "zelle" ? "text-[#0ee0d5]" : "text-slate-500"}`} fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.29 11.29c-.39.39-1.02.39-1.41 0L9.3 10.7a.996.996 0 1 1 1.41-1.41l1.79 1.79 4.29-4.3a.996.996 0 1 1 1.41 1.41l-5 5z" />
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current mt-0.5 shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
+                    <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
                   </svg>
                   <div>
                     <div className="text-sm font-bold text-slate-200">Zelle</div>
@@ -378,13 +381,15 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => handleInputChange("paymentMethod", "binance")}
-                  className={`flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "binance"
                       ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <span className={`text-[10px] font-mono font-extrabold border rounded px-1.5 py-0.5 mt-0.5 transition-colors ${form.paymentMethod === "binance" ? "border-[#0ee0d5] text-[#0ee0d5]" : "border-slate-700 text-slate-500"}`}>BINANCE</span>
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current mt-0.5 shrink-0" viewBox="0 0 20 20" aria-label="Binance">
+                    <path d="M10 2L5 7l2 2 3-3 3 3 2-2-5-5zm0 14l-3-3-2 2 5 5 5-5-2-2-3 3zm-6-6l-2 2 2 2 2-2-2-2zm12 0l-2 2 2 2 2-2-2-2zm-6-2l-2 2 2 2 2-2-2-2z" />
+                  </svg>
                   <div>
                     <div className="text-sm font-bold text-slate-200">Binance Pay</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
@@ -397,13 +402,17 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => handleInputChange("paymentMethod", "efectivo")}
-                  className={`flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "efectivo"
                       ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <Store className={`h-5 w-5 mt-0.5 transition-colors ${form.paymentMethod === "efectivo" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 10v4M10 12h4" />
+                  </svg>
                   <div>
                     <div className="text-sm font-bold text-slate-200">Efectivo USD (Taquilla)</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
@@ -416,13 +425,17 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => handleInputChange("paymentMethod", "efectivo_bs")}
-                  className={`flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "efectivo_bs"
                       ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <Store className={`h-5 w-5 mt-0.5 transition-colors ${form.paymentMethod === "efectivo_bs" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 10v4M10 12h4" />
+                  </svg>
                   <div>
                     <div className="text-sm font-bold text-slate-200">Efectivo Bs (Taquilla)</div>
                     <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
