@@ -21,11 +21,10 @@ export function CurrencyCalculator() {
   const [isSaving, setIsSaving] = React.useState(false);
   const [toastMsg, setToastMsg] = React.useState("");
 
-  // Cuando el store global muta gracias a Supabase Hydrator, 
-  // pisamos y actualizamos nuestras cajas del admin
+  // Sync local state when store changes externally
   React.useEffect(() => {
-    if (rateBcv) setLocalBcv(rateBcv.toString());
-    if (rateBinance) setLocalBinance(rateBinance.toString());
+    setLocalBcv(rateBcv.toString());
+    setLocalBinance(rateBinance.toString());
   }, [rateBcv, rateBinance]);
 
   const handleSave = async () => {
@@ -37,16 +36,27 @@ export function CurrencyCalculator() {
     setToastMsg("");
 
     try {
-      const { error } = await supabase
+      const now = new Date().toISOString();
+      const { data, error, count } = await supabase
         .from("config_tasas")
         .update({
           rate_bcv: bcv,
           rate_binance: binance,
+          updated_at: now,
         })
-        .eq("id", 1);
+        .eq("id", 1)
+        .select();
 
       if (error) {
         throw error;
+      }
+
+      // Detect silent RLS/policy failures — Supabase returns success but 0 rows affected
+      if (!data || data.length === 0) {
+        console.error("Supabase update returned 0 rows — possible RLS policy blocking writes with anon key.");
+        setToastMsg("⚠️ Error: La base de datos rechazó la escritura. Revisa los permisos RLS en Supabase.");
+        setTimeout(() => setToastMsg(""), 5000);
+        return;
       }
 
       // Sync Zustand Store state with database
