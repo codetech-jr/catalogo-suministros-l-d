@@ -6,11 +6,13 @@ import { useCartStore } from "@/store/cart-store";
 import { useDrawerStore } from "@/store/drawer-store";
 import { useCommandPaletteStore } from "@/hooks/useCommandPalette";
 import { MobileNavigationDrawer } from "./MobileNavigationDrawer";
+import { usePathname } from "next/navigation";
 
 const WHATSAPP_URL =
   "https://wa.me/584141025386?text=Hola%20Suministros%20L%26D.%20Necesito%20asesoría%20para%20mi%20proyecto.";
 
 export function MobileDock() {
+  const pathname = usePathname();
   const items = useCartStore((state) => state.items);
   const openDrawer = useDrawerStore((state) => state.openDrawer);
   const openPalette = useCommandPaletteStore((s) => s.openPalette);
@@ -22,6 +24,10 @@ export function MobileDock() {
   }, []);
 
   const totalQty = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  if (pathname.startsWith("/admin") || pathname === "/login") {
+    return null;
+  }
 
   return (
     <>
@@ -44,7 +50,7 @@ export function MobileDock() {
             {/* ☰ Menú (reemplaza Inicio) */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#0ee0d5] transition-colors cursor-pointer active:scale-95 rounded-xl"
+              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#007BFF] transition-colors cursor-pointer active:scale-95 rounded-xl"
               aria-label="Abrir menú de navegación"
             >
               <Menu className="h-5 w-5" />
@@ -54,7 +60,7 @@ export function MobileDock() {
             {/* 🔍 Buscar — abre CommandPalette */}
             <button
               onClick={openPalette}
-              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#0ee0d5] transition-colors cursor-pointer active:scale-95 rounded-xl"
+              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#007BFF] transition-colors cursor-pointer active:scale-95 rounded-xl"
               aria-label="Abrir búsqueda rápida"
             >
               <Search className="h-5 w-5" />
@@ -66,7 +72,7 @@ export function MobileDock() {
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#0ee0d5] transition-colors active:scale-95 rounded-xl"
+              className="flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#007BFF] transition-colors active:scale-95 rounded-xl"
               aria-label="Contactar asesor vía WhatsApp"
             >
               <MessageCircle className="h-5 w-5" />
@@ -76,13 +82,13 @@ export function MobileDock() {
             {/* 🛒 Cesta */}
             <button
               onClick={openDrawer}
-              className="relative flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#0ee0d5] transition-colors cursor-pointer active:scale-95 rounded-xl"
+              className="relative flex flex-col items-center gap-1 min-w-[56px] py-1 px-2 text-slate-400 hover:text-[#007BFF] transition-colors cursor-pointer active:scale-95 rounded-xl"
               aria-label="Abrir carrito de compras"
             >
               <div className="relative">
                 <ShoppingCart className="h-5 w-5" />
                 {mounted && totalQty > 0 && (
-                  <span className="absolute -top-1.5 -right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#0ee0d5] text-[8px] font-bold text-slate-950 shadow-[0_0_8px_rgba(14,224,213,0.5)]">
+                  <span className="absolute -top-1.5 -right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#007BFF] text-[8px] font-bold text-slate-950 shadow-[0_0_8px_rgba(0,123,255,0.5)]">
                     {totalQty > 99 ? "99+" : totalQty}
                   </span>
                 )}

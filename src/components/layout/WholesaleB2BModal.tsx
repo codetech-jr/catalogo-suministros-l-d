@@ -77,7 +77,7 @@ Enviado desde el Portal de Mayoristas.`;
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-slate-400 hover:text-white hover:bg-slate-800 p-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0ee0d5]"
+          className="absolute top-6 right-6 text-slate-400 hover:text-white hover:bg-slate-800 p-2 rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#007BFF]"
           aria-label="Cerrar modal"
         >
           <X className="h-5 w-5" />
@@ -86,7 +86,7 @@ Enviado desde el Portal de Mayoristas.`;
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-2xl text-white font-bold leading-tight flex items-center gap-2">
-            <ClipboardList className="h-6 w-6 text-[#0ee0d5]" />
+            <ClipboardList className="h-6 w-6 text-[#007BFF]" />
             Portal de Atención a Mayoristas y Proyectos
           </h2>
           <p className="text-slate-400 text-sm mt-2">
@@ -110,7 +110,7 @@ Enviado desde el Portal de Mayoristas.`;
                 type="text"
                 required
                 placeholder="Ej. Constructora Delta, C.A."
-                className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#0ee0d5] outline-none text-white transition-colors"
+                className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#007BFF] outline-none text-white transition-colors"
                 value={razonSocial}
                 onChange={(e) => setRazonSocial(e.target.value)}
               />
@@ -129,7 +129,7 @@ Enviado desde el Portal de Mayoristas.`;
                 type="text"
                 required
                 placeholder="Ej. J-12345678-9"
-                className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#0ee0d5] outline-none text-white transition-colors"
+                className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#007BFF] outline-none text-white transition-colors"
                 value={rif}
                 onChange={(e) => setRif(e.target.value)}
               />
@@ -149,7 +149,7 @@ Enviado desde el Portal de Mayoristas.`;
               type="text"
               required
               placeholder="Ej. Proyecto Res. Las Margaritas"
-              className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#0ee0d5] outline-none text-white transition-colors"
+              className="bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:border-[#007BFF] outline-none text-white transition-colors"
               value={nombreProyecto}
               onChange={(e) => setNombreProyecto(e.target.value)}
             />
@@ -163,7 +163,7 @@ Enviado desde el Portal de Mayoristas.`;
             >
               Área para Pegar Materiales
             </label>
-            <div className="relative group rounded-lg overflow-hidden border border-slate-700 focus-within:border-[#0ee0d5] transition-colors bg-slate-800">
+            <div className="relative group rounded-lg overflow-hidden border border-slate-700 focus-within:border-[#007BFF] transition-colors bg-slate-800">
               <textarea
                 id="materiales"
                 required
@@ -182,7 +182,7 @@ Enviado desde el Portal de Mayoristas.`;
           {/* WhatsApp Handoff Button */}
           <button
             type="submit"
-            className="w-full bg-[#0ee0d5] hover:bg-[#0bc2b9] text-slate-900 font-bold py-4 rounded-xl mt-4 flex justify-center items-center gap-3 transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#0ee0d5]/10 hover:shadow-[#0ee0d5]/20 cursor-pointer"
+            className="w-full bg-[#007BFF] hover:bg-[#0bc2b9] text-slate-900 font-bold py-4 rounded-xl mt-4 flex justify-center items-center gap-3 transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#007BFF]/10 hover:shadow-[#007BFF]/20 cursor-pointer"
           >
             <span>Generar Requerimiento Comercial y Asignar Asesor ➔</span>
           </button>

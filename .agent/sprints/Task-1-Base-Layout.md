@@ -7,3 +7,4 @@
 3. El Header debe ser oscuro (`bg-slate-950/80` con backdrop blur).
 4. Evitar a toda costa textos o bordes neón por doquier; usar text-slate-100 para textos principales y text-slate-400 para textos secundarios.
    **Componentes implicados:** globals.css, RootLayout, MainNav (Header).
+

@@ -20,6 +20,7 @@ import {
   Zap
 } from "lucide-react";
 import { useCart } from "@/store/cart-store";
+import { usePathname } from "next/navigation";
 import { useBcvStore } from "@/store/bcv-store";
 import { useDrawerStore } from "@/store/drawer-store";
 import { CheckoutForm, PaymentMethod } from "@/types/checkout";
@@ -54,6 +55,7 @@ const MOCK_ACCOUNTS = {
 };
 
 export function CartDrawer() {
+  const pathname = usePathname();
   const { isOpen, closeDrawer } = useDrawerStore();
   const { items, updateQuantity, removeItem, getTotals, clearCart } = useCart((state) => state);
   const rate = useBcvStore((state) => state.rate);
@@ -113,8 +115,8 @@ export function CartDrawer() {
     }
   }, [form.paymentMethod]);
 
-  const totals = getTotals(rate);
-  const totalVES = totals.totalUsd * rate;
+  const totals = getTotals();
+  const totalVES = totals.totalVES;
 
   const isPaymentRefValid = React.useMemo(() => {
     if (isQuoteOnly) return true;
@@ -131,6 +133,7 @@ export function CartDrawer() {
   }, [form.paymentMethod, form.paymentReference, splitPayments, totals.totalUsd, isQuoteOnly]);
 
   if (!mounted) return null;
+  if (pathname.startsWith("/admin") || pathname === "/login") return null;
 
   const handleInputChange = (field: keyof CheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -256,7 +259,7 @@ export function CartDrawer() {
               {step > 1 && (
                 <button
                   onClick={() => setStep((prev) => prev - 1)}
-                  className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-cyan-400 transition-colors cursor-pointer"
+                  className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-blue-500 transition-colors cursor-pointer"
                   aria-label="Volver al paso anterior"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -270,7 +273,7 @@ export function CartDrawer() {
             </div>
             <button
               onClick={closeDrawer}
-              className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-cyan-400 transition-colors cursor-pointer"
+              className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-blue-500 transition-colors cursor-pointer"
               aria-label="Cerrar carrito"
             >
               <X className="h-4 w-4" />
@@ -330,7 +333,7 @@ export function CartDrawer() {
                                 {item.product.sku}
                               </span>
                               {isVolume && (
-                                <span className="text-[8px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">
+                                <span className="text-[8px] bg-blue-600/10 text-blue-500 border border-blue-600/20 px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">
                                   AL MAYOR
                                 </span>
                               )}
@@ -338,7 +341,7 @@ export function CartDrawer() {
                             <h4 className="text-xs font-bold text-text-primary truncate">
                               {item.product.name}
                             </h4>
-                            <span className="text-xs font-mono font-bold text-cyan-400/90 tabular-nums">
+                            <span className="text-xs font-mono font-bold text-blue-500/90 tabular-nums">
                               {formatUSD(item.activePrice)} c/u
                             </span>
                           </div>
@@ -348,7 +351,7 @@ export function CartDrawer() {
                             <div className="flex items-center bg-[#0b0e14] rounded border border-[#1b212f]">
                               <button
                                 onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                                className="p-1 text-text-secondary hover:text-cyan-400 transition-colors cursor-pointer"
+                                className="p-1 text-text-secondary hover:text-blue-500 transition-colors cursor-pointer"
                                 aria-label="Disminuir cantidad"
                               >
                                 <Minus className="h-3 w-3" />
@@ -358,7 +361,7 @@ export function CartDrawer() {
                               </span>
                               <button
                                 onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                                className="p-1 text-text-secondary hover:text-cyan-400 transition-colors cursor-pointer"
+                                className="p-1 text-text-secondary hover:text-blue-500 transition-colors cursor-pointer"
                                 aria-label="Aumentar cantidad"
                               >
                                 <Plus className="h-3 w-3" />
@@ -389,7 +392,7 @@ export function CartDrawer() {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2 my-1">
                     <span className="h-px bg-[#1b212f] flex-1" />
-                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-cyan-400 uppercase whitespace-nowrap">
+                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-blue-500 uppercase whitespace-nowrap">
                       Identificación
                     </h3>
                     <span className="h-px bg-[#1b212f] flex-1" />
@@ -403,7 +406,7 @@ export function CartDrawer() {
                         value={form.fullName}
                         onChange={(e) => handleInputChange("fullName", e.target.value)}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.fullName ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.fullName ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                       />
                       {errors.fullName && (
@@ -418,7 +421,7 @@ export function CartDrawer() {
                         value={form.rifOrId}
                         onChange={(e) => handleInputChange("rifOrId", e.target.value)}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.rifOrId ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.rifOrId ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-mono tracking-widest text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:tracking-normal placeholder:font-sans placeholder:text-slate-500`}
                       />
                       {errors.rifOrId && (
@@ -433,7 +436,7 @@ export function CartDrawer() {
                         value={form.phone}
                         onChange={(e) => handleInputChange("phone", e.target.value)}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.phone ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.phone ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                       />
                       {errors.phone && (
@@ -447,7 +450,7 @@ export function CartDrawer() {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2 my-1">
                     <span className="h-px bg-[#1b212f] flex-1" />
-                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-cyan-400 uppercase whitespace-nowrap">
+                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-blue-500 uppercase whitespace-nowrap">
                       Distribución
                     </h3>
                     <span className="h-px bg-[#1b212f] flex-1" />
@@ -458,11 +461,11 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("deliveryType", "retiro")}
                       className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                         form.deliveryType === "retiro"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <Store className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "retiro" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <Store className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "retiro" ? "text-[#007BFF]" : "text-slate-500"}`} />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold text-slate-200">Retiro en Tienda</div>
                         <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Charallave Centro - GRATIS</div>
@@ -474,11 +477,11 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("deliveryType", "delivery_charallave")}
                       className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                         form.deliveryType === "delivery_charallave"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <Truck className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_charallave" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <Truck className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_charallave" ? "text-[#007BFF]" : "text-slate-500"}`} />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold text-slate-200">Delivery Charallave</div>
                         <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Casco Central y aledaños - GRATIS</div>
@@ -490,11 +493,11 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("deliveryType", "delivery_tuy")}
                       className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                         form.deliveryType === "delivery_tuy"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
-                      <MapPin className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_tuy" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                      <MapPin className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_tuy" ? "text-[#007BFF]" : "text-slate-500"}`} />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold text-slate-200">Flete Valles del Tuy</div>
                         <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Cúa, Ocumare, Santa Teresa - FLETE ADICIONAL</div>
@@ -511,7 +514,7 @@ export function CartDrawer() {
                         value={form.deliveryAddress}
                         onChange={(e) => handleInputChange("deliveryAddress", e.target.value)}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.deliveryAddress ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.deliveryAddress ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                       />
                       {errors.deliveryAddress && (
@@ -535,7 +538,7 @@ export function CartDrawer() {
                         e.stopPropagation();
                         setIsQuoteOnly(e.target.checked);
                       }}
-                      className="h-4 w-4 rounded border-slate-750 bg-slate-900 text-cyan-400 focus:ring-cyan-500/25"
+                      className="h-4 w-4 rounded border-slate-750 bg-slate-900 text-blue-500 focus:ring-blue-600/25"
                     />
                     <div>
                       <div className="text-xs font-bold text-slate-100 uppercase tracking-wide">
@@ -549,7 +552,7 @@ export function CartDrawer() {
 
                   <div className="flex items-center gap-2 my-1">
                     <span className="h-px bg-[#1b212f] flex-1" />
-                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-cyan-400 uppercase whitespace-nowrap">
+                    <h3 className="text-[9px] font-bold font-mono tracking-widest text-blue-500 uppercase whitespace-nowrap">
                       Forma de Pago
                     </h3>
                     <span className="h-px bg-[#1b212f] flex-1" />
@@ -559,7 +562,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "pago_movil")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "pago_movil"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -574,7 +577,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "zelle")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "zelle"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -588,7 +591,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "binance")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "binance"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -602,7 +605,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "transferencia")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "transferencia"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -616,7 +619,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "efectivo")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "efectivo"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -632,7 +635,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "efectivo_bs")}
                       className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "efectivo_bs"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -648,7 +651,7 @@ export function CartDrawer() {
                       onClick={() => handleInputChange("paymentMethod", "mixto")}
                       className={`group col-span-2 flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
                         form.paymentMethod === "mixto"
-                          ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_12px_rgba(14,224,213,0.06)]"
+                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
                           : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                       }`}
                     >
@@ -662,7 +665,7 @@ export function CartDrawer() {
                   {/* Bank Account Details dynamically showing based on choice */}
                   {!isQuoteOnly && form.paymentMethod !== "efectivo" && form.paymentMethod !== "efectivo_bs" && form.paymentMethod !== "mixto" && (
                     <div className="p-3.5 rounded-lg border border-[#1b212f] bg-[#0e1420] flex flex-col gap-2.5 text-xs shadow-sm">
-                      <span className="font-mono text-[9px] text-cyan-400 uppercase font-bold tracking-wider">
+                      <span className="font-mono text-[9px] text-blue-500 uppercase font-bold tracking-wider">
                         Cuentas Receptoras de Suministros L&D
                       </span>
                       
@@ -673,11 +676,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.pago_movil.bank, "pm-bank")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "pm-bank" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -689,11 +692,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.pago_movil.phone, "pm-phone")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "pm-phone" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -705,11 +708,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.pago_movil.id, "pm-id")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "pm-id" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -725,11 +728,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.zelle.email, "zelle-email")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "zelle-email" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -740,11 +743,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.zelle.holder, "zelle-holder")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "zelle-holder" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -760,11 +763,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.binance.payId, "binance-id")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "binance-id" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -775,11 +778,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.binance.alias, "binance-alias")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "binance-alias" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -795,11 +798,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.bank, "trans-bank")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "trans-bank" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -810,11 +813,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.number, "trans-number")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "trans-number" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -825,11 +828,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.holder, "trans-holder")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "trans-holder" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -840,11 +843,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.id, "trans-id")}
-                              className="relative p-1 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={14} />
                               {copiedField === "trans-id" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -857,7 +860,7 @@ export function CartDrawer() {
 
                   {!isQuoteOnly && form.paymentMethod === "mixto" && (
                     <div className="p-3.5 rounded-lg border border-[#1b212f] bg-[#131923] flex flex-col gap-3 text-xs shadow-none">
-                      <span className="font-mono text-[9px] text-cyan-400 uppercase font-bold tracking-wider">
+                      <span className="font-mono text-[9px] text-blue-500 uppercase font-bold tracking-wider">
                         Configuración de Pago Mixto
                       </span>
                       
@@ -887,8 +890,8 @@ export function CartDrawer() {
                             } else if (remaining > 0) {
                               return (
                                 <>
-                                  <span className="text-cyan-400">Restante:</span>
-                                  <span className="text-cyan-400 tabular-nums">Faltan: {formatUSD(remaining)}</span>
+                                  <span className="text-blue-500">Restante:</span>
+                                  <span className="text-blue-500 tabular-nums">Faltan: {formatUSD(remaining)}</span>
                                 </>
                               );
                             } else {
@@ -920,7 +923,7 @@ export function CartDrawer() {
                                     {p.method === "efectivo_bs" && "Efec Bs"}
                                   </span>
                                   <span className="text-text-muted mx-1">|</span>
-                                  <span className="text-cyan-400 font-bold">{formatUSD(p.amountUsd)}</span>
+                                  <span className="text-blue-500 font-bold">{formatUSD(p.amountUsd)}</span>
                                   {p.method !== "efectivo" && p.method !== "efectivo_bs" && (
                                     <>
                                       <span className="text-text-muted mx-1">|</span>
@@ -950,7 +953,7 @@ export function CartDrawer() {
                       {/* Sub-method Account details snippet */}
                       <div className="bg-[#0b0e14]/50 border border-[#1b212f]/30 p-2.5 rounded text-[10px] text-text-secondary flex flex-col gap-1">
                         <div className="flex justify-between items-center">
-                          <span className="text-[9px] text-cyan-400 font-mono uppercase tracking-wider font-semibold">
+                          <span className="text-[9px] text-blue-500 font-mono uppercase tracking-wider font-semibold">
                             Instrucciones del método
                           </span>
                           <span className="text-[9px] text-text-muted font-mono uppercase font-bold">
@@ -968,11 +971,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(`${MOCK_ACCOUNTS.pago_movil.bank} ${MOCK_ACCOUNTS.pago_movil.phone} ${MOCK_ACCOUNTS.pago_movil.id}`, "mixto-pm")}
-                              className="relative p-0.5 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={12} />
                               {copiedField === "mixto-pm" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
+                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -985,11 +988,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(`${MOCK_ACCOUNTS.zelle.email} ${MOCK_ACCOUNTS.zelle.holder}`, "mixto-zelle")}
-                              className="relative p-0.5 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={12} />
                               {copiedField === "mixto-zelle" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
+                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -1002,11 +1005,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(`${MOCK_ACCOUNTS.binance.payId} ${MOCK_ACCOUNTS.binance.alias}`, "mixto-binance")}
-                              className="relative p-0.5 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={12} />
                               {copiedField === "mixto-binance" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
+                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -1019,11 +1022,11 @@ export function CartDrawer() {
                             <button
                               type="button"
                               onClick={() => handleCopy(`${MOCK_ACCOUNTS.transferencia.bank} ${MOCK_ACCOUNTS.transferencia.number} ${MOCK_ACCOUNTS.transferencia.id}`, "mixto-trans")}
-                              className="relative p-0.5 text-text-muted hover:text-cyan-400 transition-colors"
+                              className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
                             >
                               <Copy size={12} />
                               {copiedField === "mixto-trans" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-cyan-500 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
+                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
                                   ¡Copiado!
                                 </span>
                               )}
@@ -1047,7 +1050,7 @@ export function CartDrawer() {
                               setNewSplitMethod(e.target.value as PaymentMethod);
                               setNewSplitRef("");
                             }}
-                            className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-cyan-400 font-mono w-[110px]"
+                            className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-blue-500 font-mono w-[110px]"
                           >
                             <option value="pago_movil">Pago Móvil</option>
                             <option value="zelle">Zelle</option>
@@ -1062,7 +1065,7 @@ export function CartDrawer() {
                             placeholder="$0.00 Monto"
                             value={newSplitAmount}
                             onChange={(e) => setNewSplitAmount(e.target.value)}
-                            className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-cyan-400 font-mono flex-1 min-w-[50px]"
+                            className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-blue-500 font-mono flex-1 min-w-[50px]"
                           />
                         </div>
                         
@@ -1074,7 +1077,7 @@ export function CartDrawer() {
                               maxLength={12}
                               value={newSplitRef}
                               onChange={(e) => setNewSplitRef(e.target.value.replace(/\D/g, ""))}
-                              className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-cyan-400 font-mono flex-1 min-w-[100px]"
+                              className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-blue-500 font-mono flex-1 min-w-[100px]"
                             />
                           ) : (
                             <div className="flex-1 text-[10px] text-text-muted italic px-2">Efectivo no requiere referencia</div>
@@ -1121,7 +1124,7 @@ export function CartDrawer() {
                           handleInputChange("paymentReference", val);
                         }}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.paymentReference ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.paymentReference ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-mono tracking-widest text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:tracking-normal placeholder:font-sans placeholder:text-slate-500`}
                       />
                       {errors.paymentReference && (
@@ -1143,7 +1146,7 @@ export function CartDrawer() {
 
                 {/* Alerta de optimización de red (Evitar inyectar Blob Input) */}
                 <div className="rounded-lg border border-dashed border-[#1b212f] bg-[#0e1420]/40 p-3 flex gap-2.5 items-center">
-                  <Camera className="text-cyan-400 h-5 w-5 flex-shrink-0 opacity-80" />
+                  <Camera className="text-blue-500 h-5 w-5 flex-shrink-0 opacity-80" />
                   <p className="text-xs text-text-secondary leading-relaxed">
                     Para evitar esperas de carga de red, nuestra plataforma cargará todos los datos digitalizados primero. Por favor envíe la captura fotográfica o screenshot de la transacción una vez dentro de nuestra ventanilla del agente vía WhatsApp.
                   </p>
@@ -1175,7 +1178,7 @@ export function CartDrawer() {
                     <span className="text-text-muted">Pago:</span>{" "}
                     <span className="text-text-primary font-medium uppercase font-mono">
                       {isQuoteOnly ? (
-                        <span className="text-cyan-400 font-bold">SOLICITUD DE COTIZACIÓN (Sin Pago preventivo)</span>
+                        <span className="text-blue-500 font-bold">SOLICITUD DE COTIZACIÓN (Sin Pago preventivo)</span>
                       ) : (
                         <>
                           {form.paymentMethod === "pago_movil" && `Pago Móvil (Ref: ${form.paymentReference})`}
@@ -1198,7 +1201,7 @@ export function CartDrawer() {
                             {p.method === "transferencia" && "Transferencia"}
                             {p.method === "efectivo" && "Efectivo USD"}
                             {p.method === "efectivo_bs" && "Efectivo Bs"}:{" "}
-                            <span className="text-cyan-400 font-bold">{formatUSD(p.amountUsd)}</span>
+                            <span className="text-blue-500 font-bold">{formatUSD(p.amountUsd)}</span>
                             {p.method !== "efectivo" && p.method !== "efectivo_bs" && ` [Ref: ${p.ref}]`}
                           </div>
                         ))}
@@ -1224,10 +1227,10 @@ export function CartDrawer() {
                           className="flex justify-between items-baseline border-b border-[#1b212f]/40 last:border-b-0 pb-2 last:pb-0 text-xs"
                         >
                           <div className="max-w-[70%]">
-                            <span className="font-bold text-cyan-400 font-mono tabular-nums">{item.quantity}x</span>{" "}
+                            <span className="font-bold text-blue-500 font-mono tabular-nums">{item.quantity}x</span>{" "}
                             <span className="text-text-primary">{item.product.name}</span>
                             {isVolume && (
-                              <span className="block text-[8px] text-cyan-400 font-mono font-medium leading-none mt-0.5">
+                              <span className="block text-[8px] text-blue-500 font-mono font-medium leading-none mt-0.5">
                                 Tasa al Mayor activa
                               </span>
                             )}
@@ -1259,7 +1262,7 @@ export function CartDrawer() {
               {/* Pricing breakdown */}
               <div className="flex flex-col gap-1.5 border-b border-[#1b212f]/50 pb-3">
                 {totals.savingsUsd > 0 && (
-                  <div className="flex justify-between text-xs text-cyan-400 font-medium">
+                  <div className="flex justify-between text-xs text-blue-500 font-medium">
                     <span className="flex items-center gap-1"><Percent className="h-3 w-3" /> Ahorro Mayorista:</span>
                     <span className="font-mono tabular-nums">-{formatUSD(totals.savingsUsd)}</span>
                   </div>
@@ -1308,7 +1311,7 @@ export function CartDrawer() {
                 <div className="flex flex-col gap-2 w-full">
                   <Button
                     onClick={handleProceedToStep2}
-                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-black border border-cyan-400/20 text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-cyan-500/50 active:scale-98 shadow-none"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-black border border-blue-500/20 text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-blue-600/50 active:scale-98 shadow-none"
                   >
                     Continuar al Checkout
                   </Button>
@@ -1330,12 +1333,12 @@ export function CartDrawer() {
                   <Button
                     onClick={handleProceedToStep3}
                     disabled={!isPaymentRefValid}
-                    className={`w-full text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-cyan-500/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-cyan-400/20 ${
+                    className={`w-full text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-blue-600/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-blue-500/20 ${
                       !isQuoteOnly && form.paymentMethod === "mixto"
                         ? isPaymentRefValid
-                          ? "bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold"
+                          ? "bg-blue-600 hover:bg-blue-500 text-black font-extrabold"
                           : "bg-canvas-card text-slate-500 border-[#1b212f]"
-                        : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                        : "bg-blue-600 hover:bg-blue-500 text-black"
                     }`}
                   >
                     {isQuoteOnly
@@ -1363,7 +1366,7 @@ export function CartDrawer() {
                 <Button
                   onClick={handleConfirmOrder}
                   disabled={!isPaymentRefValid}
-                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-cyan-500/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-cyan-400/20"
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-black text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-blue-600/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-blue-500/20"
                 >
                   <Send className="h-3.5 w-3.5" />
                   {isQuoteOnly ? "Enviar Presupuesto vía WhatsApp ↗" : "Confirmar por WhatsApp"}

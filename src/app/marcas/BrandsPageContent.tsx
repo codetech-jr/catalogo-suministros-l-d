@@ -98,7 +98,7 @@ export default function BrandsPageContent() {
       <main className="flex-1 w-full max-w-7xl mx-auto py-12 px-6 relative flex flex-col">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-mono tracking-wide mb-8" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[#0ee0d5] transition-colors">
+          <Link href="/" className="hover:text-[#007BFF] transition-colors">
             Inicio
           </Link>
           <span className="text-slate-600 select-none">/</span>
@@ -134,7 +134,7 @@ export default function BrandsPageContent() {
                 <div
                   key={brand.id}
                   onClick={() => handleBrandClick(brand.filterUrl)}
-                  className="group bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col items-center justify-between min-h-[250px] cursor-pointer transition-all hover:bg-slate-800 hover:border-[#0ee0d5]/40 hover:shadow-2xl"
+                  className="group bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col items-center justify-between min-h-[250px] cursor-pointer transition-all hover:bg-slate-800 hover:border-[#007BFF]/40 hover:shadow-2xl"
                   title={`Filtrar productos de la marca ${brand.name}`}
                 >
                   <div className="flex-1 flex flex-col items-center justify-center w-full">
@@ -152,7 +152,7 @@ export default function BrandsPageContent() {
                   </div>
 
                   {/* Call to Action */}
-                  <div className="text-xs text-[#0ee0d5] font-semibold opacity-0 group-hover:opacity-100 mt-4 translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-out select-none text-center">
+                  <div className="text-xs text-[#007BFF] font-semibold opacity-0 group-hover:opacity-100 mt-4 translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-out select-none text-center">
                     {brand.ctaText}
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export default function BrandsPageContent() {
         <div className="flex justify-center mt-20 mb-6">
           <Link
             href="/catalogo"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#0ee0d5] transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#007BFF] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Volver al Catálogo Completo

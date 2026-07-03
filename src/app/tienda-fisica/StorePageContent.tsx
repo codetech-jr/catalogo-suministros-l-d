@@ -21,7 +21,7 @@ export default function StorePageContent() {
         
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-mono tracking-wide mb-8" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[#0ee0d5] transition-colors">
+          <Link href="/" className="hover:text-[#007BFF] transition-colors">
             Inicio
           </Link>
           <span className="text-slate-600 select-none">/</span>
@@ -46,7 +46,7 @@ export default function StorePageContent() {
               
               {/* Bloque 1: Ubicación Exacta */}
               <div className="flex gap-4 items-start">
-                <div className="flex items-center justify-center p-3 rounded-xl bg-slate-950 border border-slate-800 text-[#0ee0d5] shrink-0">
+                <div className="flex items-center justify-center p-3 rounded-xl bg-slate-950 border border-slate-800 text-[#007BFF] shrink-0">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -60,7 +60,7 @@ export default function StorePageContent() {
 
               {/* Bloque 2: Horarios */}
               <div className="flex gap-4 items-start">
-                <div className="flex items-center justify-center p-3 rounded-xl bg-slate-950 border border-slate-800 text-[#0ee0d5] shrink-0">
+                <div className="flex items-center justify-center p-3 rounded-xl bg-slate-950 border border-slate-800 text-[#007BFF] shrink-0">
                   <Clock className="w-6 h-6" />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -89,7 +89,7 @@ export default function StorePageContent() {
                   href="https://waze.com/ul?ll=10.2461325,-66.8619453&navigate=yes"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border border-slate-700 bg-slate-800 hover:bg-[#0ee0d5] hover:text-slate-900 transition-colors font-semibold px-4 py-3 text-slate-300 rounded-lg text-sm flex items-center justify-center gap-2 active:scale-[0.98] select-none text-center cursor-pointer"
+                  className="border border-slate-700 bg-slate-800 hover:bg-[#007BFF] hover:text-slate-900 transition-colors font-semibold px-4 py-3 text-slate-300 rounded-lg text-sm flex items-center justify-center gap-2 active:scale-[0.98] select-none text-center cursor-pointer"
                 >
                   <Navigation className="w-4 h-4 shrink-0" />
                   <span>Ir con Waze</span>
@@ -129,7 +129,7 @@ export default function StorePageContent() {
             
             {/* Tarjeta 1: Recogida Express */}
             <div className="bg-transparent border border-slate-800 p-6 rounded-xl hover:border-slate-700 transition-all duration-300 group flex flex-col gap-4 shadow-sm hover:shadow-md">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#0ee0d5] group-hover:bg-[#0ee0d5] group-hover:text-slate-900 transition-colors duration-300">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#007BFF] group-hover:bg-[#007BFF] group-hover:text-slate-900 transition-colors duration-300">
                 <Zap className="w-5 h-5" />
               </div>
               <div className="flex flex-col gap-2">
@@ -137,14 +137,14 @@ export default function StorePageContent() {
                   Recogida Express
                 </h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Tu carrito embalado en minutos. Trae la <span className="font-bold text-[#0ee0d5]/90 font-mono">#Referencia</span> o tu confirmación y subimos todo de una vez a tu vehículo.
+                  Tu carrito embalado en minutos. Trae la <span className="font-bold text-[#007BFF]/90 font-mono">#Referencia</span> o tu confirmación y subimos todo de una vez a tu vehículo.
                 </p>
               </div>
             </div>
 
             {/* Tarjeta 2: Asesoría Técnica */}
             <div className="bg-transparent border border-slate-800 p-6 rounded-xl hover:border-slate-700 transition-all duration-300 group flex flex-col gap-4 shadow-sm hover:shadow-md">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#0ee0d5] group-hover:bg-[#0ee0d5] group-hover:text-slate-900 transition-colors duration-300">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#007BFF] group-hover:bg-[#007BFF] group-hover:text-slate-900 transition-colors duration-300">
                 <Cpu className="w-5 h-5" />
               </div>
               <div className="flex flex-col gap-2">
@@ -159,7 +159,7 @@ export default function StorePageContent() {
 
             {/* Tarjeta 3: Zona de Carga */}
             <div className="bg-transparent border border-slate-800 p-6 rounded-xl hover:border-slate-700 transition-all duration-300 group flex flex-col gap-4 shadow-sm hover:shadow-md">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#0ee0d5] group-hover:bg-[#0ee0d5] group-hover:text-slate-900 transition-colors duration-300">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-[#007BFF] group-hover:bg-[#007BFF] group-hover:text-slate-900 transition-colors duration-300">
                 <Truck className="w-5 h-5" />
               </div>
               <div className="flex flex-col gap-2">
@@ -179,7 +179,7 @@ export default function StorePageContent() {
         <div className="flex justify-center mt-16 mb-6">
           <Link
             href="/catalogo"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#0ee0d5] transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#007BFF] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Volver al Catálogo de Materiales

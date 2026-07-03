@@ -20,8 +20,8 @@ function FaqItem({ question, answer, id }: FaqItemProps) {
     <div
       id={id}
       onClick={() => setIsOpen(!isOpen)}
-      className={`bg-slate-900 border rounded-lg p-5 cursor-pointer text-slate-300 font-medium hover:bg-slate-800 hover:text-[#0ee0d5] transition-all select-none flex flex-col justify-between ${
-        isOpen ? "border-[#0ee0d5]/30" : "border-slate-800"
+      className={`bg-slate-900 border rounded-lg p-5 cursor-pointer text-slate-300 font-medium hover:bg-slate-800 hover:text-[#007BFF] transition-all select-none flex flex-col justify-between ${
+        isOpen ? "border-[#007BFF]/30" : "border-slate-800"
       }`}
     >
       <div className="flex justify-between items-center gap-4 w-full">
@@ -29,7 +29,7 @@ function FaqItem({ question, answer, id }: FaqItemProps) {
         <div className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-slate-950/40 border border-slate-800 text-slate-400 transition-colors">
           <ChevronDown
             className={`w-4 h-4 transition-transform duration-300 ${
-              isOpen ? "rotate-180 text-[#0ee0d5]" : ""
+              isOpen ? "rotate-180 text-[#007BFF]" : ""
             }`}
           />
         </div>
@@ -64,7 +64,7 @@ export default function HelpCenterContent() {
         
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-xs text-slate-500 font-mono tracking-wide mb-8" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[#0ee0d5] transition-colors">
+          <Link href="/" className="hover:text-[#007BFF] transition-colors">
             Inicio
           </Link>
           <span className="text-slate-600 select-none">/</span>
@@ -87,7 +87,7 @@ export default function HelpCenterContent() {
           {/* Section 1 */}
           <section aria-labelledby="section-pagos">
             <h2 id="section-pagos" className="text-xl text-white mb-4 mt-2 font-semibold font-display tracking-tight flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0ee0d5]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#007BFF]" />
               TASA Y MÉTODOS DE PAGO
             </h2>
             <div className="flex flex-col gap-3">
@@ -107,7 +107,7 @@ export default function HelpCenterContent() {
           {/* Section 2 */}
           <section aria-labelledby="section-logistica">
             <h2 id="section-logistica" className="text-xl text-white mb-4 mt-8 font-semibold font-display tracking-tight flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0ee0d5]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#007BFF]" />
               LOGÍSTICA Y ENTREGAS (VALLES DEL TUY)
             </h2>
             <div className="flex flex-col gap-3">
@@ -127,7 +127,7 @@ export default function HelpCenterContent() {
           {/* Section 3 */}
           <section aria-labelledby="section-checkout">
             <h2 id="section-checkout" className="text-xl text-white mb-4 mt-8 font-semibold font-display tracking-tight flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0ee0d5]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#007BFF]" />
               CÓMO COMPRAR Y VERIFICACIÓN WHATSAPP
             </h2>
             <div className="flex flex-col gap-3">
@@ -159,7 +159,7 @@ export default function HelpCenterContent() {
             href="https://wa.me/584141025386?text=Hola,%20deseo%20comunicarme%20con%20el%20escritorio%20mayorista%20sobre%20requerimientos%20especiales%20o%20licitaciones%20B2B."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-6 py-3.5 bg-[#0ee0d5] hover:bg-[#12f0e4] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#0ee0d5]/10 hover:shadow-[#0ee0d5]/20 cursor-pointer"
+            className="inline-flex items-center justify-center px-6 py-3.5 bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-[0.98] shadow-lg shadow-[#007BFF]/10 hover:shadow-[#007BFF]/20 cursor-pointer"
           >
             Atención Corporativa Inmediata ↗
           </a>
@@ -169,7 +169,7 @@ export default function HelpCenterContent() {
         <div className="flex justify-center mt-12 mb-6">
           <Link
             href="/catalogo"
-            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#0ee0d5] transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-[#007BFF] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Volver al Catálogo de Materiales

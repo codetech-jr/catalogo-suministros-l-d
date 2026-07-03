@@ -33,7 +33,7 @@ const CATEGORIES = [
   {
     label: "Luminaria Comercial e Industrial",
     href: "/catalogo/iluminacion",
-    icon: <Lightbulb className="h-5 w-5 text-[#0ee0d5]" />,
+    icon: <Lightbulb className="h-5 w-5 text-[#007BFF]" />,
     desc: "Reflectores, paneles LED, luminarias viales",
   },
   {
@@ -102,7 +102,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
           {/* Mini logo */}
           <a href="/" onClick={onClose} className="flex items-center gap-2 group">
             <svg
-              className="h-6 w-6 text-[#0ee0d5]"
+              className="h-6 w-6 text-[#007BFF]"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -156,13 +156,13 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
                   key={cat.label}
                   href={cat.href}
                   onClick={onClose}
-                  className="flex items-center gap-4 px-6 py-3.5 border-b border-slate-800/60 last:border-b-0 hover:bg-[#0ee0d5]/5 transition-colors active:bg-[#0ee0d5]/10 group"
+                  className="flex items-center gap-4 px-6 py-3.5 border-b border-slate-800/60 last:border-b-0 hover:bg-[#007BFF]/5 transition-colors active:bg-[#007BFF]/10 group"
                 >
-                  <div className="flex-shrink-0 p-2 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:border-[#0ee0d5]/30 transition-colors">
+                  <div className="flex-shrink-0 p-2 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:border-[#007BFF]/30 transition-colors">
                     {cat.icon}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-slate-200 group-hover:text-[#0ee0d5] transition-colors leading-snug">
+                    <span className="text-sm font-bold text-slate-200 group-hover:text-[#007BFF] transition-colors leading-snug">
                       {cat.label}
                     </span>
                     <span className="text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-1">
@@ -175,7 +175,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
               <a
                 href="/catalogo/iluminacion"
                 onClick={onClose}
-                className="flex items-center justify-center gap-2 mx-6 mt-3 mb-1 py-2.5 rounded-lg bg-[#0ee0d5]/10 border border-[#0ee0d5]/20 text-[#0ee0d5] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#0ee0d5]/20 transition-colors"
+                className="flex items-center justify-center gap-2 mx-6 mt-3 mb-1 py-2.5 rounded-lg bg-[#007BFF]/10 border border-[#007BFF]/20 text-[#007BFF] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#007BFF]/20 transition-colors"
               >
                 Ver Catálogo Completo →
               </a>
@@ -204,7 +204,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
                 }}
                 className={`block px-6 py-4 border-b border-slate-800 text-lg font-bold uppercase tracking-wide transition-colors active:bg-slate-800/60 cursor-pointer ${
                   link.highlight
-                    ? "text-[#0ee0d5]/90 hover:text-[#0ee0d5]"
+                    ? "text-[#007BFF]/90 hover:text-[#007BFF]"
                     : "text-slate-200 hover:text-white hover:bg-slate-800/40"
                 }`}
               >
@@ -217,7 +217,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
                 onClick={onClose}
                 className={`block px-6 py-4 border-b border-slate-800 text-lg font-bold uppercase tracking-wide transition-colors active:bg-slate-800/60 ${
                   link.highlight
-                    ? "text-[#0ee0d5]/90 hover:text-[#0ee0d5]"
+                    ? "text-[#007BFF]/90 hover:text-[#007BFF]"
                     : "text-slate-200 hover:text-white hover:bg-slate-800/40"
                 }`}
               >

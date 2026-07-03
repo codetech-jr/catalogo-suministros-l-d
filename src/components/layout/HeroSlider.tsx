@@ -79,7 +79,7 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
             <div className="flex flex-wrap gap-4 mt-2 justify-center w-full">
               <button
                 onClick={handleScrollToCatalog}
-                className="bg-[#0ee0d5] hover:bg-[#12f0e4] text-slate-900 font-bold px-6 py-3 rounded-lg transition-all duration-200 active:scale-98 shadow-md shadow-cyan-950/20 text-sm font-mono uppercase tracking-wider cursor-pointer"
+                className="bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold px-6 py-3 rounded-lg transition-all duration-200 active:scale-98 shadow-md shadow-blue-950/20 text-sm font-mono uppercase tracking-wider cursor-pointer"
               >
                 Explorar Catálogo
               </button>
@@ -155,7 +155,7 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
                 className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${
                   fileName 
                     ? 'border-emerald-500/50 bg-emerald-950/10' 
-                    : 'border-slate-700 bg-slate-800/50 hover:border-[#0ee0d5]/50'
+                    : 'border-slate-700 bg-slate-800/50 hover:border-[#007BFF]/50'
                 }`}
               >
                 {fileName ? (
@@ -194,7 +194,7 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
               {fileName && (
                 <button
                   onClick={handleWhatsAppSubmit}
-                  className="w-full py-3 bg-[#0ee0d5] hover:bg-[#12f0e4] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-98 shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-3 bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-98 shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   Enviar Lista a WhatsApp <ArrowRight className="h-3.5 w-3.5" />
                 </button>

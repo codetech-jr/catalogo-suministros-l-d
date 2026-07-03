@@ -37,7 +37,8 @@ export function Navbar({ onSearch }: NavbarProps) {
   
   const items = useCartStore((state) => state.items);
   const openDrawer = useDrawerStore((state) => state.openDrawer);
-  const { globalCurrencyMode, setCurrencyMode } = useCurrencyStore();
+  const displayCurrency = useCurrencyStore((s) => s.displayCurrency);
+  const setDisplayCurrency = useCurrencyStore((s) => s.setDisplayCurrency);
   const menuRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -123,7 +124,7 @@ export function Navbar({ onSearch }: NavbarProps) {
             </a>
 
             {/* Centro (Mega-Buscador B2B) — oculto en móvil, visible en md+ */}
-            <div className="hidden md:flex flex-1 w-full md:max-w-2xl bg-slate-900 border border-slate-700/80 rounded-lg focus-within:ring-2 focus-within:ring-[#0ee0d5] focus-within:border-[#0ee0d5] transition-all h-10 items-center relative">
+            <div className="hidden md:flex flex-1 w-full md:max-w-2xl bg-slate-900 border border-slate-700/80 rounded-lg focus-within:ring-2 focus-within:ring-[#007BFF] focus-within:border-[#007BFF] transition-all h-10 items-center relative">
               {/* Categories Menu Selector */}
               <div ref={menuRef} className="relative h-full flex items-center">
                 <button
@@ -144,7 +145,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                     <a
                       href="/catalogo/iluminacion"
                       onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center px-3 py-2 text-xs font-bold text-slate-200 hover:bg-[#0ee0d5] hover:text-slate-900 rounded-md cursor-pointer transition-colors outline-none border-b border-slate-800 pb-2 mb-1"
+                      className="flex items-center px-3 py-2 text-xs font-bold text-slate-200 hover:bg-[#007BFF] hover:text-slate-900 rounded-md cursor-pointer transition-colors outline-none border-b border-slate-800 pb-2 mb-1"
                     >
                       Ver Catálogo Completo ➔
                     </a>
@@ -154,7 +155,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                         key={item.label}
                         href={item.href}
                         onClick={() => setIsMenuOpen(false)}
-                        className="flex items-center px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-[#0ee0d5] hover:text-slate-900 rounded-md cursor-pointer transition-colors outline-none"
+                        className="flex items-center px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-[#007BFF] hover:text-slate-900 rounded-md cursor-pointer transition-colors outline-none"
                       >
                         {item.label}
                       </a>
@@ -213,11 +214,11 @@ export function Navbar({ onSearch }: NavbarProps) {
               {/* Segmented Control / Toggle de Monedas B2B */}
               <div className="flex items-center bg-slate-900 border border-slate-700/60 p-1 rounded-lg">
                 <button
-                  onClick={() => setCurrencyMode("USD")}
+                  onClick={() => setDisplayCurrency("USD")}
                   className={cn(
                     "px-3 py-1 text-xs transition-colors rounded-md cursor-pointer",
-                    globalCurrencyMode === "USD"
-                      ? "font-bold text-slate-900 bg-[#0ee0d5] shadow-sm animate-none"
+                    displayCurrency === "USD"
+                      ? "font-bold text-slate-900 bg-[#007BFF] shadow-sm animate-none"
                       : "font-semibold text-slate-400 hover:text-slate-200"
                   )}
                 >
@@ -225,11 +226,11 @@ export function Navbar({ onSearch }: NavbarProps) {
                   <span className="hidden md:inline">$ USD</span>
                 </button>
                 <button
-                  onClick={() => setCurrencyMode("VES")}
+                  onClick={() => setDisplayCurrency("VES")}
                   className={cn(
                     "px-3 py-1 text-xs transition-colors rounded-md cursor-pointer",
-                    globalCurrencyMode === "VES"
-                      ? "font-bold text-slate-900 bg-[#0ee0d5] shadow-sm animate-none"
+                    displayCurrency === "VES"
+                      ? "font-bold text-slate-900 bg-[#007BFF] shadow-sm animate-none"
                       : "font-semibold text-slate-400 hover:text-slate-200"
                   )}
                 >
@@ -248,7 +249,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                 
                 {/* Quantity Badge with neon/cyan glow */}
                 {mounted && totalQty > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4.5 w-4.5 items-center justify-center rounded bg-[#0ee0d5] text-[9px] font-bold text-slate-950 shadow-[0_0_8px_rgba(14,224,213,0.6)] animate-pulse">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4.5 w-4.5 items-center justify-center rounded bg-[#007BFF] text-[9px] font-bold text-slate-950 shadow-[0_0_8px_rgba(0,123,255,0.6)] animate-pulse">
                     {totalQty}
                   </span>
                 )}
@@ -267,7 +268,7 @@ export function Navbar({ onSearch }: NavbarProps) {
               Compras al Mayor
             </button>
             <Link href="/tienda-fisica" className="hover:text-white transition-colors duration-200">Tienda Física</Link>
-            <Link href="/ayuda" className="text-[#0ee0d5]/80 hover:text-[#0ee0d5] transition-colors duration-200">Preguntas Frecuentes</Link>
+            <Link href="/ayuda" className="text-[#007BFF]/80 hover:text-[#007BFF] transition-colors duration-200">Preguntas Frecuentes</Link>
           </div>
         </div>
       </header>

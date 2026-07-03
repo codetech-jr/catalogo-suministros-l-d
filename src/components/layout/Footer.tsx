@@ -14,7 +14,7 @@ export function Footer() {
           <div className="lg:col-span-2 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
             <div className="flex items-center justify-center md:justify-start gap-1.5 font-display font-bold text-lg text-white">
               <svg
-                className="h-6 w-6 text-[#0ee0d5]"
+                className="h-6 w-6 text-[#007BFF]"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -33,7 +33,7 @@ export function Footer() {
                 href="https://www.instagram.com/suministros2023ld/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-500 hover:text-[#0ee0d5] transition-colors"
+                className="text-slate-500 hover:text-[#007BFF] transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -52,7 +52,7 @@ export function Footer() {
               <li>
                 <a
                   href="#catalogo"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Iluminación Eficiente
                 </a>
@@ -60,7 +60,7 @@ export function Footer() {
               <li>
                 <a
                   href="#catalogo"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Control Eléctrico
                 </a>
@@ -68,7 +68,7 @@ export function Footer() {
               <li>
                 <a
                   href="#catalogo"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Cables y Material Pesado
                 </a>
@@ -76,7 +76,7 @@ export function Footer() {
               <li>
                 <a
                   href="#catalogo"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Cotización Express de Obras
                 </a>
@@ -93,7 +93,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/tienda-fisica"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Retiros por Tienda
                 </Link>
@@ -101,7 +101,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/tienda-fisica"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Opciones de Flete Logístico
                 </Link>
@@ -109,7 +109,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/ayuda"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Preguntas Frecuentes
                 </Link>
@@ -119,7 +119,7 @@ export function Footer() {
                   href="https://wa.me/584141025386?text=Hola,%20quisiera%20saber%20mas%20sobre%20comprar%20con%20Cashea"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Guía para Comprar con Cashea
                 </a>
@@ -129,7 +129,7 @@ export function Footer() {
                   href="https://wa.me/584141025386?text=Hola,%20quisiera%20saber%20sobre%20las%20garantias%20de%20los%20productos"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#0ee0d5] hover:pl-1 transition-all duration-200 block"
+                  className="hover:text-[#007BFF] hover:pl-1 transition-all duration-200 block"
                 >
                   Garantías de Productos
                 </a>
@@ -147,7 +147,7 @@ export function Footer() {
                 href="https://wa.me/584141025386"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center md:justify-start gap-2 hover:text-[#0ee0d5] transition-colors w-full"
+                className="flex items-center justify-center md:justify-start gap-2 hover:text-[#007BFF] transition-colors w-full"
               >
                 <svg className="h-4 w-4 text-emerald-400 shrink-0 fill-current" viewBox="0 0 24 24">
                   <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.966C16.312 1.98 13.846.953 11.23.953 5.794.953 1.37 5.323 1.366 10.751c-.001 1.76.471 3.479 1.366 5.011l-1.01 3.693 3.791-.986c1.478.808 3.084 1.235 4.534 1.235zm11.38-7.394c-.265-.133-1.57-.775-1.815-.865-.243-.09-.42-.133-.598.133-.176.265-.685.865-.84 1.042-.155.177-.31.198-.577.066-.265-.133-1.122-.413-2.138-1.32-.79-.705-1.325-1.575-1.48-1.84-.155-.267-.016-.41.117-.542.12-.12.265-.31.397-.465.133-.155.177-.266.265-.443.09-.176.044-.332-.022-.465-.067-.133-.598-1.44-.82-1.97-.216-.523-.453-.453-.62-.462-.16-.008-.344-.01-.528-.01-.184 0-.486.068-.74.344-.253.277-.97.95-.97 2.32s.995 2.69 1.13 2.87c.133.18 1.956 2.99 4.743 4.195.662.285 1.18.456 1.58.584.667.212 1.274.182 1.754.11.535-.08 1.57-.643 1.79-1.265.22-.623.22-1.157.155-1.265-.067-.108-.244-.153-.51-.287z"/>
@@ -156,7 +156,7 @@ export function Footer() {
               </a>
               <a
                 href="mailto:ventas@suministrosld.com.ve"
-                className="flex items-center justify-center md:justify-start gap-2 hover:text-[#0ee0d5] transition-colors break-all w-full"
+                className="flex items-center justify-center md:justify-start gap-2 hover:text-[#007BFF] transition-colors break-all w-full"
               >
                 <Mail className="h-4 w-4 text-sky-400 shrink-0" />
                 <span>ventas@suministrosld.com.ve</span>

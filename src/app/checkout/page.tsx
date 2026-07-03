@@ -51,8 +51,8 @@ export default function CheckoutPage() {
     );
   }
 
-  const totals = getTotals(rate);
-  const totalVES = totals.totalUsd * rate;
+  const totals = getTotals();
+  const totalVES = totals.totalVES;
 
   const handleInputChange = (field: keyof CheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -321,7 +321,7 @@ export default function CheckoutPage() {
                     e.stopPropagation();
                     setIsQuoteOnly(e.target.checked);
                   }}
-                  className="h-4 w-4 rounded border-slate-750 bg-slate-900 text-cyan-400 focus:ring-cyan-500/25"
+                  className="h-4 w-4 rounded border-slate-750 bg-slate-900 text-blue-500 focus:ring-blue-600/25"
                 />
                 <div>
                   <div className="text-xs font-bold text-slate-100 uppercase tracking-wide">
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("paymentMethod", "pago_movil")}
                   className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "pago_movil"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("paymentMethod", "zelle")}
                   className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "zelle"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
@@ -383,7 +383,7 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("paymentMethod", "binance")}
                   className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "binance"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
@@ -404,7 +404,7 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("paymentMethod", "efectivo")}
                   className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "efectivo"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
@@ -427,7 +427,7 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("paymentMethod", "efectivo_bs")}
                   className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.paymentMethod === "efectivo_bs"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
@@ -510,7 +510,7 @@ export default function CheckoutPage() {
                       value={form.fullName}
                       onChange={(e) => handleInputChange("fullName", e.target.value)}
                       className={`flex w-full bg-slate-900 border ${
-                        errors.fullName ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                        errors.fullName ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                       } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                     />
                     {errors.fullName && (
@@ -525,7 +525,7 @@ export default function CheckoutPage() {
                       value={form.rifOrId}
                       onChange={(e) => handleInputChange("rifOrId", e.target.value)}
                       className={`flex w-full bg-slate-900 border ${
-                        errors.rifOrId ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                        errors.rifOrId ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                       } p-4 rounded-xl font-mono tracking-widest text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:tracking-normal placeholder:font-sans placeholder:text-slate-500`}
                     />
                     {errors.rifOrId && (
@@ -543,7 +543,7 @@ export default function CheckoutPage() {
                       value={form.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
                       className={`flex w-full bg-slate-900 border ${
-                        errors.phone ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                        errors.phone ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                       } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                     />
                     {errors.phone && (
@@ -566,7 +566,7 @@ export default function CheckoutPage() {
                           handleInputChange("paymentReference", val);
                         }}
                         className={`flex w-full bg-slate-900 border ${
-                          errors.paymentReference ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                          errors.paymentReference ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                         } p-4 rounded-xl font-mono tracking-widest text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:tracking-normal placeholder:font-sans placeholder:text-slate-500`}
                       />
                       {errors.paymentReference && (
@@ -594,11 +594,11 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("deliveryType", "retiro")}
                   className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.deliveryType === "retiro"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <Store className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "retiro" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <Store className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "retiro" ? "text-[#007BFF]" : "text-slate-500"}`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-slate-200">Retiro en Tienda (Ferretería)</div>
                     <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Charallave Casco Central — GRATIS</div>
@@ -611,11 +611,11 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("deliveryType", "delivery_charallave")}
                   className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.deliveryType === "delivery_charallave"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <Truck className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_charallave" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <Truck className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_charallave" ? "text-[#007BFF]" : "text-slate-500"}`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-slate-200">Delivery Express Charallave</div>
                     <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Casco central y zonas residenciales céntricas — GRATIS</div>
@@ -628,11 +628,11 @@ export default function CheckoutPage() {
                   onClick={() => handleInputChange("deliveryType", "delivery_tuy")}
                   className={`flex items-center gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
                     form.deliveryType === "delivery_tuy"
-                      ? "bg-slate-900/50 border-[#0ee0d5] text-slate-100 shadow-[0_0_15px_rgba(14,224,213,0.08)]"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
                       : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <MapPin className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_tuy" ? "text-[#0ee0d5]" : "text-slate-500"}`} />
+                  <MapPin className={`h-5 w-5 flex-shrink-0 transition-colors ${form.deliveryType === "delivery_tuy" ? "text-[#007BFF]" : "text-slate-500"}`} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-slate-200">Flete Valles del Tuy</div>
                     <div className="text-[10px] text-slate-400 mt-0.5 leading-none">Cúa, Ocumare, Santa Teresa, Santa Lucía — FLETE ADICIONAL</div>
@@ -649,7 +649,7 @@ export default function CheckoutPage() {
                     value={form.deliveryAddress}
                     onChange={(e) => handleInputChange("deliveryAddress", e.target.value)}
                     className={`flex w-full bg-slate-900 border ${
-                      errors.deliveryAddress ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#0ee0d5] focus:ring-[#0ee0d5]/25"
+                      errors.deliveryAddress ? "border-rose-500 focus:ring-rose-500/25" : "border-slate-700/60 focus:border-[#007BFF] focus:ring-[#007BFF]/25"
                     } p-4 rounded-xl font-sans text-slate-100 outline-none focus:ring-1 transition-all text-sm placeholder:text-slate-500`}
                   />
                   {errors.deliveryAddress && (

@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, Zap, Lightbulb, Cable, X } from "lucide-react";
 import { useCommandPaletteStore } from "@/hooks/useCommandPalette";
+import { useProductsStore } from "@/store/products-store";
 
 const QUICK_ITEMS = [
   { label: "Cable THHN 12 AWG", category: "Cableado", query: "Cable THHN" },
@@ -17,6 +18,7 @@ const QUICK_ITEMS = [
 export function CommandPalette() {
   const router = useRouter();
   const { isOpen, closePalette } = useCommandPaletteStore();
+  const { products } = useProductsStore();
   const [search, setSearch] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -25,12 +27,30 @@ export function CommandPalette() {
   const filtered = React.useMemo(() => {
     if (!search.trim()) return QUICK_ITEMS;
     const lower = search.toLowerCase();
+
+    // Prioritize search results from live database products
+    const dbMatches = products
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(lower) ||
+          p.sku.toLowerCase().includes(lower) ||
+          p.categoryLabel.toLowerCase().includes(lower)
+      )
+      .map((p) => ({
+        label: p.name,
+        category: p.categoryLabel,
+        query: p.name,
+      }));
+
+    if (dbMatches.length > 0) return dbMatches.slice(0, 8);
+
+    // Fallback to static quick items
     return QUICK_ITEMS.filter(
       (item) =>
         item.label.toLowerCase().includes(lower) ||
         item.category.toLowerCase().includes(lower)
     );
-  }, [search]);
+  }, [search, products]);
 
   // Reset state when opening/closing
   React.useEffect(() => {
@@ -155,7 +175,7 @@ export function CommandPalette() {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors duration-100 ${
                     idx === selectedIndex
-                      ? "bg-[#0ee0d5]/10"
+                      ? "bg-[#007BFF]/10"
                       : "hover:bg-slate-800/60"
                   }`}
                 >
@@ -173,7 +193,7 @@ export function CommandPalette() {
                   <ArrowRight
                     className={`h-3.5 w-3.5 flex-shrink-0 transition-all duration-150 ${
                       idx === selectedIndex
-                        ? "text-[#0ee0d5] translate-x-0 opacity-100"
+                        ? "text-[#007BFF] translate-x-0 opacity-100"
                         : "text-slate-600 -translate-x-1 opacity-0"
                     }`}
                   />

@@ -8,10 +8,11 @@ import ProductGrid from "@/components/product/ProductGrid";
 
 import HeroSlider from "@/components/layout/HeroSlider";
 import { CheckCircle, Banknote, Truck, ArrowRight, Sparkles, Plus, Check, Tag, MapPin, Clock } from "lucide-react";
-import { PRODUCTS } from "@/data/products";
+import { Product } from "@/types/product";
+import { useProductsStore } from "@/store/products-store";
 import { ProductCard } from "@/components/product/ProductCard";
 import { useCart, useCartStore } from "@/store/cart-store";
-import { useBcvStore } from "@/store/bcv-store";
+
 import { useCurrencyStore } from "@/store/currency-store";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { useAttentionGrabber } from "@/hooks/useAttentionGrabber";
@@ -53,12 +54,13 @@ const BRANDS = [
 ];
 
 interface CompactConsumableCardProps {
-  product: typeof PRODUCTS[0];
-  rate: number;
-  switchCount: number;
+  product: Product;
+  rateBcv: number;
 }
 
-function CompactConsumableCard({ product, rate, switchCount }: CompactConsumableCardProps) {
+function CompactConsumableCard({ product, rateBcv }: CompactConsumableCardProps) {
+  const displayCurrency = useCurrencyStore((s) => s.displayCurrency);
+  const rateBinance = useCurrencyStore((s) => s.rateBinance);
   const addItem = useCartStore((state) => state.addItem);
   const items = useCart((state) => state.items);
   
@@ -137,7 +139,7 @@ function CompactConsumableCard({ product, rate, switchCount }: CompactConsumable
             {!isVolumePrice && (
               <button 
                 onClick={handleSetBulk}
-                className="mt-1 text-[9px] font-mono font-bold text-[#0ee0d5] hover:underline uppercase block text-left cursor-pointer"
+                className="mt-1 text-[9px] font-mono font-bold text-[#007BFF] hover:underline uppercase block text-left cursor-pointer"
               >
                 Activar Descuento al Mayor ({threshold} unidades)
               </button>
@@ -152,13 +154,13 @@ function CompactConsumableCard({ product, rate, switchCount }: CompactConsumable
           {/* Price Preview */}
           <div className="flex flex-col">
             <span className="text-[9px] font-mono text-slate-500 uppercase">Monto</span>
-            <div key={switchCount} className="animate-blur-pop">
+            <div key={`${displayCurrency}-${rateBcv}-${rateBinance}`} className="animate-blur-pop">
               <span className="font-display text-sm font-bold text-slate-100 font-mono">
                 {formatUSD(currentUnitPrice * quantity)}
               </span>
               <br />
               <span className="text-[9px] text-slate-400 font-mono">
-                ≈ {formatVES(currentUnitPrice * quantity * rate)}
+                ≈ {formatVES(currentUnitPrice * quantity * rateBcv)}
               </span>
             </div>
           </div>
@@ -194,7 +196,7 @@ function CompactConsumableCard({ product, rate, switchCount }: CompactConsumable
         ) : (
           <button
             onClick={handleAdd}
-            className="w-full py-2 bg-[#0ee0d5] hover:bg-[#12f0e4] text-slate-900 font-bold rounded-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-1.5 text-xs font-mono uppercase tracking-wider select-none shadow-md cursor-pointer"
+            className="w-full py-2 bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold rounded-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-1.5 text-xs font-mono uppercase tracking-wider select-none shadow-md cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5 stroke-[3px]" /> Agregar Insumos
           </button>
@@ -205,6 +207,7 @@ function CompactConsumableCard({ product, rate, switchCount }: CompactConsumable
 }
 
 export default function Home() {
+  const { products, isFetchingData } = useProductsStore();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
 
@@ -214,8 +217,7 @@ export default function Home() {
   const cartItems = useCart((state) => state.items);
   const getTotals = useCartStore((state) => state.getTotals);
   const totals = getTotals();
-  const rate = useBcvStore((state) => state.rate);
-  const switchCount = useCurrencyStore((state) => state.switchCount);
+  const rateBcv = useCurrencyStore((s) => s.rateBcv);
 
   const handleSearch = React.useCallback((query: string) => {
     setSearchQuery(query);
@@ -313,18 +315,18 @@ export default function Home() {
               >
                 {/* Background Image */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-55"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-90"
                   style={{ backgroundImage: "url('/cables-y-tubos.jpg')" }}
                 />
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent hover:via-slate-900/40 transition-all" />
                 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col gap-2.5 max-w-xl">
-                  <span className="self-start px-2 py-0.5 text-[9px] font-mono font-bold tracking-widest text-[#0ee0d5] bg-[#0ee0d5]/10 border border-[#0ee0d5]/20 rounded uppercase">
+                  <span className="self-start px-2 py-0.5 text-[9px] font-mono font-bold tracking-widest text-[#007BFF] bg-[#007BFF]/10 border border-[#007BFF]/20 rounded uppercase">
                     Urbano / Industrial
                   </span>
-                  <h3 className="font-display text-xl md:text-2xl font-bold text-slate-100 group-hover:text-[#0ee0d5] transition-colors duration-200">
+                  <h3 className="font-display text-xl md:text-2xl font-bold text-slate-100 group-hover:text-[#007BFF] transition-colors duration-200">
                     Obras Civiles y Construcción Pesada
                   </h3>
                   <p className="text-xs text-slate-350 leading-relaxed">
@@ -343,18 +345,18 @@ export default function Home() {
               >
                 {/* Background Image */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-50"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-90"
                   style={{ backgroundImage: "url('/iluminaria-led.jpg')" }}
                 />
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent hover:via-slate-900/40 transition-all" />
                 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col gap-2">
                   <span className="self-start px-2 py-0.5 text-[9px] font-mono font-bold tracking-widest text-slate-400 bg-slate-900 border border-slate-800 rounded uppercase">
                     LED Eficiencia
                   </span>
-                  <h3 className="font-display text-base font-bold text-slate-100 group-hover:text-[#0ee0d5] transition-colors duration-200">
+                  <h3 className="font-display text-base font-bold text-slate-100 group-hover:text-[#007BFF] transition-colors duration-200">
                     Iluminación Vial y Comercial
                   </h3>
                   <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
@@ -373,18 +375,18 @@ export default function Home() {
               >
                 {/* Background Image */}
                 <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-50"
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105 opacity-90"
                   style={{ backgroundImage: "url('/breakers.jpg')" }}
                 />
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent hover:via-slate-900/40 transition-all" />
                 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col gap-2">
                   <span className="self-start px-2 py-0.5 text-[9px] font-mono font-bold tracking-widest text-slate-400 bg-slate-900 border border-slate-800 rounded uppercase">
                     Control & Fuerza
                   </span>
-                  <h3 className="font-display text-base font-bold text-slate-100 group-hover:text-[#0ee0d5] transition-colors duration-200">
+                  <h3 className="font-display text-base font-bold text-slate-100 group-hover:text-[#007BFF] transition-colors duration-200">
                     Fuerza y Control Industrial
                   </h3>
                   <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
@@ -402,7 +404,7 @@ export default function Home() {
           <section className="w-full max-w-full overflow-hidden py-2 border-b border-slate-800/80">
             <div className="flex flex-col gap-2 mb-8 text-center items-center">
               <span className="text-[9px] font-mono font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 justify-center">
-                <Sparkles className="h-3 w-3 text-[#0ee0d5]" /> MAYORISTAS Y CONTRATISTAS
+                <Sparkles className="h-3 w-3 text-[#007BFF]" /> MAYORISTAS Y CONTRATISTAS
               </span>
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
                 <div className="flex flex-col gap-1 items-center">
@@ -413,16 +415,35 @@ export default function Home() {
                     Ahorra en insumos de alta rotación. Agrega paquetes completos con precios especiales por volumen a un solo clic.
                   </p>
                 </div>
-                <span className="md:hidden flex items-center gap-1 text-[9px] font-mono font-bold text-[#0ee0d5] uppercase tracking-wider bg-slate-950/40 border border-slate-800 px-2.5 py-1 rounded-full shrink-0 select-none animate-pulse">
+                <span className="md:hidden flex items-center gap-1 text-[9px] font-mono font-bold text-[#007BFF] uppercase tracking-wider bg-slate-950/40 border border-slate-800 px-2.5 py-1 rounded-full shrink-0 select-none animate-pulse">
                   Desliza ➔
                 </span>
               </div>
             </div>
 
             <div className="flex overflow-x-auto gap-4 px-4 md:px-0 md:grid md:grid-cols-3 md:overflow-visible pb-8 snap-x snap-mandatory scroll-smooth scrollbar-hide">
-              {PRODUCTS.filter(p => ["prod-10", "prod-11", "prod-12"].includes(p.id)).map(product => (
-                <CompactConsumableCard key={product.id} product={product} rate={rate} switchCount={switchCount} />
-              ))}
+              {isFetchingData ? (
+                [1, 2, 3].map((n) => (
+                  <div key={n} className="bg-slate-800 border border-slate-700/50 rounded-xl p-4 animate-pulse min-h-[240px] w-[85vw] sm:w-[320px] md:w-auto flex flex-col justify-between">
+                    <div className="flex flex-col gap-2">
+                      <div className="h-4 w-1/2 bg-slate-700 rounded mb-2" />
+                      <div className="h-6 w-3/4 bg-slate-700 rounded mb-1" />
+                      <div className="h-3 w-5/6 bg-slate-700 rounded" />
+                    </div>
+                    <div className="h-10 w-full bg-slate-700 rounded-lg mt-auto" />
+                  </div>
+                ))
+              ) : (
+                products
+                  .filter((p) => 
+                    ["prod-10", "prod-11", "prod-12", "LD-CON-TEI3M", "LD-CON-TIRNYL", "LD-CON-TEROJO"].includes(p.id) ||
+                    ["LD-CON-TEI3M", "LD-CON-TIRNYL", "LD-CON-TEROJO"].includes(p.sku)
+                  )
+                  .slice(0, 3)
+                  .map((product) => (
+                    <CompactConsumableCard key={product.id} product={product} rateBcv={rateBcv} />
+                  ))
+              )}
             </div>
           </section>
 
@@ -485,7 +506,7 @@ export default function Home() {
                     Precios dinámicos liquidados en dólares o bolívares al cambio del Banco Central.
                   </p>
                 </div>
-                <span className="md:hidden flex items-center gap-1 text-[9px] font-mono font-bold text-[#0ee0d5] uppercase tracking-wider bg-slate-950/40 border border-slate-800 px-2.5 py-1 rounded-full shrink-0 select-none animate-pulse">
+                <span className="md:hidden flex items-center gap-1 text-[9px] font-mono font-bold text-[#007BFF] uppercase tracking-wider bg-slate-950/40 border border-slate-800 px-2.5 py-1 rounded-full shrink-0 select-none animate-pulse">
                   Desliza ➔
                 </span>
               </div>
@@ -563,7 +584,7 @@ export default function Home() {
                   href="https://wa.me/584141025386?text=Hola%20Suministros%20L%26D.%20Deseo%20hacer%20una%20consulta%20directa%20a%20la%20tienda%20f%C3%ADsica."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 bg-[#0ee0d5] text-slate-900 hover:bg-[#12f0e4] hover:opacity-90 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-98 shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
+                  className="w-full py-3 bg-[#007BFF] text-slate-900 hover:bg-[#1a8cff] hover:opacity-90 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-98 shadow-sm flex items-center justify-center gap-1.5 cursor-pointer text-center"
                 >
                   Hablar con Asesor en Tienda
                 </a>

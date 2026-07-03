@@ -5,7 +5,7 @@ import { use } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/product/ProductCard";
-import { PRODUCTS } from "@/data/products";
+import { useProductsStore } from "@/store/products-store";
 import { useBcvStore } from "@/store/bcv-store";
 import { useCurrencyStore } from "@/store/currency-store";
 import { 
@@ -59,6 +59,9 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   const resolvedParams = use(params);
   const resolvedSearchParams = use(searchParams);
   
+  // Dynamic products store integration
+  const { products, isFetchingData } = useProductsStore();
+  
   // URL category parameter
   const urlCategory = resolvedParams.category && resolvedParams.category.length > 0 
     ? resolvedParams.category[0] 
@@ -66,7 +69,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
 
   // Global state integrations
   const rate = useBcvStore((state) => state.rate);
-  const globalCurrencyMode = useCurrencyStore((state) => state.globalCurrencyMode);
+  const displayCurrency = useCurrencyStore((state) => state.displayCurrency);
 
   // Search & sorting state
   const [searchQuery, setSearchQuery] = React.useState(() => {
@@ -94,7 +97,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   });
   const [selectedVoltages, setSelectedVoltages] = React.useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = React.useState<string[]>([]);
-  const [priceRange, setPriceRange] = React.useState<number>(100);
+  const [priceRange, setPriceRange] = React.useState<number>(1000);
 
   // Accordion toggle states
   const [accordions, setAccordions] = React.useState({
@@ -159,7 +162,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     setSelectedBrands([]);
     setSelectedVoltages([]);
     setSelectedAvailability([]);
-    setPriceRange(100);
+    setPriceRange(1000);
     setSearchQuery("");
     // Also reset back to root catalog page if category is changed
     setSelectedCategory("all");
@@ -171,35 +174,35 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     selectedBrands.length + 
     selectedVoltages.length + 
     selectedAvailability.length + 
-    (priceRange < 100 ? 1 : 0) + 
+    (priceRange < 1000 ? 1 : 0) + 
     (selectedCategory !== "all" ? 1 : 0) +
     (searchQuery !== "" ? 1 : 0);
 
   // Categories helper list with counts
   const categoriesList = React.useMemo(() => {
     return [
-      { id: "all", label: "Todos los Suministros", count: PRODUCTS.length },
+      { id: "all", label: "Todos los Suministros", count: products.length },
       { 
         id: "iluminacion", 
         label: "Luminaria LED", 
-        count: PRODUCTS.filter(p => p.category === "iluminacion").length 
+        count: products.filter(p => p.category === "iluminacion").length 
       },
       { 
         id: "control", 
         label: "Control Eléctrico", 
-        count: PRODUCTS.filter(p => p.category === "control").length 
+        count: products.filter(p => p.category === "control").length 
       },
       { 
         id: "cableado", 
         label: "Material Pesado", 
-        count: PRODUCTS.filter(p => p.category === "cableado").length 
+        count: products.filter(p => p.category === "cableado").length 
       }
     ];
-  }, []);
+  }, [products]);
 
   // Filter products by specifications, search query, category, and price range
   const filteredProducts = React.useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       // 1. Category Filter
       const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
 
@@ -259,7 +262,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
       // Default (relevance/id)
       return a.id.localeCompare(b.id);
     });
-  }, [selectedCategory, searchQuery, selectedBrands, selectedVoltages, selectedAvailability, priceRange, sortBy]);
+  }, [selectedCategory, searchQuery, selectedBrands, selectedVoltages, selectedAvailability, priceRange, sortBy, products]);
 
   // Dynamic Breadcrumb Labeling
   const getBreadcrumbs = () => {
@@ -284,7 +287,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
             {idx === crumbs.length - 1 ? (
               <span className="text-slate-350 font-bold truncate max-w-[120px] sm:max-w-none">{crumb.label}</span>
             ) : (
-              <Link href={crumb.href} className="hover:text-[#0ee0d5] transition-colors">
+              <Link href={crumb.href} className="hover:text-[#007BFF] transition-colors">
                 {crumb.label}
               </Link>
             )}
@@ -325,13 +328,13 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
           <aside className="hidden md:block w-64 lg:w-72 shrink-0 sticky top-28 bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl p-5 h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden scrollbar-fine select-none">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3.5 mb-5">
               <span className="text-xs font-mono font-bold tracking-wider text-slate-450 flex items-center gap-1.5">
-                <SlidersHorizontal size={14} className="text-[#0ee0d5]" />
+                <SlidersHorizontal size={14} className="text-[#007BFF]" />
                 BÚSQUEDA FACETADA
               </span>
               {activeFiltersCount > 0 && (
                 <button
                   onClick={handleClearFilters}
-                  className="text-[10px] font-mono font-bold text-[#0ee0d5] hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-[10px] font-mono font-bold text-[#007BFF] hover:underline cursor-pointer flex items-center gap-1"
                 >
                   <RotateCcw size={10} />
                   Limpiar ({activeFiltersCount})
@@ -355,18 +358,18 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     {categoriesList.map((cat) => (
                       <label 
                         key={cat.id}
-                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#0ee0d5] text-sm my-2 transition-all"
+                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
                       >
                         <input 
                           type="checkbox"
                           checked={selectedCategory === cat.id}
                           onChange={() => handleCategoryChange(cat.id)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#0ee0d5] cursor-pointer"
+                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
                         />
                         <span className="flex-grow flex items-center justify-between">
                           <span>{cat.label}</span>
                           <span className="text-xs text-slate-600 font-mono">
-                            ({cat.id === "all" ? 12 : cat.id === "iluminacion" ? 3 : cat.id === "control" ? 5 : 4})
+                            ({cat.count})
                           </span>
                         </span>
                       </label>
@@ -389,13 +392,13 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     {BRANDS_METADATA.map((brand) => (
                       <label 
                         key={brand.name}
-                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#0ee0d5] text-sm my-2 transition-all"
+                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
                       >
                         <input 
                           type="checkbox"
                           checked={selectedBrands.includes(brand.name)}
                           onChange={() => toggleBrand(brand.name)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#0ee0d5] cursor-pointer"
+                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
                         />
                         <span className="flex-grow flex items-center justify-between">
                           <span>{brand.name}</span>
@@ -427,13 +430,13 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         {VOLTAGES_METADATA.map((volt) => (
                           <label 
                             key={volt.name}
-                            className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#0ee0d5] text-sm my-2 transition-all"
+                            className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
                           >
                             <input 
                               type="checkbox"
                               checked={selectedVoltages.includes(volt.name)}
                               onChange={() => toggleVoltage(volt.name)}
-                              className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#0ee0d5] cursor-pointer"
+                              className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
                             />
                             <span className="flex-grow flex items-center justify-between">
                               <span>{volt.name}</span>
@@ -453,18 +456,18 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         {AVAILABILITIES.map((avail) => (
                           <label 
                             key={avail.id}
-                            className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#0ee0d5] text-sm my-2 transition-all"
+                            className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
                           >
                             <input 
                               type="checkbox"
                               checked={selectedAvailability.includes(avail.id)}
                               onChange={() => toggleAvailability(avail.id)}
-                              className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#0ee0d5] cursor-pointer"
+                              className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
                             />
                             <span className="flex-grow flex items-center justify-between">
                               <span>{avail.label}</span>
                               <span className="text-xs text-slate-600 font-mono">
-                                ({avail.id === "in-stock" ? PRODUCTS.filter(p => p.stock > 0).length : PRODUCTS.filter(p => p.stock === 0).length})
+                                ({avail.id === "in-stock" ? products.filter(p => p.stock > 0).length : products.filter(p => p.stock === 0).length})
                               </span>
                             </span>
                           </label>
@@ -481,14 +484,14 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         <input 
                           type="range"
                           min="1"
-                          max="100"
+                          max="1000"
                           value={priceRange}
                           onChange={(e) => setPriceRange(Number(e.target.value))}
-                          className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#0ee0d5]"
+                          className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
                         />
                         <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
                           <span>$1</span>
-                          <span className="font-bold text-[#0ee0d5]">${priceRange} Máx</span>
+                          <span className="font-bold text-[#007BFF]">${priceRange} Máx</span>
                         </div>
                       </div>
                     </div>
@@ -515,10 +518,10 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                   onClick={() => setIsMobileFiltersOpen(true)}
                   className="md:hidden flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold font-mono uppercase tracking-wider bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-350 rounded-lg transition-all active:scale-[0.97] cursor-pointer"
                 >
-                  <ListFilter size={14} className="text-[#0ee0d5]" />
+                  <ListFilter size={14} className="text-[#007BFF]" />
                   <span>Filtros</span>
                   {activeFiltersCount > 0 && (
-                    <span className="h-4 w-4 bg-[#0ee0d5] text-slate-950 rounded-full flex items-center justify-center text-[9px] font-bold">
+                    <span className="h-4 w-4 bg-[#007BFF] text-slate-950 rounded-full flex items-center justify-center text-[9px] font-bold">
                       {activeFiltersCount}
                     </span>
                   )}
@@ -541,7 +544,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-slate-300 outline-none focus:border-[#0ee0d5] cursor-pointer transition-colors shadow-inner"
+                    className="bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-lg text-slate-300 outline-none focus:border-[#007BFF] cursor-pointer transition-colors shadow-inner"
                   >
                     <option value="relevance">Relevancia / Código</option>
                     <option value="price-low">Precio Menor &rarr; Mayor</option>
@@ -625,11 +628,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     ))}
 
                     {/* Price Range chip */}
-                    {priceRange < 100 && (
+                    {priceRange < 1000 && (
                       <div className="bg-slate-800 text-slate-300 text-xs py-1 px-3 rounded-full flex items-center gap-1.5 border border-slate-700 shadow-sm transition-all hover:bg-slate-750">
                         <span>Menos de ${priceRange}</span>
                         <button 
-                          onClick={() => setPriceRange(100)}
+                          onClick={() => setPriceRange(1000)}
                           className="hover:text-red-400 text-slate-500 transition-colors p-0.5 cursor-pointer"
                           aria-label="Quitar límite de precio"
                         >
@@ -665,14 +668,34 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
             </div>
 
             {/* Dynamic Product Grid Display */}
-            {filteredProducts.length > 0 ? (
+            {isFetchingData ? (
+              <div className="flex flex-col gap-6 w-full">
+                <div className="h-4 w-48 bg-slate-800 rounded animate-pulse" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <div key={n} className="bg-slate-800 border border-slate-700/50 rounded-xl p-4 flex flex-col gap-4 animate-pulse min-h-[480px]">
+                      <div className="flex justify-between items-center">
+                        <div className="h-3 w-16 bg-slate-700 rounded" />
+                        <div className="h-3 w-20 bg-slate-700 rounded" />
+                      </div>
+                      <div className="aspect-[4/3] w-full rounded-lg bg-slate-900/60" />
+                      <div className="flex flex-col gap-2">
+                        <div className="h-5 w-3/4 bg-slate-700/60 rounded" />
+                        <div className="h-3 w-full bg-slate-700/60 rounded" />
+                      </div>
+                      <div className="h-10 w-full bg-slate-700 rounded-lg mt-auto" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 select-none pb-2">
                   <span>
                     BÚSQUEDA DETECTADA
                   </span>
                   <span>
-                    Mostrando <span className="text-slate-200 font-bold">{filteredProducts.length}</span> de <span className="font-bold">{PRODUCTS.length}</span> insumos
+                    Mostrando <span className="text-slate-200 font-bold">{filteredProducts.length}</span> de <span className="font-bold">{products.length}</span> insumos
                   </span>
                 </div>
                 
@@ -725,7 +748,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
             <div>
               <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-5">
                 <h2 className="font-display text-sm font-bold uppercase tracking-wider text-slate-250 flex items-center gap-1.5">
-                  <SlidersHorizontal size={15} className="text-[#0ee0d5]" />
+                  <SlidersHorizontal size={15} className="text-[#007BFF]" />
                   Filtros Disponibles
                 </h2>
                 <button
@@ -753,7 +776,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                           }}
                           className={`w-full flex items-center justify-between text-xs py-2 px-2.5 rounded-lg font-medium transition-all text-left cursor-pointer ${
                             selectedCategory === cat.id
-                              ? "bg-[#0ee0d5]/10 border border-[#0ee0d5]/20 text-[#0ee0d5] font-bold"
+                              ? "bg-[#007BFF]/10 border border-[#007BFF]/20 text-[#007BFF] font-bold"
                               : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-100 border border-transparent"
                           }`}
                         >
@@ -782,7 +805,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                           type="checkbox"
                           checked={selectedBrands.includes(brand)}
                           onChange={() => toggleBrand(brand)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 h-4.5 w-4.5 accent-[#0ee0d5]"
+                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
                         />
                         <span>{brand}</span>
                       </label>
@@ -805,7 +828,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                           type="checkbox"
                           checked={selectedVoltages.includes(volt)}
                           onChange={() => toggleVoltage(volt)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 h-4.5 w-4.5 accent-[#0ee0d5]"
+                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
                         />
                         <span>{volt}</span>
                       </label>
@@ -822,14 +845,14 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     <input 
                       type="range"
                       min="1"
-                      max="100"
+                      max="1000"
                       value={priceRange}
                       onChange={(e) => setPriceRange(Number(e.target.value))}
-                      className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#0ee0d5]"
+                      className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
                     />
                     <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
                       <span>$1</span>
-                      <span className="font-bold text-[#0ee0d5]">${priceRange} Máx</span>
+                      <span className="font-bold text-[#007BFF]">${priceRange} Máx</span>
                     </div>
                   </div>
                 </div>
@@ -849,7 +872,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                           type="checkbox"
                           checked={selectedAvailability.includes(avail.id)}
                           onChange={() => toggleAvailability(avail.id)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#0ee0d5] focus:ring-0 h-4.5 w-4.5 accent-[#0ee0d5]"
+                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
                         />
                         <span>{avail.label}</span>
                       </label>
@@ -864,7 +887,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
             <div className="mt-8 border-t border-slate-800 pt-4 flex flex-col gap-2">
               <button
                 onClick={() => setIsMobileFiltersOpen(false)}
-                className="w-full py-2.5 bg-[#0ee0d5] hover:bg-[#12f0e4] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all active:scale-[0.98] cursor-pointer text-center"
+                className="w-full py-2.5 bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold font-mono text-xs uppercase tracking-wider rounded-lg transition-all active:scale-[0.98] cursor-pointer text-center"
               >
                 Aplicar Filtros
               </button>

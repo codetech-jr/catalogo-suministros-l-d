@@ -2,14 +2,16 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem } from "@/types/cart";
 import { ISuministrosProduct } from "@/types/product";
-import { useBcvStore } from "./bcv-store";
+import { useCurrencyStore } from "./currency-store";
+import { getStorePrices } from "@/lib/utils/pricing-engine";
 import { useState, useEffect } from "react";
 
 export interface CartTotals {
   subtotalUsd: number;          // Pre-discount unit sum in USD
   totalUsd: number;             // Post-discount B2B volume-aware sum in USD
   savingsUsd: number;           // Total savings via volume discount in USD
-  totalVES: number;             // Total in Bolívares using the official BCV rate
+  totalVES: number;             // Total in Bolívares using Binance rate (protected)
+  displayTotalUSD: number;      // Total in legal USD vitrina (totalVES / BCV)
   itemCount: number;            // Total units of all products
 }
 
@@ -21,7 +23,7 @@ interface CartState {
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  getTotals: (customRate?: number) => CartTotals;
+  getTotals: () => CartTotals;
 }
 
 const getActivePrice = (product: ISuministrosProduct, quantity: number): number => {
@@ -102,8 +104,8 @@ export const useCartStore = create<CartState>()(
 
       clearCart: () => set({ items: [] }),
 
-      getTotals: (customRate) => {
-        const rate = customRate ?? useBcvStore.getState().rate ?? 40.25;
+      getTotals: () => {
+        const { rateBcv, rateBinance } = useCurrencyStore.getState();
         const items = get().items;
         let subtotalUsd = 0;
         let totalUsd = 0;
@@ -120,13 +122,16 @@ export const useCartStore = create<CartState>()(
         });
 
         const savingsUsd = subtotalUsd - totalUsd;
-        const totalVES = totalUsd * rate;
+
+        // Use the pricing engine for protected totals
+        const totals = getStorePrices(totalUsd, rateBcv, rateBinance);
 
         return {
           subtotalUsd,
           totalUsd,
           savingsUsd,
-          totalVES,
+          totalVES: totals.netVES,
+          displayTotalUSD: totals.displayUSD,
           itemCount,
         };
       },
@@ -165,6 +170,7 @@ export function useCart<T>(selector: (state: CartState) => T): T {
           totalUsd: 0,
           savingsUsd: 0,
           totalVES: 0,
+          displayTotalUSD: 0,
           itemCount: 0,
         }),
       } as unknown as CartState);

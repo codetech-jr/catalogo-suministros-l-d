@@ -1,3 +1,12 @@
+// ---------------------------------------------------------------------------
+// BCV Store — Compatibility Re-export
+// ---------------------------------------------------------------------------
+// The financial state now lives in the unified `currency-store.ts`.
+// This file remains as a compatibility bridge so existing imports
+// (cart-store, API route, components) continue to work without mass renames.
+// ---------------------------------------------------------------------------
+
+import { useCurrencyStore } from "./currency-store";
 import { create } from "zustand";
 
 interface BcvState {
@@ -11,34 +20,40 @@ interface BcvState {
 }
 
 export const useBcvStore = create<BcvState>((set) => ({
-  rate: 40.25,
-  source: "default",
-  updatedAt: new Date().toISOString(),
+  rate: useCurrencyStore.getState().rateBcv,
+  source: "unified-store",
+  updatedAt: useCurrencyStore.getState().lastUpdated,
   isLoading: false,
   error: null,
-  
+
   fetchRate: async () => {
     set({ isLoading: true, error: null });
     try {
       const res = await fetch("/api/bcv-rate");
       if (!res.ok) throw new Error("Failed to fetch rate");
       const data = await res.json();
+
+      // Sync both stores
+      useCurrencyStore.getState().setRateBcv(data.rate);
       set({
         rate: data.rate,
         source: data.source,
         updatedAt: data.updatedAt,
         isLoading: false,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Error al obtener la tasa";
       console.error("Error in fetchRate store action:", err);
       set({
         isLoading: false,
-        error: err.message || "Error al obtener la tasa",
+        error: message,
       });
     }
   },
-  
+
   setManualRate: (newRate: number) => {
+    useCurrencyStore.getState().setRateBcv(newRate);
     set({
       rate: newRate,
       source: "manual_override",
