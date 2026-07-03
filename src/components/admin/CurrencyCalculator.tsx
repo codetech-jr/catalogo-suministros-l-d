@@ -21,10 +21,11 @@ export function CurrencyCalculator() {
   const [isSaving, setIsSaving] = React.useState(false);
   const [toastMsg, setToastMsg] = React.useState("");
 
-  // Sync local state when store changes externally
+  // Cuando el store global muta gracias a Supabase Hydrator, 
+  // pisamos y actualizamos nuestras cajas del admin
   React.useEffect(() => {
-    setLocalBcv(rateBcv.toString());
-    setLocalBinance(rateBinance.toString());
+    if (rateBcv) setLocalBcv(rateBcv.toString());
+    if (rateBinance) setLocalBinance(rateBinance.toString());
   }, [rateBcv, rateBinance]);
 
   const handleSave = async () => {
