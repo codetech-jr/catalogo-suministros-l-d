@@ -91,9 +91,14 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
         const categoryMapped = mapCategorySlug(dbCatSlug);
         const categoryLabelMapped = mapCategoryLabel(dbCatSlug, dbCatName);
 
-        // Normalize image paths if starting with products/ or similar
+        // Normalize image paths if starting with products/ or similar, or fallback seed images to public assets
         let finalImage = dbProd.image_url || "";
-        if (finalImage && !finalImage.startsWith("http") && !finalImage.startsWith("/")) {
+        if (finalImage.startsWith("products/") || finalImage.startsWith("/products/")) {
+          if (categoryMapped === "iluminacion") finalImage = "/iluminaria-led.jpg";
+          else if (categoryMapped === "cableado") finalImage = "/cables-y-tubos.jpg";
+          else if (categoryMapped === "control") finalImage = "/breakers.jpg";
+          else finalImage = "/iluminaria-led.jpg";
+        } else if (finalImage && !finalImage.startsWith("http") && !finalImage.startsWith("/") && !finalImage.startsWith("data:")) {
           finalImage = `/${finalImage}`;
         }
 

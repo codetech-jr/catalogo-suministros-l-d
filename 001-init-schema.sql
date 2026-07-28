@@ -114,41 +114,23 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.config_tasas ENABLE ROW LEVEL SECURITY;
 
 -- Políticas de Seguridad para categories
-CREATE POLICY "Allow public read access to categories" 
-    ON public.categories 
-    FOR SELECT 
-    USING (true);
-
-CREATE POLICY "Allow admin full access to categories" 
+CREATE POLICY "Allow public full access to categories" 
     ON public.categories 
     FOR ALL 
-    TO authenticated 
     USING (true) 
     WITH CHECK (true);
 
 -- Políticas de Seguridad para products
-CREATE POLICY "Allow public read access to products" 
-    ON public.products 
-    FOR SELECT 
-    USING (true);
-
-CREATE POLICY "Allow admin full access to products" 
+CREATE POLICY "Allow public full access to products" 
     ON public.products 
     FOR ALL 
-    TO authenticated 
     USING (true) 
     WITH CHECK (true);
 
 -- Políticas de Seguridad para config_tasas
-CREATE POLICY "Allow public read access to config_tasas" 
-    ON public.config_tasas 
-    FOR SELECT 
-    USING (true);
-
-CREATE POLICY "Allow admin full access to config_tasas" 
+CREATE POLICY "Allow public full access to config_tasas" 
     ON public.config_tasas 
     FOR ALL 
-    TO authenticated 
     USING (true) 
     WITH CHECK (true);
 

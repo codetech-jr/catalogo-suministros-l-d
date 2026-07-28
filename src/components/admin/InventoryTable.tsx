@@ -10,6 +10,26 @@ import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { Plus, Pencil, Trash2, Search, Package } from "lucide-react";
 import { ProductFormModal } from "./ProductFormModal";
 
+function ProductRowImage({ src, alt }: { src: string; alt: string }) {
+  const [error, setError] = React.useState(false);
+
+  if (!src || error) {
+    return <Package className="h-4 w-4 text-slate-600" />;
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={40}
+      height={40}
+      unoptimized
+      className="object-cover w-full h-full"
+      onError={() => setError(true)}
+    />
+  );
+}
+
 export function InventoryTable() {
   const { products, isFetchingData, deleteProduct } = useProductsStore();
   const rateBcv = useCurrencyStore((s) => s.rateBcv);
@@ -128,17 +148,7 @@ export function InventoryTable() {
                       {/* Miniatura */}
                       <td className="px-4 py-3">
                         <div className="h-10 w-10 rounded-lg bg-slate-800 border border-slate-700/50 overflow-hidden flex items-center justify-center flex-shrink-0">
-                          {product.image ? (
-                            <Image
-                              src={product.image}
-                              alt={product.name}
-                              width={40}
-                              height={40}
-                              className="object-cover w-full h-full"
-                            />
-                          ) : (
-                            <Package className="h-4 w-4 text-slate-600" />
-                          )}
+                          <ProductRowImage src={product.image} alt={product.name} />
                         </div>
                       </td>
 
