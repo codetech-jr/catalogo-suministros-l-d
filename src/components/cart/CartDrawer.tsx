@@ -23,6 +23,7 @@ import { useCart } from "@/store/cart-store";
 import { usePathname } from "next/navigation";
 import { useBcvStore } from "@/store/bcv-store";
 import { useDrawerStore } from "@/store/drawer-store";
+import { useCurrencyStore } from "@/store/currency-store";
 import { CheckoutForm, PaymentMethod } from "@/types/checkout";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/utils/build-whatsapp-message";
@@ -59,6 +60,8 @@ export function CartDrawer() {
   const { isOpen, closeDrawer } = useDrawerStore();
   const { items, updateQuantity, removeItem, getTotals, clearCart } = useCart((state) => state);
   const rate = useBcvStore((state) => state.rate);
+  const rateBinance = useCurrencyStore((s) => s.rateBinance);
+  const rateBcv = useCurrencyStore((s) => s.rateBcv);
 
   const [step, setStep] = React.useState(1);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -342,7 +345,7 @@ export function CartDrawer() {
                               {item.product.name}
                             </h4>
                             <span className="text-xs font-mono font-bold text-blue-500/90 tabular-nums">
-                              {formatUSD(item.activePrice)} c/u
+                              {formatVES(item.activePrice * rateBinance)} c/u
                             </span>
                           </div>
 
@@ -1236,7 +1239,7 @@ export function CartDrawer() {
                             )}
                           </div>
                           <span className="font-mono font-bold text-text-primary tabular-nums">
-                            {formatUSD(item.activePrice * item.quantity)}
+                            {formatVES(item.activePrice * item.quantity * rateBinance)}
                           </span>
                         </div>
                       );
@@ -1264,32 +1267,21 @@ export function CartDrawer() {
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between text-xs text-blue-500 font-medium">
                     <span className="flex items-center gap-1"><Percent className="h-3 w-3" /> Ahorro Mayorista:</span>
-                    <span className="font-mono tabular-nums">-{formatUSD(totals.savingsUsd)}</span>
+                    <span className="font-mono tabular-nums">-{formatVES(totals.savingsUsd * rateBinance)}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between items-baseline">
-                  <span className="text-xs text-text-secondary">
-                    {isQuoteOnly ? "Monto a Cotizar en USD:" : "Subtotal USD:"}
-                  </span>
-                  <span className="text-sm font-mono font-bold text-[#f4f5f6] tabular-nums">
-                    {formatUSD(totals.totalUsd)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-baseline">
-                  <span className="text-xs text-text-secondary">Tasa Oficial BCV:</span>
-                  <span className="text-xs font-mono font-semibold text-accent-amber tabular-nums">
-                    {formatVES(rate)}/$
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-baseline mt-1 border-t border-[#1b212f]/40 pt-2">
-                  <span className="text-sm font-bold text-text-primary">
-                    {isQuoteOnly ? "Monto a Cotizar (VES):" : "Total VES (BCV):"}
-                  </span>
-                  <span className="text-base font-mono font-bold text-accent-amber tabular-nums">
-                    {formatVES(totalVES)}
+                <div className="flex flex-col gap-1.5 mt-1 border-t border-[#1b212f]/40 pt-3">
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-sm font-extrabold uppercase tracking-wider text-text-primary">
+                      {isQuoteOnly ? "TOTAL A COTIZAR:" : "TOTAL A PAGAR:"}
+                    </span>
+                    <span className="text-2xl font-black font-mono text-accent-amber tabular-nums animate-blur-pop">
+                      {formatVES(totalVES)}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-500 text-center mt-1">
+                    Facturación sujeta a Tasa Oficial Banco Central BCV ({formatVES(rateBcv)}/$)
                   </span>
                 </div>
               </div>
@@ -1443,7 +1435,7 @@ export function CartDrawer() {
                 <p className="mt-1">
                   <strong>Código Presupuesto:</strong> <span className="font-mono text-sm font-bold">LDP-{budgetCode}</span><br />
                   <strong>Distribución:</strong> {form.deliveryType === "retiro" ? "Retiro en Tienda" : "Despacho a Domicilio"}<br />
-                  <strong>Moneda de Pago:</strong> VES / USD
+                  <strong>Moneda de Pago:</strong> Bs. (VES)
                 </p>
               </div>
             </div>
@@ -1456,8 +1448,8 @@ export function CartDrawer() {
                 <th className="py-2 px-1">SKU</th>
                 <th className="py-2 px-2">Descripción del Material</th>
                 <th className="py-2 px-2 text-center">Cant.</th>
-                <th className="py-2 px-2 text-right">P. Unit (USD)</th>
-                <th className="py-2 px-1 text-right">Total (USD)</th>
+                <th className="py-2 px-2 text-right">P. Unit (Bs.)</th>
+                <th className="py-2 px-1 text-right">Total (Bs.)</th>
               </tr>
             </thead>
             <tbody>
@@ -1474,8 +1466,8 @@ export function CartDrawer() {
                       {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa Mayorista)</span>}
                     </td>
                     <td className="py-2 px-2 text-center font-mono">{item.quantity}</td>
-                    <td className="py-2 px-2 text-right font-mono">{formatUSD(item.activePrice)}</td>
-                    <td className="py-2 px-1 text-right font-mono font-bold">{formatUSD(item.activePrice * item.quantity)}</td>
+                    <td className="py-2 px-2 text-right font-mono">{formatVES(item.activePrice * rateBinance)}</td>
+                    <td className="py-2 px-1 text-right font-mono font-bold">{formatVES(item.activePrice * item.quantity * rateBinance)}</td>
                   </tr>
                 );
               })}
@@ -1488,20 +1480,16 @@ export function CartDrawer() {
               {totals.savingsUsd > 0 && (
                 <div className="flex justify-between py-1 text-green-700 font-bold">
                   <span>Ahorro Mayorista:</span>
-                  <span className="font-mono">-{formatUSD(totals.savingsUsd)}</span>
+                  <span className="font-mono">-{formatVES(totals.savingsUsd * rateBinance)}</span>
                 </div>
               )}
               <div className="flex justify-between py-1 text-slate-600">
-                <span>Subtotal en USD:</span>
-                <span className="font-mono font-bold">{formatUSD(totals.totalUsd)}</span>
-              </div>
-              <div className="flex justify-between py-1 text-slate-600">
                 <span>Tasa de Cambio BCV:</span>
-                <span className="font-mono font-bold">{formatVES(rate)} Bs.</span>
+                <span className="font-mono font-bold">{rate.toFixed(2)} Bs.</span>
               </div>
               <div className="flex justify-between py-1 border-t border-slate-300 mt-1.5 pt-1.5 font-bold text-slate-900 text-sm">
                 <span>Monto Total VES:</span>
-                <span className="font-mono text-blue-900">{formatVES(totalVES)} Bs.</span>
+                <span className="font-mono text-blue-900">{formatVES(totalVES)}</span>
               </div>
             </div>
           </div>

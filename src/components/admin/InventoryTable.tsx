@@ -11,7 +11,7 @@ import { Plus, Pencil, Trash2, Search, Package } from "lucide-react";
 import { ProductFormModal } from "./ProductFormModal";
 
 export function InventoryTable() {
-  const { products, isFetchingData } = useProductsStore();
+  const { products, isFetchingData, deleteProduct } = useProductsStore();
   const rateBcv = useCurrencyStore((s) => s.rateBcv);
   const rateBinance = useCurrencyStore((s) => s.rateBinance);
 
@@ -33,6 +33,16 @@ export function InventoryTable() {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (product: Product) => {
+    if (confirm(`¿Estás seguro de que deseas eliminar "${product.name}"?`)) {
+      try {
+        await deleteProduct(product.id);
+      } catch (err: any) {
+        alert("Error al eliminar producto: " + (err.message || "Falla en base de datos."));
+      }
+    }
   };
 
   const handleNewProduct = () => {
@@ -198,6 +208,7 @@ export function InventoryTable() {
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
+                            onClick={() => handleDelete(product)}
                             className="p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition-all cursor-pointer"
                             title="Eliminar producto"
                           >

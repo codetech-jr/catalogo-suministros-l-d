@@ -7,7 +7,7 @@ import { Product } from "@/types/product";
 import { useCart, useCartStore } from "@/store/cart-store";
 import { useCurrencyStore } from "@/store/currency-store";
 import { getStorePrices, getVolumeSavings } from "@/lib/utils/pricing-engine";
-import { formatUSD, formatVES } from "@/lib/utils/format-currency";
+import { formatVES } from "@/lib/utils/format-currency";
 
 interface ProductCardProps {
   product: Product;
@@ -16,7 +16,6 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const rateBcv = useCurrencyStore((s) => s.rateBcv);
   const rateBinance = useCurrencyStore((s) => s.rateBinance);
-  const displayCurrency = useCurrencyStore((s) => s.displayCurrency);
 
   const addItem = useCartStore((s) => s.addItem);
   const items = useCart((s) => s.items);
@@ -64,8 +63,8 @@ export function ProductCard({ product }: ProductCardProps) {
     ? getVolumeSavings(product.price, product.volumeDiscount.discountPrice, rateBcv, rateBinance)
     : null;
 
-  // Stable key for blur-pop animation on currency switch
-  const animKey = `${displayCurrency}-${rateBcv}-${rateBinance}`;
+  // Stable key for blur-pop animation on rate change
+  const animKey = `${rateBcv}-${rateBinance}`;
 
   return (
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50 transition-all hover:bg-slate-800/80 p-4 gap-4 shadow-sm min-h-[480px] flex-none w-[85vw] sm:w-[320px] md:w-auto snap-center md:snap-align-none">
@@ -156,9 +155,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 </span>
                 <span className="text-xs font-medium text-slate-200 mt-0.5 leading-snug">
                   Desde <span className="font-mono font-bold text-emerald-400">{product.volumeDiscount.threshold}</span> Und. &rarr; <span className="font-mono font-bold text-slate-100">
-                    {displayCurrency === "VES"
-                      ? formatVES(volumePrices.netVES)
-                      : formatUSD(volumePrices.displayUSD)}
+                    {formatVES(volumePrices.netVES)}
                   </span> /c/u
                 </span>
               </div>
@@ -168,9 +165,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 Ahorras
               </span>
               <span className="text-[10px] font-mono text-emerald-400 font-bold tracking-tight block">
-                -{displayCurrency === "VES"
-                  ? formatVES(volumeSavings.savingsVES)
-                  : formatUSD(volumeSavings.savingsUSD)} c/u
+                -{formatVES(volumeSavings.savingsVES)} c/u
               </span>
             </div>
           </div>
@@ -183,25 +178,9 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-baseline justify-between">
             <span className="text-xs text-slate-400 font-medium">Unitario:</span>
             <div key={animKey} className="flex flex-col items-end animate-blur-pop">
-              {displayCurrency === "VES" ? (
-                <>
-                  <span className="font-display text-2xl font-bold text-white">
-                    {formatVES(prices.netVES)}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    Ref. Oficial: {formatUSD(prices.displayUSD)} (BCV)
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="font-display text-2xl font-bold text-white">
-                    {formatUSD(prices.displayUSD)}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    {formatVES(prices.netVES)}
-                  </span>
-                </>
-              )}
+              <span className="font-display text-2xl font-bold text-white">
+                {formatVES(prices.netVES)}
+              </span>
             </div>
           </div>
         </div>

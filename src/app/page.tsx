@@ -14,7 +14,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { useCart, useCartStore } from "@/store/cart-store";
 
 import { useCurrencyStore } from "@/store/currency-store";
-import { formatUSD, formatVES } from "@/lib/utils/format-currency";
+import { formatVES } from "@/lib/utils/format-currency";
 import { useAttentionGrabber } from "@/hooks/useAttentionGrabber";
 
 const BRANDS = [
@@ -59,7 +59,6 @@ interface CompactConsumableCardProps {
 }
 
 function CompactConsumableCard({ product, rateBcv }: CompactConsumableCardProps) {
-  const displayCurrency = useCurrencyStore((s) => s.displayCurrency);
   const rateBinance = useCurrencyStore((s) => s.rateBinance);
   const addItem = useCartStore((state) => state.addItem);
   const items = useCart((state) => state.items);
@@ -133,7 +132,7 @@ function CompactConsumableCard({ product, rateBcv }: CompactConsumableCardProps)
                 <span>Precio al Mayor ({threshold}+):</span>
               </span>
               <span className="font-bold text-slate-250 font-mono text-[10px]">
-                {formatUSD(discountPrice)} c/u
+                {formatVES(discountPrice * rateBinance)} c/u
               </span>
             </div>
             {!isVolumePrice && (
@@ -154,13 +153,9 @@ function CompactConsumableCard({ product, rateBcv }: CompactConsumableCardProps)
           {/* Price Preview */}
           <div className="flex flex-col">
             <span className="text-[9px] font-mono text-slate-500 uppercase">Monto</span>
-            <div key={`${displayCurrency}-${rateBcv}-${rateBinance}`} className="animate-blur-pop">
+            <div key={`${rateBcv}-${rateBinance}`} className="animate-blur-pop">
               <span className="font-display text-sm font-bold text-slate-100 font-mono">
-                {formatUSD(currentUnitPrice * quantity)}
-              </span>
-              <br />
-              <span className="text-[9px] text-slate-400 font-mono">
-                ≈ {formatVES(currentUnitPrice * quantity * rateBcv)}
+                {formatVES(currentUnitPrice * quantity * rateBinance)}
               </span>
             </div>
           </div>

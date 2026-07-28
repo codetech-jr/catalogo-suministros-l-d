@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils/cn";
 import { useCartStore } from "@/store/cart-store";
 import { useDrawerStore } from "@/store/drawer-store";
 import BcvRateWidget from "../shared/BcvRateWidget";
-import { useCurrencyStore } from "@/store/currency-store";
 import { useCommandPaletteKeyboard } from "@/hooks/useCommandPalette";
 import CommandPalette from "./CommandPalette";
 import WholesaleB2BModal from "./WholesaleB2BModal";
@@ -34,11 +33,8 @@ export function Navbar({ onSearch }: NavbarProps) {
 
   // Wire up Ctrl+K / ⌘K keyboard shortcut for Command Palette
   useCommandPaletteKeyboard();
-  
   const items = useCartStore((state) => state.items);
   const openDrawer = useDrawerStore((state) => state.openDrawer);
-  const displayCurrency = useCurrencyStore((s) => s.displayCurrency);
-  const setDisplayCurrency = useCurrencyStore((s) => s.setDisplayCurrency);
   const menuRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -211,33 +207,7 @@ export function Navbar({ onSearch }: NavbarProps) {
             <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
               <BcvRateWidget />
 
-              {/* Segmented Control / Toggle de Monedas B2B */}
-              <div className="flex items-center bg-slate-900 border border-slate-700/60 p-1 rounded-lg">
-                <button
-                  onClick={() => setDisplayCurrency("USD")}
-                  className={cn(
-                    "px-3 py-1 text-xs transition-colors rounded-md cursor-pointer",
-                    displayCurrency === "USD"
-                      ? "font-bold text-slate-900 bg-[#007BFF] shadow-sm animate-none"
-                      : "font-semibold text-slate-400 hover:text-slate-200"
-                  )}
-                >
-                  <span className="md:hidden">$</span>
-                  <span className="hidden md:inline">$ USD</span>
-                </button>
-                <button
-                  onClick={() => setDisplayCurrency("VES")}
-                  className={cn(
-                    "px-3 py-1 text-xs transition-colors rounded-md cursor-pointer",
-                    displayCurrency === "VES"
-                      ? "font-bold text-slate-900 bg-[#007BFF] shadow-sm animate-none"
-                      : "font-semibold text-slate-400 hover:text-slate-200"
-                  )}
-                >
-                  <span className="md:hidden">Bs</span>
-                  <span className="hidden md:inline">Bs VES</span>
-                </button>
-              </div>
+
 
               {/* Cart trigger button */}
               <button

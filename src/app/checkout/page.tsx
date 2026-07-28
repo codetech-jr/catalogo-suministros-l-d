@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, CreditCard, Store, Truck, MapPin, Send, ShieldCheck, CheckCircle2, Zap, FileText } from "lucide-react";
 import { useCart } from "@/store/cart-store";
 import { useBcvStore } from "@/store/bcv-store";
+import { useCurrencyStore } from "@/store/currency-store";
 import { CheckoutForm } from "@/types/checkout";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/utils/build-whatsapp-message";
@@ -17,6 +18,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotals, clearCart } = useCart((state) => state);
   const { rate, fetchRate } = useBcvStore();
+  const rateBinance = useCurrencyStore((s) => s.rateBinance);
+  const rateBcv = useCurrencyStore((s) => s.rateBcv);
 
   const [step, setStep] = React.useState(1);
   const [mounted, setMounted] = React.useState(false);
@@ -253,12 +256,11 @@ export default function CheckoutPage() {
                         </div>
                         <h4 className="text-sm font-bold text-text-primary truncate">{item.product.name}</h4>
                         <div className="text-xs text-text-secondary mt-0.5">
-                          <span className="font-mono">{item.quantity}x</span> &times; <span className="font-mono">{formatUSD(item.activePrice)}</span>
+                          <span className="font-mono">{item.quantity}x</span> &times; <span className="font-mono">{formatVES(item.activePrice * rateBinance)}</span>
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-sm font-mono font-bold text-text-primary">{formatUSD(item.activePrice * item.quantity)}</div>
-                        <div className="text-[10px] font-mono text-text-muted mt-0.5">Bs. {formatVES(item.activePrice * item.quantity * rate)}</div>
+                        <div className="text-sm font-mono font-bold text-text-primary">{formatVES(item.activePrice * item.quantity * rateBinance)}</div>
                       </div>
                     </div>
                   );
@@ -270,22 +272,19 @@ export default function CheckoutPage() {
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between items-baseline text-xs text-success font-semibold">
                     <span>Ahorro Mayorista:</span>
-                    <span className="font-mono font-bold tracking-tight tabular-nums">-{formatUSD(totals.savingsUsd)}</span>
+                    <span className="font-mono font-bold tracking-tight tabular-nums">-{formatVES(totals.savingsUsd * rateBinance)}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-baseline text-xs text-text-secondary">
-                  <span>{isQuoteOnly ? "Monto a Cotizar en USD:" : "Subtotal en USD:"}</span>
-                  <span className="font-mono text-text-primary font-bold tracking-tight tabular-nums">{formatUSD(totals.totalUsd)}</span>
-                </div>
-                <div className="flex justify-between items-baseline text-xs text-text-secondary">
-                  <span>Tasa oficial de cambio (BCV):</span>
-                  <span className="font-mono text-accent-amber font-semibold">{formatVES(rate)}/$</span>
-                </div>
-                <div className="flex justify-between items-center mt-2 border-t border-hairline/60 pt-3">
-                  <span className="text-sm font-bold text-text-primary">
-                    {isQuoteOnly ? "Monto a Cotizar (VES):" : "Total estimado (VES):"}
+                <div className="flex flex-col gap-1.5 mt-2 border-t border-hairline/60 pt-3">
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-sm font-bold text-text-primary">
+                      {isQuoteOnly ? "TOTAL A COTIZAR:" : "TOTAL A PAGAR:"}
+                    </span>
+                    <span className="text-2xl font-black font-mono text-accent-amber animate-blur-pop">{formatVES(totalVES)}</span>
+                  </div>
+                  <span className="text-xs text-slate-500 text-center mt-1">
+                    Facturación sujeta a Tasa Oficial Banco Central BCV ({formatVES(rateBcv)}/$)
                   </span>
-                  <span className="text-xl font-mono font-extrabold text-accent-amber">{formatVES(totalVES)}</span>
                 </div>
               </div>
 
@@ -785,7 +784,7 @@ export default function CheckoutPage() {
                   <p className="mt-1">
                     <strong>Código Presupuesto:</strong> <span className="font-mono text-sm font-bold">LDP-{budgetCode}</span><br />
                     <strong>Distribución:</strong> {form.deliveryType === "retiro" ? "Retiro en Tienda" : "Despacho a Domicilio"}<br />
-                    <strong>Moneda de Pago:</strong> VES / USD
+                    <strong>Moneda de Pago:</strong> Bs. (VES)
                   </p>
                 </div>
               </div>
@@ -798,8 +797,8 @@ export default function CheckoutPage() {
                   <th className="py-2 px-1">SKU</th>
                   <th className="py-2 px-2">Descripción del Material</th>
                   <th className="py-2 px-2 text-center">Cant.</th>
-                  <th className="py-2 px-2 text-right">P. Unit (USD)</th>
-                  <th className="py-2 px-1 text-right">Total (USD)</th>
+                  <th className="py-2 px-2 text-right">P. Unit (Bs.)</th>
+                  <th className="py-2 px-1 text-right">Total (Bs.)</th>
                 </tr>
               </thead>
               <tbody>
@@ -816,8 +815,8 @@ export default function CheckoutPage() {
                         {isVolume && <span className="text-[8px] text-blue-600 font-bold ml-1.5">(Tasa Mayorista)</span>}
                       </td>
                       <td className="py-2 px-2 text-center font-mono">{item.quantity}</td>
-                      <td className="py-2 px-2 text-right font-mono">{formatUSD(item.activePrice)}</td>
-                      <td className="py-2 px-1 text-right font-mono font-bold">{formatUSD(item.activePrice * item.quantity)}</td>
+                      <td className="py-2 px-2 text-right font-mono">{formatVES(item.activePrice * rate)}</td>
+                      <td className="py-2 px-1 text-right font-mono font-bold">{formatVES(item.activePrice * item.quantity * rate)}</td>
                     </tr>
                   );
                 })}
@@ -830,20 +829,16 @@ export default function CheckoutPage() {
                 {totals.savingsUsd > 0 && (
                   <div className="flex justify-between py-1 text-green-700 font-bold">
                     <span>Ahorro Mayorista:</span>
-                    <span className="font-mono">-{formatUSD(totals.savingsUsd)}</span>
+                    <span className="font-mono">-{formatVES(totals.savingsUsd * rate)}</span>
                   </div>
                 )}
                 <div className="flex justify-between py-1 text-slate-600">
-                  <span>Subtotal en USD:</span>
-                  <span className="font-mono font-bold">{formatUSD(totals.totalUsd)}</span>
-                </div>
-                <div className="flex justify-between py-1 text-slate-600">
                   <span>Tasa de Cambio BCV:</span>
-                  <span className="font-mono font-bold">{formatVES(rate)} Bs.</span>
+                  <span className="font-mono font-bold">{rate.toFixed(2)} Bs.</span>
                 </div>
                 <div className="flex justify-between py-1 border-t border-slate-350 mt-1.5 pt-1.5 font-bold text-slate-900 text-sm">
                   <span>Monto Total VES:</span>
-                  <span className="font-mono text-blue-900">{formatVES(totalVES)} Bs.</span>
+                  <span className="font-mono text-blue-900">{formatVES(totalVES)}</span>
                 </div>
               </div>
             </div>

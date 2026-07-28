@@ -8,9 +8,11 @@ export interface ProductsState {
   isFetchingData: boolean;
   error: string | null;
   fetchProductsAndCategories: () => Promise<void>;
+  saveProduct: (productData: Partial<Product>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
 }
 
-export const useProductsStore = create<ProductsState>((set) => ({
+export const useProductsStore = create<ProductsState>((set, get) => ({
   products: [],
   categories: [],
   isFetchingData: false,
@@ -129,5 +131,102 @@ export const useProductsStore = create<ProductsState>((set) => ({
         error: err.message || "Falla al conectar con base de datos Supabase.",
       });
     }
+  },
+
+  saveProduct: async (productData: Partial<Product>) => {
+    const categories = get().categories;
+
+    // Resolve or create category_id
+    const categoryKey = productData.category || "iluminacion";
+    let categoryId = "";
+
+    const catMatch = categories.find((c) => {
+      const slug = (c.slug || "").toLowerCase();
+      if (categoryKey === "iluminacion" && (slug.includes("iluminacion") || slug.includes("led") || slug.includes("luminaria"))) return true;
+      if (categoryKey === "cableado" && (slug.includes("cable") || slug.includes("pesado") || slug.includes("tubo") || slug.includes("material"))) return true;
+      if (categoryKey === "control" && (slug.includes("control") || slug.includes("breaker") || slug.includes("tablero"))) return true;
+      return false;
+    });
+
+    if (catMatch) {
+      categoryId = catMatch.id;
+    } else {
+      const slugMap: Record<string, { name: string; slug: string }> = {
+        iluminacion: { name: "Luminaria LED", slug: "luminaria-led" },
+        control: { name: "Control Eléctrico", slug: "control-electrico" },
+        cableado: { name: "Material Pesado", slug: "material-pesado" },
+      };
+      const target = slugMap[categoryKey] || { name: "Luminaria LED", slug: "luminaria-led" };
+
+      const { data: existing } = await supabase
+        .from("categories")
+        .select("id")
+        .eq("slug", target.slug)
+        .maybeSingle();
+
+      if (existing) {
+        categoryId = existing.id;
+      } else {
+        const { data: newCat, error: createCatErr } = await supabase
+          .from("categories")
+          .insert({ name: target.name, slug: target.slug })
+          .select("id")
+          .single();
+
+        if (createCatErr || !newCat) {
+          if (categories.length > 0) {
+            categoryId = categories[0].id;
+          } else {
+            throw new Error("No se pudo asignar una categoría válida.");
+          }
+        } else {
+          categoryId = newCat.id;
+        }
+      }
+    }
+
+    const payload = {
+      sku: productData.sku,
+      name: productData.name,
+      description: productData.description || "",
+      base_price_usd: productData.price,
+      stock_quantity: productData.stock,
+      category_id: categoryId,
+      image_url: productData.image || null,
+      specs: productData.specs || [],
+      wholesale_enabled: Boolean(productData.volumeDiscount),
+      wholesale_min_units: productData.volumeDiscount?.threshold || null,
+      wholesale_price_usd: productData.volumeDiscount?.discountPrice || null,
+    };
+
+    if (productData.id) {
+      // Update existing
+      const { error } = await supabase
+        .from("products")
+        .update(payload)
+        .eq("id", productData.id);
+
+      if (error) throw error;
+    } else {
+      // Insert new
+      const { error } = await supabase
+        .from("products")
+        .insert(payload);
+
+      if (error) throw error;
+    }
+
+    // Refresh products list
+    await get().fetchProductsAndCategories();
+  },
+
+  deleteProduct: async (id: string) => {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+    await get().fetchProductsAndCategories();
   },
 }));

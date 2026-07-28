@@ -4,6 +4,8 @@ import * as React from "react";
 import { X, Upload, Plus, Trash2, Save, Cloud } from "lucide-react";
 import type { ISuministrosProduct } from "@/types/product";
 
+import { useProductsStore } from "@/store/products-store";
+
 interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,6 +19,7 @@ const CATEGORIES = [
 ];
 
 export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalProps) {
+  const saveProduct = useProductsStore((s) => s.saveProduct);
   const isEditing = !!product;
 
   const [name, setName] = React.useState("");
@@ -41,10 +44,12 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   // Populate form when editing or opening
   React.useEffect(() => {
     if (isOpen) {
+      setErrorMessage(null);
       if (product) {
         setName(product.name);
         setSku(product.sku);
@@ -130,15 +135,66 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setErrorMessage(null);
     
-    // Simulate API call for premium UI experience
-    setTimeout(() => {
+    try {
+      const parsedPrice = parseFloat(price);
+      const parsedStock = parseInt(stock, 10);
+
+      if (isNaN(parsedPrice) || parsedPrice < 0) {
+        throw new Error("Ingresa un precio base válido.");
+      }
+      if (isNaN(parsedStock) || parsedStock < 0) {
+        throw new Error("Ingresa un stock válido.");
+      }
+
+      const filteredSpecs = specs.filter((s) => s.label.trim() !== "" && s.value.trim() !== "");
+
+      let volumeDiscount = undefined;
+      if (isVolumeDiscountEnabled) {
+        const threshold = parseInt(discountThreshold, 10);
+        const dPrice = parseFloat(discountPrice);
+
+        if (isNaN(threshold) || threshold < 1) {
+          throw new Error("Ingresa una cantidad mínima válida para el descuento mayorista.");
+        }
+        if (isNaN(dPrice) || dPrice < 0) {
+          throw new Error("Ingresa un precio mayorista válido.");
+        }
+        if (dPrice > parsedPrice) {
+          throw new Error("El precio mayorista debe ser menor o igual al precio base.");
+        }
+
+        volumeDiscount = {
+          threshold,
+          discountPrice: dPrice,
+          label: `paquete a partir de ${threshold} unidades`,
+        };
+      }
+
+      await saveProduct({
+        id: product?.id,
+        sku: sku.trim(),
+        name: name.trim(),
+        description: description.trim(),
+        category: category as "iluminacion" | "control" | "cableado",
+        price: parsedPrice,
+        stock: parsedStock,
+        specs: filteredSpecs,
+        volumeDiscount,
+        image: previewImage || undefined,
+      });
+
       setIsSaving(false);
       onClose();
-    }, 1000);
+    } catch (err: any) {
+      console.error("Error al guardar el producto:", err);
+      setErrorMessage(err.message || "Error al conectar con la base de datos.");
+      setIsSaving(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -165,6 +221,12 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
             <X className="h-6 w-6" />
           </button>
         </div>
+
+        {errorMessage && (
+          <div className="mx-6 mt-4 p-4 bg-rose-950/50 border border-rose-800/50 text-rose-300 rounded-xl text-xs font-mono">
+            ⚠️ {errorMessage}
+          </div>
+        )}
 
         {/* Form Container */}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4 p-6">
