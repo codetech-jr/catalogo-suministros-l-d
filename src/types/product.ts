@@ -10,8 +10,8 @@ export interface ISuministrosProduct {
   name: string;
   slug: string;
   description: string;
-  category: "iluminacion" | "control" | "cableado";
-  categoryLabel: string; // e.g., "Iluminación LED", "Control Eléctrico", "Material Pesado"
+  category: string;
+  categoryLabel: string;
   price: number; // Unit price in USD
   image: string; // URL path to image (or fallback text icon if empty)
   specs: {

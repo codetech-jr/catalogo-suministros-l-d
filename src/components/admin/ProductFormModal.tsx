@@ -12,23 +12,19 @@ interface ProductFormModalProps {
   product?: ISuministrosProduct | null;
 }
 
-const CATEGORIES = [
-  { id: "iluminacion", label: "Iluminación LED" },
-  { id: "control", label: "Control Eléctrico" },
-  { id: "cableado", label: "Cables" },
-];
 
 export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalProps) {
   const saveProduct = useProductsStore((s) => s.saveProduct);
+  const categoriesList = useProductsStore((s) => s.categories);
   const isEditing = !!product;
 
   const [name, setName] = React.useState("");
   const [sku, setSku] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [category, setCategory] = React.useState("iluminacion");
+  const [category, setCategory] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [stock, setStock] = React.useState("");
-  
+
   // Volume Discount State
   const [isVolumeDiscountEnabled, setIsVolumeDiscountEnabled] = React.useState(false);
   const [discountThreshold, setDiscountThreshold] = React.useState("");
@@ -54,7 +50,7 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
         setName(product.name);
         setSku(product.sku);
         setDescription(product.description || "");
-        setCategory(product.category);
+        setCategory(product.category || (categoriesList[0]?.slug || "luminaria-led"));
         setPrice(product.price.toString());
         setStock(product.stock.toString());
         setPreviewImage(product.image || null);
@@ -81,7 +77,7 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
         setName("");
         setSku("");
         setDescription("");
-        setCategory("iluminacion");
+        setCategory(categoriesList[0]?.slug || "luminaria-led");
         setPrice("");
         setStock("");
         setPreviewImage(null);
@@ -94,7 +90,7 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
         ]);
       }
     }
-  }, [product, isOpen]);
+  }, [product, isOpen, categoriesList]);
 
   const handleAddSpec = () => {
     setSpecs((prev) => [...prev, { label: "", value: "" }]);
@@ -186,7 +182,7 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
         sku: sku.trim(),
         name: name.trim(),
         description: description.trim(),
-        category: category as "iluminacion" | "control" | "cableado",
+        category: category,
         price: parsedPrice,
         stock: parsedStock,
         specs: filteredSpecs,
@@ -286,9 +282,9 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
                   onChange={(e) => setCategory(e.target.value)}
                   className={`${inputStyle} appearance-none pr-10 cursor-pointer`}
                 >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.label}
+                  {categoriesList.map((cat) => (
+                    <option key={cat.id || cat.slug} value={cat.slug}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>

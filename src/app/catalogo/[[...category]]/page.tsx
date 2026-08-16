@@ -60,8 +60,8 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   const resolvedSearchParams = use(searchParams);
   
   // Dynamic products store integration
-  const { products, isFetchingData } = useProductsStore();
-  
+  const { products, categories: dbCategories, isFetchingData } = useProductsStore();
+
   // URL category parameter
   const urlCategory = resolvedParams.category && resolvedParams.category.length > 0 
     ? resolvedParams.category[0] 
@@ -178,27 +178,20 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     (selectedCategory !== "all" ? 1 : 0) +
     (searchQuery !== "" ? 1 : 0);
 
-  // Categories helper list with counts
+  // Categories helper list with counts dynamically built from database
   const categoriesList = React.useMemo(() => {
-    return [
-      { id: "all", label: "Todos los Suministros", count: products.length },
-      { 
-        id: "iluminacion", 
-        label: "Luminaria LED", 
-        count: products.filter(p => p.category === "iluminacion").length 
-      },
-      { 
-        id: "control", 
-        label: "Control Eléctrico", 
-        count: products.filter(p => p.category === "control").length 
-      },
-      { 
-        id: "cableado", 
-        label: "Material Pesado", 
-        count: products.filter(p => p.category === "cableado").length 
-      }
+    const list = [
+      { id: "all", label: "Todos los Suministros", count: products.length }
     ];
-  }, [products]);
+    (dbCategories || []).forEach((cat: any) => {
+      list.push({
+        id: cat.slug,
+        label: cat.name,
+        count: products.filter(p => p.category === cat.slug).length
+      });
+    });
+    return list;
+  }, [dbCategories, products]);
 
   // Filter products by specifications, search query, category, and price range
   const filteredProducts = React.useMemo(() => {
@@ -224,9 +217,9 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
         (selectedBrands.includes("Lumistar") && product.name.includes("Lumistar")) ||
         (selectedBrands.includes("Stanley") && product.name.includes("Stanley")) ||
         (selectedBrands.includes("Bosch") && product.name.includes("Bosch")) ||
-        (selectedBrands.includes("Siemens") && product.category === "control") ||
-        (selectedBrands.includes("Exceline") && product.category === "control") ||
-        (selectedBrands.includes("Bticino") && (product.category === "control" || product.sku.includes("TAB")));
+        (selectedBrands.includes("Siemens") && product.category.includes("control")) ||
+        (selectedBrands.includes("Exceline") && product.category.includes("control")) ||
+        (selectedBrands.includes("Bticino") && (product.category.includes("control") || product.sku.includes("TAB")));
 
       // 4. Voltage Filter
       const matchesVoltage = 
@@ -271,12 +264,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
       { label: "Catálogo", href: "/catalogo" }
     ];
 
-    if (selectedCategory === "iluminacion") {
-      crumbs.push({ label: "Iluminación LED", href: "/catalogo/iluminacion" });
-    } else if (selectedCategory === "control") {
-      crumbs.push({ label: "Control Eléctrico", href: "/catalogo/control" });
-    } else if (selectedCategory === "cableado") {
-      crumbs.push({ label: "Material Pesado", href: "/catalogo/cableado" });
+    if (selectedCategory !== "all") {
+      const activeCat = (dbCategories || []).find(c => c.slug === selectedCategory);
+      if (activeCat) {
+        crumbs.push({ label: activeCat.name, href: `/catalogo/${activeCat.slug}` });
+      }
     }
 
     return (
@@ -299,16 +291,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
 
   // Header dynamic title
   const getHeaderTitle = () => {
-    switch (selectedCategory) {
-      case "iluminacion":
-        return "Reflectores y LED Exterior";
-      case "control":
-        return "Control de Fuerza Eléctrica";
-      case "cableado":
-        return "Canalización y Material Pesado";
-      default:
-        return "Catálogo Corporativo de Suministros";
+    if (selectedCategory !== "all") {
+      const activeCat = (dbCategories || []).find(c => c.slug === selectedCategory);
+      if (activeCat) return activeCat.name;
     }
+    return "Catálogo Corporativo de Suministros";
   };
 
   return (

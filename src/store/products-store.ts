@@ -54,23 +54,6 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
 
       const mappedCategories = dbCategories || [];
 
-      // Helper functions for category mapping to match frontend "iluminacion" | "control" | "cableado"
-      const mapCategorySlug = (slug: string): "iluminacion" | "control" | "cableado" => {
-        const s = slug.toLowerCase();
-        if (s.includes("iluminacion") || s.includes("luminaria") || s.includes("led")) return "iluminacion";
-        if (s.includes("cable") || s.includes("material-pesado") || s.includes("tubo") || s.includes("conduit") || s.includes("pesado")) return "cableado";
-        if (s.includes("control") || s.includes("breaker") || s.includes("tablero")) return "control";
-        return "iluminacion"; // default fallback
-      };
-
-      const mapCategoryLabel = (slug: string, dbName: string): string => {
-        const mapped = mapCategorySlug(slug);
-        if (mapped === "iluminacion") return "Luminaria LED";
-        if (mapped === "cableado") return "Material Pesado";
-        if (mapped === "control") return "Control Eléctrico";
-        return dbName || "Otros";
-      };
-
       // 4. Map products to frontend structure
       const mappedProducts: Product[] = (dbProducts || []).map((dbProd: any) => {
         let mappedSpecs: { label: string; value: string }[] = [];
@@ -85,18 +68,15 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
 
         // Handle possible array or single object for joined categories relation
         const catObj = Array.isArray(dbProd.categories) ? dbProd.categories[0] : dbProd.categories;
-        const dbCatSlug = catObj?.slug || "iluminacion";
+        const dbCatSlug = catObj?.slug || "luminaria-led";
         const dbCatName = catObj?.name || "Luminaria LED";
-
-        const categoryMapped = mapCategorySlug(dbCatSlug);
-        const categoryLabelMapped = mapCategoryLabel(dbCatSlug, dbCatName);
 
         // Normalize image paths if starting with products/ or similar, or fallback seed images to public assets
         let finalImage = dbProd.image_url || "";
         if (finalImage.startsWith("products/") || finalImage.startsWith("/products/")) {
-          if (categoryMapped === "iluminacion") finalImage = "/iluminaria-led.jpg";
-          else if (categoryMapped === "cableado") finalImage = "/cables-y-tubos.jpg";
-          else if (categoryMapped === "control") finalImage = "/breakers.jpg";
+          if (dbCatSlug.includes("iluminacion") || dbCatSlug.includes("led")) finalImage = "/iluminaria-led.jpg";
+          else if (dbCatSlug.includes("tubo") || dbCatSlug.includes("cable") || dbCatSlug.includes("pesado")) finalImage = "/cables-y-tubos.jpg";
+          else if (dbCatSlug.includes("control") || dbCatSlug.includes("proteccion")) finalImage = "/breakers.jpg";
           else finalImage = "/iluminaria-led.jpg";
         } else if (finalImage && !finalImage.startsWith("http") && !finalImage.startsWith("/") && !finalImage.startsWith("data:")) {
           finalImage = `/${finalImage}`;
@@ -108,8 +88,8 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
           name: dbProd.name,
           slug: dbProd.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
           description: dbProd.description || "",
-          category: categoryMapped,
-          categoryLabel: categoryLabelMapped,
+          category: dbCatSlug,
+          categoryLabel: dbCatName,
           price: Number(dbProd.base_price_usd),
           image: finalImage,
           specs: mappedSpecs,
@@ -141,53 +121,18 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
   saveProduct: async (productData: Partial<Product>) => {
     const categories = get().categories;
 
-    // Resolve or create category_id
-    const categoryKey = productData.category || "iluminacion";
+    // Resolve category_id
+    const categoryKey = productData.category || "";
     let categoryId = "";
 
-    const catMatch = categories.find((c) => {
-      const slug = (c.slug || "").toLowerCase();
-      if (categoryKey === "iluminacion" && (slug.includes("iluminacion") || slug.includes("led") || slug.includes("luminaria"))) return true;
-      if (categoryKey === "cableado" && (slug.includes("cable") || slug.includes("pesado") || slug.includes("tubo") || slug.includes("material"))) return true;
-      if (categoryKey === "control" && (slug.includes("control") || slug.includes("breaker") || slug.includes("tablero"))) return true;
-      return false;
-    });
+    const catMatch = categories.find((c) => c.slug === categoryKey || c.id === categoryKey);
 
     if (catMatch) {
       categoryId = catMatch.id;
+    } else if (categories.length > 0) {
+      categoryId = categories[0].id;
     } else {
-      const slugMap: Record<string, { name: string; slug: string }> = {
-        iluminacion: { name: "Luminaria LED", slug: "luminaria-led" },
-        control: { name: "Control Eléctrico", slug: "control-electrico" },
-        cableado: { name: "Material Pesado", slug: "material-pesado" },
-      };
-      const target = slugMap[categoryKey] || { name: "Luminaria LED", slug: "luminaria-led" };
-
-      const { data: existing } = await supabase
-        .from("categories")
-        .select("id")
-        .eq("slug", target.slug)
-        .maybeSingle();
-
-      if (existing) {
-        categoryId = existing.id;
-      } else {
-        const { data: newCat, error: createCatErr } = await supabase
-          .from("categories")
-          .insert({ name: target.name, slug: target.slug })
-          .select("id")
-          .single();
-
-        if (createCatErr || !newCat) {
-          if (categories.length > 0) {
-            categoryId = categories[0].id;
-          } else {
-            throw new Error("No se pudo asignar una categoría válida.");
-          }
-        } else {
-          categoryId = newCat.id;
-        }
-      }
+      throw new Error("No se pudo asignar una categoría válida.");
     }
 
     const payload = {
