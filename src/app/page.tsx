@@ -114,7 +114,15 @@ function CompactConsumableCard({ product, rateBcv }: CompactConsumableCardProps)
           <h3 className="font-display text-xs font-bold text-slate-200 leading-snug group-hover:text-slate-100 transition-colors">
             {product.name}
           </h3>
-          <p className="text-[11px] text-slate-400 leading-relaxed mt-1 line-clamp-1">
+          <p 
+            className="text-[11px] text-slate-400 leading-relaxed mt-1 block overflow-hidden text-ellipsis"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              maxHeight: "2.4rem"
+            }}
+          >
             {product.description}
           </p>
         </div>

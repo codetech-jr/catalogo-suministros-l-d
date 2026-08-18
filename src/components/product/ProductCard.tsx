@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Plus, Check, Lightbulb, Zap, Tag } from "lucide-react";
+import Link from "next/link";
+import { Plus, Check, Lightbulb, Zap, Tag, Eye, Maximize2, ChevronRight } from "lucide-react";
 import { Product } from "@/types/product";
 import { useCart, useCartStore } from "@/store/cart-store";
 import { useCurrencyStore } from "@/store/currency-store";
@@ -82,8 +83,11 @@ export function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
-        {/* Product Image Area */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-900/60 flex items-center justify-center border border-slate-700/40">
+        {/* Product Image Area (Clickable Link to Product Slug) */}
+        <Link 
+          href={`/producto/${product.slug}`} 
+          className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-900/60 flex items-center justify-center border border-slate-700/40 group/img cursor-pointer"
+        >
           {/* Badge de Stock sutil semáforo */}
           <div className="absolute top-2 right-2 z-10">
             {product.stock > 0 ? (
@@ -98,13 +102,28 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
+
+          {/* Badge táctil exclusivo para móviles (Foto Completa) */}
+          <div className="absolute bottom-2 left-2 z-10 sm:hidden">
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-slate-950/85 border border-slate-700/80 text-[9px] font-mono text-slate-200 backdrop-blur-md shadow">
+              <Maximize2 size={10} className="text-[#007BFF]" />
+              Foto Completa
+            </span>
+          </div>
+
+          {/* Hover overlay hint exclusivo para computadoras/pantallas grandes */}
+          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] opacity-0 group-hover/img:opacity-100 transition-opacity z-10 hidden sm:flex items-center justify-center gap-1.5 text-xs font-mono font-bold text-white">
+            <Eye size={16} className="text-[#007BFF]" />
+            <span>Ver Ficha y Foto Completa</span>
+          </div>
+
           {product.image === "" || imageError ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               {/* Grid background pattern */}
               <div className="absolute inset-0 opacity-[0.015] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:12px_12px]" />
               {getCategoryIcon(product.category)}
               <span className="text-[9px] text-slate-500 font-mono tracking-widest uppercase select-none opacity-80">
-                Imagen en edicion
+                Imagen en edición
               </span>
             </div>
           ) : (
@@ -114,20 +133,49 @@ export function ProductCard({ product }: ProductCardProps) {
               fill
               unoptimized
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 group-hover/img:scale-105"
               onError={() => setImageError(true)}
             />
           )}
-        </div>
+        </Link>
 
         {/* Product Details */}
         <div className="flex flex-col gap-1">
-          <h3 className="font-display text-sm md:text-base font-bold leading-snug tracking-tight text-slate-100 line-clamp-1">
+          <Link 
+            href={`/producto/${product.slug}`}
+            className="font-display text-sm md:text-base font-bold leading-snug tracking-tight text-slate-100 hover:text-[#007BFF] transition-colors cursor-pointer block overflow-hidden text-ellipsis"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              maxHeight: "1.5rem"
+            }}
+            title={product.name}
+          >
             {product.name}
-          </h3>
-          <p className="text-xs text-slate-400 line-clamp-2 min-h-[2rem] leading-relaxed">
+          </Link>
+          <Link 
+            href={`/producto/${product.slug}`}
+            className="text-xs text-slate-400 leading-relaxed hover:text-slate-300 cursor-pointer block overflow-hidden text-ellipsis"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              maxHeight: "2.6rem"
+            }}
+            title={product.description}
+          >
             {product.description}
-          </p>
+          </Link>
+          
+          {/* Direct Mobile Call-To-Action Link to Slug (Exclusivo en celulares) */}
+          <Link
+            href={`/producto/${product.slug}`}
+            className="inline-flex sm:hidden items-center gap-1 text-[11px] font-mono font-bold text-[#007BFF] hover:underline mt-0.5 cursor-pointer"
+          >
+            <span>Ver ficha técnica y foto completa</span>
+            <ChevronRight size={12} />
+          </Link>
         </div>
 
         {/* Technical Specs horizontal Badges */}
