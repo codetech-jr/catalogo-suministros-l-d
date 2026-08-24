@@ -844,14 +844,20 @@ export default function CheckoutPage() {
             </div>
 
             {/* Signature Area */}
-            <div className="grid grid-cols-2 gap-10 mt-16 pt-10 border-t border-slate-200">
-              <div className="text-center">
-                <div className="h-12 border-b border-slate-350 w-[200px] mx-auto" />
-                <span className="text-[10px] text-slate-550 mt-2 block font-mono">Firma Responsable (L&D)</span>
+            <div className="grid grid-cols-2 gap-10 mt-8 pt-4 border-t border-slate-200">
+              <div className="text-center flex flex-col items-center justify-end">
+                <img
+                  src="/sello-cotizacion.jpeg"
+                  alt="Sello y Firma Suministros L&D"
+                  className="w-36 h-auto object-contain mb-1 mix-blend-multiply opacity-95"
+                />
+                <div className="h-0 border-b border-slate-400 w-[200px] mx-auto" />
+                <span className="text-[10px] text-slate-600 font-bold uppercase mt-1.5 block font-mono">Firma & Sello Autorizado (L&D)</span>
               </div>
-              <div className="text-center">
-                <div className="h-12 border-b border-slate-350 w-[200px] mx-auto" />
-                <span className="text-[10px] text-slate-550 mt-2 block font-mono">Recibido Conforme (Cliente)</span>
+              <div className="text-center flex flex-col items-center justify-end">
+                <div className="h-20 w-full" />
+                <div className="h-0 border-b border-slate-400 w-[200px] mx-auto" />
+                <span className="text-[10px] text-slate-600 font-bold uppercase mt-1.5 block font-mono">Recibido Conforme (Cliente)</span>
               </div>
             </div>
 
