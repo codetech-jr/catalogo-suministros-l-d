@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { X, ChevronDown, ChevronRight, Zap, Lightbulb, Cable, Hammer, LayoutGrid } from "lucide-react";
+import { X, ChevronDown, ChevronRight, Zap, Lightbulb, Cable, Hammer, LayoutGrid, Layers, ShieldCheck, Cpu } from "lucide-react";
+import { useProductsStore } from "@/store/products-store";
 import WholesaleB2BModal from "./WholesaleB2BModal";
 
 interface MobileNavigationDrawerProps {
@@ -11,7 +12,7 @@ interface MobileNavigationDrawerProps {
 }
 
 const NAV_LINKS = [
-  { label: "Catálogo Completo", href: "/catalogo/iluminacion", highlight: false },
+  { label: "Catálogo Completo", href: "/catalogo", highlight: false },
   { label: "Marcas Aliadas", href: "/marcas", highlight: false },
   {
     label: "Compras al Mayor",
@@ -23,36 +24,40 @@ const NAV_LINKS = [
   { label: "Preguntas Frecuentes", href: "/ayuda", highlight: true },
 ];
 
-const CATEGORIES = [
-  {
-    label: "Cableado Eléctrico",
-    href: "/catalogo/iluminacion",
-    icon: <Cable className="h-5 w-5 text-slate-400" />,
-    desc: "Cables THHN, conductores, rollos de cobre",
-  },
-  {
-    label: "Luminaria Comercial e Industrial",
-    href: "/catalogo/iluminacion",
-    icon: <Lightbulb className="h-5 w-5 text-[#007BFF]" />,
-    desc: "Reflectores, paneles LED, luminarias viales",
-  },
-  {
-    label: "Control de Carga",
-    href: "/catalogo/iluminacion",
-    icon: <Zap className="h-5 w-5 text-amber-400" />,
-    desc: "Breakers, tableros, interruptores termomagnéticos",
-  },
-  {
-    label: "Tuberías y Herramientas Pesadas",
-    href: "/catalogo/iluminacion",
-    icon: <Hammer className="h-5 w-5 text-slate-400" />,
-    desc: "Conduit PVC, accesorios de canalización",
-  },
-];
+function getCategoryIcon(slug: string, name: string) {
+  const s = (slug + " " + name).toLowerCase();
+  if (s.includes("led") || s.includes("ilumin")) return <Lightbulb className="h-5 w-5 text-[#007BFF]" />;
+  if (s.includes("protecc") || s.includes("breaker")) return <ShieldCheck className="h-5 w-5 text-emerald-400" />;
+  if (s.includes("control") || s.includes("auto") || s.includes("instru")) return <Cpu className="h-5 w-5 text-amber-400" />;
+  if (s.includes("cable") || s.includes("tub") || s.includes("conex")) return <Cable className="h-5 w-5 text-cyan-400" />;
+  if (s.includes("herramient")) return <Hammer className="h-5 w-5 text-slate-300" />;
+  if (s.includes("cinta") || s.includes("adhes")) return <Layers className="h-5 w-5 text-indigo-400" />;
+  return <Zap className="h-5 w-5 text-slate-400" />;
+}
 
 export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDrawerProps) {
   const [isCatOpen, setIsCatOpen] = React.useState(false);
   const [isWholesaleOpen, setIsWholesaleOpen] = React.useState(false);
+  const { categories: dbCategories, products } = useProductsStore();
+
+  const dynamicCategories = React.useMemo(() => {
+    if (dbCategories && dbCategories.length > 0) {
+      return dbCategories.map((cat: any) => ({
+        label: cat.name,
+        href: `/catalogo/${cat.slug}`,
+        icon: getCategoryIcon(cat.slug, cat.name),
+        count: products.filter((p) => p.category === cat.slug || p.category === cat.id).length,
+      }));
+    }
+    return [
+      { label: "Luminaria LED", href: "/catalogo/luminaria-led", icon: <Lightbulb className="h-5 w-5 text-[#007BFF]" />, count: 0 },
+      { label: "Protección Eléctrica", href: "/catalogo/proteccion-electrica", icon: <ShieldCheck className="h-5 w-5 text-emerald-400" />, count: 0 },
+      { label: "Automatización e Instrumentación", href: "/catalogo/automatizacion-e-instrumentacion", icon: <Cpu className="h-5 w-5 text-amber-400" />, count: 0 },
+      { label: "Herramientas y Equipos", href: "/catalogo/herramientas-y-equipos", icon: <Hammer className="h-5 w-5 text-slate-300" />, count: 0 },
+      { label: "Cintas y Adhesivos", href: "/catalogo/cintas-y-adhesivos", icon: <Layers className="h-5 w-5 text-indigo-400" />, count: 0 },
+      { label: "Tuberías, Cables y Conexiones", href: "/catalogo/tuberias-cables-y-conexiones", icon: <Cable className="h-5 w-5 text-cyan-400" />, count: 0 },
+    ];
+  }, [dbCategories, products]);
 
   // Lock body scroll when open
   React.useEffect(() => {
@@ -147,38 +152,40 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
           {/* Category list (accordion body) */}
           <div
             className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              isCatOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+              isCatOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="bg-slate-950/40 pb-2">
-              {CATEGORIES.map((cat) => (
-                <a
+            <div className="bg-slate-950/40 pb-2 max-h-[420px] overflow-y-auto scrollbar-fine">
+              {dynamicCategories.map((cat) => (
+                <Link
                   key={cat.label}
                   href={cat.href}
                   onClick={onClose}
-                  className="flex items-center gap-4 px-6 py-3.5 border-b border-slate-800/60 last:border-b-0 hover:bg-[#007BFF]/5 transition-colors active:bg-[#007BFF]/10 group"
+                  className="flex items-center justify-between px-6 py-3.5 border-b border-slate-800/60 last:border-b-0 hover:bg-[#007BFF]/5 transition-colors active:bg-[#007BFF]/10 group"
                 >
-                  <div className="flex-shrink-0 p-2 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:border-[#007BFF]/30 transition-colors">
-                    {cat.icon}
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-slate-200 group-hover:text-[#007BFF] transition-colors leading-snug">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex-shrink-0 p-2 rounded-lg bg-slate-800 border border-slate-700/60 group-hover:border-[#007BFF]/30 transition-colors">
+                      {cat.icon}
+                    </div>
+                    <span className="text-sm font-bold text-slate-200 group-hover:text-[#007BFF] transition-colors leading-snug truncate">
                       {cat.label}
                     </span>
-                    <span className="text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-1">
-                      {cat.desc}
-                    </span>
                   </div>
-                </a>
+                  {cat.count > 0 && (
+                    <span className="text-xs font-mono font-bold text-slate-500 ml-2 flex-shrink-0">
+                      ({cat.count})
+                    </span>
+                  )}
+                </Link>
               ))}
               {/* CTA full catalog */}
-              <a
-                href="/catalogo/iluminacion"
+              <Link
+                href="/catalogo"
                 onClick={onClose}
                 className="flex items-center justify-center gap-2 mx-6 mt-3 mb-1 py-2.5 rounded-lg bg-[#007BFF]/10 border border-[#007BFF]/20 text-[#007BFF] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#007BFF]/20 transition-colors"
               >
                 Ver Catálogo Completo →
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -8,15 +8,15 @@ import ProductCard from "@/components/product/ProductCard";
 import { useProductsStore } from "@/store/products-store";
 import { useBcvStore } from "@/store/bcv-store";
 import { useCurrencyStore } from "@/store/currency-store";
+import { Product } from "@/types/product";
+import { calculateProductSearchScore } from "@/lib/search/smartSearch";
 import { 
   SlidersHorizontal, 
   ChevronDown, 
   ChevronUp, 
   X, 
   RotateCcw, 
-  Check, 
   Search, 
-  Grid3X3, 
   ListFilter 
 } from "lucide-react";
 import Link from "next/link";
@@ -27,32 +27,55 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-// Available filter dimensions in metadata
-const BRANDS_METADATA = [
-  { name: "Siemens", count: 4 },
-  { name: "Exceline", count: 15 },
-  { name: "Bticino", count: 8 },
-  { name: "3M Temflex", count: 10 },
-  { name: "INGCO", count: 25 },
-  { name: "Lumistar", count: 12 },
-  { name: "Bosch", count: 6 },
-  { name: "Stanley", count: 9 }
-];
+// Helper to extract brand dynamically from product specs, name or SKU
+function getProductBrand(product: Product): string {
+  const brandSpec = product.specs?.find(
+    (s) => s.label?.trim().toLowerCase() === "marca" || s.label?.trim().toLowerCase() === "brand"
+  );
+  if (brandSpec && brandSpec.value?.trim()) {
+    return brandSpec.value.trim();
+  }
+  
+  const nameUpper = (product.name || "").toUpperCase();
+  const skuUpper = (product.sku || "").toUpperCase();
+  const knownBrands = [
+    "Pickens", "Bticino", "Classic Lux", "Lumistar", "Exceline", 
+    "Siemens", "3M Temflex", "3M", "INGCO", "Stanley", "Bosch", 
+    "Vért", "Vert", "TOTAL", "Eboli", "Ilumiven", "Philips", 
+    "Sylvania", "Tonal", "Trio", "Griven", "Bellota", "Tubrica",
+    "Manpica", "Cebra", "Venceramica", "Reinco", "Iconel", "Fermetal",
+    "Run", "Aquafina", "Exxel", "Faguax", "Ferco", "Lincoln",
+    "Littmann", "Proxical", "Sergeca", "PCP", "Termofusion", "Zasc",
+    "Protonic", "Cobra", "Ceramipego", "Belt-G"
+  ];
+  
+  for (const brand of knownBrands) {
+    if (nameUpper.includes(brand.toUpperCase()) || skuUpper.includes(brand.toUpperCase())) {
+      return brand === "3M" ? "3M Temflex" : brand === "Vert" ? "Vért" : brand;
+    }
+  }
+  
+  return "Otras Marcas";
+}
 
-const VOLTAGES_METADATA = [
-  { name: "120v-240v", count: 45 },
-  { name: "85-265V", count: 22 },
-  { name: "240V AC", count: 14 },
-  { name: "600V", count: 8 }
-];
-
-const BRANDS = BRANDS_METADATA.map(b => b.name);
-const VOLTAGES = VOLTAGES_METADATA.map(v => v.name);
-
-const AVAILABILITIES = [
-  { id: "in-stock", label: "En Stock / Tienda" },
-  { id: "on-order", label: "Bajo Pedido" }
-];
+// Helper to extract voltages dynamically from product specs or name
+function getProductVoltages(product: Product): string[] {
+  const voltSpecs = (product.specs || []).filter((s) => {
+    const l = s.label?.trim().toLowerCase() || "";
+    return l.includes("volt") || l.includes("tensión") || l.includes("tension") || l.includes("voltaje");
+  });
+  
+  if (voltSpecs.length > 0) {
+    return voltSpecs.map((s) => s.value.trim()).filter(Boolean);
+  }
+  
+  const match = (product.name || "").match(/\b(85-265V|110-220V|120\/240V|120V|240V|220V|110V|600V|230V)\b/i);
+  if (match) {
+    return [match[1].toUpperCase()];
+  }
+  
+  return [];
+}
 
 export default function CatalogPage({ params, searchParams }: PageProps) {
   const router = useRouter();
@@ -67,9 +90,12 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     ? resolvedParams.category[0] 
     : "all";
 
-  // Global state integrations
-  const rate = useBcvStore((state) => state.rate);
-  const displayCurrency = useCurrencyStore((state) => state.displayCurrency);
+  // Calculate dynamic maximum price
+  const maxCatalogPrice = React.useMemo(() => {
+    if (!products || products.length === 0) return 1000;
+    const maxVal = Math.max(...products.map(p => p.price || 0));
+    return Math.max(1000, Math.ceil(maxVal / 100) * 100);
+  }, [products]);
 
   // Search & sorting state
   const [searchQuery, setSearchQuery] = React.useState(() => {
@@ -82,22 +108,13 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   const [selectedCategory, setSelectedCategory] = React.useState<string>(urlCategory);
   const [selectedBrands, setSelectedBrands] = React.useState<string[]>(() => {
     const brandParam = resolvedSearchParams.brand;
-    if (typeof brandParam === "string") {
-      const match = BRANDS_METADATA.find(b => b.name.toLowerCase() === brandParam.toLowerCase() || (brandParam.toLowerCase() === "3m" && b.name === "3M Temflex"));
-      return match ? [match.name] : [brandParam];
-    } else if (Array.isArray(brandParam)) {
-      return brandParam
-        .filter((b): b is string => typeof b === "string")
-        .map(b => {
-          const match = BRANDS_METADATA.find(bm => bm.name.toLowerCase() === b.toLowerCase() || (b.toLowerCase() === "3m" && bm.name === "3M Temflex"));
-          return match ? match.name : b;
-        });
-    }
+    if (typeof brandParam === "string") return [brandParam];
+    if (Array.isArray(brandParam)) return brandParam.filter((b): b is string => typeof b === "string");
     return [];
   });
   const [selectedVoltages, setSelectedVoltages] = React.useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = React.useState<string[]>([]);
-  const [priceRange, setPriceRange] = React.useState<number>(1000);
+  const [priceRange, setPriceRange] = React.useState<number>(10000);
 
   // Accordion toggle states
   const [accordions, setAccordions] = React.useState({
@@ -119,6 +136,13 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
       setSelectedCategory("all");
     }
   }, [resolvedParams.category]);
+
+  // Set default priceRange once products are loaded
+  React.useEffect(() => {
+    if (maxCatalogPrice > 1000 && priceRange === 1000) {
+      setPriceRange(maxCatalogPrice);
+    }
+  }, [maxCatalogPrice, priceRange]);
 
   // Toggle single accordion
   const toggleAccordion = (key: keyof typeof accordions) => {
@@ -162,21 +186,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     setSelectedBrands([]);
     setSelectedVoltages([]);
     setSelectedAvailability([]);
-    setPriceRange(1000);
+    setPriceRange(maxCatalogPrice);
     setSearchQuery("");
-    // Also reset back to root catalog page if category is changed
     setSelectedCategory("all");
     router.push("/catalogo");
   };
-
-  // Get active filter count
-  const activeFiltersCount = 
-    selectedBrands.length + 
-    selectedVoltages.length + 
-    selectedAvailability.length + 
-    (priceRange < 1000 ? 1 : 0) + 
-    (selectedCategory !== "all" ? 1 : 0) +
-    (searchQuery !== "" ? 1 : 0);
 
   // Categories helper list with counts dynamically built from database
   const categoriesList = React.useMemo(() => {
@@ -184,78 +198,142 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
       { id: "all", label: "Todos los Suministros", count: products.length }
     ];
     (dbCategories || []).forEach((cat: any) => {
+      const count = products.filter(
+        (p) => p.category === cat.slug || p.category === cat.id
+      ).length;
       list.push({
         id: cat.slug,
         label: cat.name,
-        count: products.filter(p => p.category === cat.slug).length
+        count
       });
     });
     return list;
   }, [dbCategories, products]);
 
-  // Filter products by specifications, search query, category, and price range
-  const filteredProducts = React.useMemo(() => {
-    return products.filter((product) => {
-      // 1. Category Filter
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+  // Dynamic Base Products for facet counting (contextual to the selected category)
+  const baseCategoryProducts = React.useMemo(() => {
+    if (selectedCategory === "all") return products;
+    const catMatch = dbCategories?.find((c: any) => c.slug === selectedCategory);
+    return products.filter(
+      (p) => p.category === selectedCategory || (catMatch && p.category === catMatch.id)
+    );
+  }, [products, selectedCategory, dbCategories]);
 
-      // 2. Search Query Filter
-      const query = searchQuery.trim().toLowerCase();
-      const matchesSearch = 
-        query === "" ||
-        product.name.toLowerCase().includes(query) ||
-        product.sku.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query) ||
-        product.categoryLabel.toLowerCase().includes(query);
+  // Dynamic Brands list with REAL counts
+  const dynamicBrandsList = React.useMemo(() => {
+    const brandMap = new Map<string, number>();
 
-      // 3. Brands Filter
-      const matchesBrand = 
-        selectedBrands.length === 0 || 
-        product.specs.some(spec => spec.label === "Marca" && selectedBrands.includes(spec.value)) ||
-        (selectedBrands.includes("3M Temflex") && product.name.includes("3M")) ||
-        (selectedBrands.includes("INGCO") && product.sku.includes("INGCO")) ||
-        (selectedBrands.includes("Lumistar") && product.name.includes("Lumistar")) ||
-        (selectedBrands.includes("Stanley") && product.name.includes("Stanley")) ||
-        (selectedBrands.includes("Bosch") && product.name.includes("Bosch")) ||
-        (selectedBrands.includes("Siemens") && product.category.includes("control")) ||
-        (selectedBrands.includes("Exceline") && product.category.includes("control")) ||
-        (selectedBrands.includes("Bticino") && (product.category.includes("control") || product.sku.includes("TAB")));
-
-      // 4. Voltage Filter
-      const matchesVoltage = 
-        selectedVoltages.length === 0 || 
-        product.specs.some(spec => spec.label === "Voltaje" && selectedVoltages.includes(spec.value)) ||
-        product.specs.some(spec => spec.label === "Tensión nominal" && selectedVoltages.some(v => spec.value.includes(v))) ||
-        (selectedVoltages.includes("120v-240v") && (
-          product.specs.some(spec => spec.label === "Voltaje" && (spec.value.includes("120") || spec.value.includes("240") || spec.value.includes("85-265"))) ||
-          product.specs.some(spec => spec.label === "Tensión nominal" && (spec.value.includes("120") || spec.value.includes("240")))
-        ));
-
-      // 5. Availability Filter
-      const matchesAvailability = 
-        selectedAvailability.length === 0 || 
-        (selectedAvailability.includes("in-stock") && product.stock > 0) ||
-        (selectedAvailability.includes("on-order") && product.stock === 0);
-
-      // 6. Price Range Filter
-      const matchesPrice = product.price <= priceRange;
-
-      return matchesCategory && matchesSearch && matchesBrand && matchesVoltage && matchesAvailability && matchesPrice;
-    }).sort((a, b) => {
-      // Sorting
-      if (sortBy === "price-low") {
-        return a.price - b.price;
-      }
-      if (sortBy === "price-high") {
-        return b.price - a.price;
-      }
-      if (sortBy === "alpha") {
-        return a.name.localeCompare(b.name);
-      }
-      // Default (relevance/id)
-      return a.id.localeCompare(b.id);
+    baseCategoryProducts.forEach((p) => {
+      const brand = getProductBrand(p);
+      brandMap.set(brand, (brandMap.get(brand) || 0) + 1);
     });
-  }, [selectedCategory, searchQuery, selectedBrands, selectedVoltages, selectedAvailability, priceRange, sortBy, products]);
+
+    return Array.from(brandMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [baseCategoryProducts]);
+
+  // Dynamic Voltages list with REAL counts
+  const dynamicVoltagesList = React.useMemo(() => {
+    const voltMap = new Map<string, number>();
+
+    baseCategoryProducts.forEach((p) => {
+      const volts = getProductVoltages(p);
+      volts.forEach((v) => {
+        voltMap.set(v, (voltMap.get(v) || 0) + 1);
+      });
+    });
+
+    return Array.from(voltMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [baseCategoryProducts]);
+
+  // Dynamic Availability list with REAL counts
+  const dynamicAvailabilityList = React.useMemo(() => {
+    const inStockCount = baseCategoryProducts.filter((p) => p.stock > 0).length;
+    const onOrderCount = baseCategoryProducts.filter((p) => p.stock === 0).length;
+
+    return [
+      { id: "in-stock", label: "En Stock / Tienda", count: inStockCount },
+      { id: "on-order", label: "Bajo Pedido", count: onOrderCount }
+    ];
+  }, [baseCategoryProducts]);
+
+  // Filter products by specifications, search query, category, and price range with smart search engine
+  const filteredProducts = React.useMemo(() => {
+    const catMatch = dbCategories?.find((c: any) => c.slug === selectedCategory);
+    const query = searchQuery.trim();
+
+    const matched = products
+      .map((product) => {
+        // 1. Category Filter
+        const matchesCategory = 
+          selectedCategory === "all" || 
+          product.category === selectedCategory || 
+          (catMatch && product.category === catMatch.id);
+
+        // 2. Brands Filter
+        const productBrand = getProductBrand(product);
+        const matchesBrand = 
+          selectedBrands.length === 0 || 
+          selectedBrands.includes(productBrand);
+
+        // 3. Voltage Filter
+        const productVolts = getProductVoltages(product);
+        const matchesVoltage = 
+          selectedVoltages.length === 0 || 
+          selectedVoltages.some((v) => productVolts.includes(v));
+
+        // 4. Availability Filter
+        const matchesAvailability = 
+          selectedAvailability.length === 0 || 
+          (selectedAvailability.includes("in-stock") && product.stock > 0) ||
+          (selectedAvailability.includes("on-order") && product.stock === 0);
+
+        // 5. Price Range Filter
+        const matchesPrice = product.price <= priceRange;
+
+        if (!matchesCategory || !matchesBrand || !matchesVoltage || !matchesAvailability || !matchesPrice) {
+          return null;
+        }
+
+        // 6. Smart Search Scoring
+        if (!query) {
+          return { product, score: 100 };
+        }
+
+        const searchResult = calculateProductSearchScore(product, query);
+        if (searchResult.score < 35) {
+          return null;
+        }
+
+        return { product, score: searchResult.score };
+      })
+      .filter((item): item is { product: Product; score: number } => item !== null);
+
+    return matched
+      .sort((a, b) => {
+        if (sortBy === "price-low") return a.product.price - b.product.price;
+        if (sortBy === "price-high") return b.product.price - a.product.price;
+        if (sortBy === "alpha") return a.product.name.localeCompare(b.product.name);
+        // Default (relevance/id): if query is active, sort by highest search score
+        if (query) {
+          return b.score - a.score;
+        }
+        return a.product.id.localeCompare(b.product.id);
+      })
+      .map((item) => item.product);
+  }, [selectedCategory, searchQuery, selectedBrands, selectedVoltages, selectedAvailability, priceRange, sortBy, products, dbCategories]);
+
+  // Get active filter count
+  const activeFiltersCount = 
+    selectedBrands.length + 
+    selectedVoltages.length + 
+    selectedAvailability.length + 
+    (priceRange < maxCatalogPrice ? 1 : 0) + 
+    (selectedCategory !== "all" ? 1 : 0) + 
+    (searchQuery !== "" ? 1 : 0);
 
   // Dynamic Breadcrumb Labeling
   const getBreadcrumbs = () => {
@@ -365,7 +443,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                 )}
               </div>
 
-              {/* Bloque 2: Marca */}
+              {/* Bloque 2: Marca (DINÁMICO CON DATOS REALES) */}
               <div className="border-b border-slate-800 pb-4 mb-4">
                 <button
                   onClick={() => toggleAccordion("brands")}
@@ -376,28 +454,32 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                 </button>
                 {accordions.brands && (
                   <div className="mt-2 space-y-1 max-h-48 overflow-y-auto scrollbar-fine pr-1">
-                    {BRANDS_METADATA.map((brand) => (
-                      <label 
-                        key={brand.name}
-                        className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
-                      >
-                        <input 
-                          type="checkbox"
-                          checked={selectedBrands.includes(brand.name)}
-                          onChange={() => toggleBrand(brand.name)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
-                        />
-                        <span className="flex-grow flex items-center justify-between">
-                          <span>{brand.name}</span>
-                          <span className="text-xs text-slate-600 font-mono">({brand.count})</span>
-                        </span>
-                      </label>
-                    ))}
+                    {dynamicBrandsList.length > 0 ? (
+                      dynamicBrandsList.map((brand) => (
+                        <label 
+                          key={brand.name}
+                          className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
+                        >
+                          <input 
+                            type="checkbox"
+                            checked={selectedBrands.includes(brand.name)}
+                            onChange={() => toggleBrand(brand.name)}
+                            className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
+                          />
+                          <span className="flex-grow flex items-center justify-between">
+                            <span className="truncate max-w-[150px]">{brand.name}</span>
+                            <span className="text-xs text-slate-600 font-mono">({brand.count})</span>
+                          </span>
+                        </label>
+                      ))
+                    ) : (
+                      <span className="text-xs text-slate-500 font-mono block py-1">Sin marcas registradas</span>
+                    )}
                   </div>
                 )}
               </div>
 
-              {/* Bloque 3: Capacidad Técnica */}
+              {/* Bloque 3: Capacidad Técnica (DINÁMICO CON DATOS REALES) */}
               <div className="border-b border-slate-800 pb-4 mb-4">
                 <button
                   onClick={() => toggleAccordion("voltages")}
@@ -409,30 +491,32 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                 {accordions.voltages && (
                   <div className="mt-2 space-y-4">
                     {/* Voltages subgroup */}
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-slate-500 font-bold tracking-wider block mb-1">
-                        Voltaje / Tensión
-                      </span>
-                      <div className="space-y-1">
-                        {VOLTAGES_METADATA.map((volt) => (
-                          <label 
-                            key={volt.name}
-                            className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
-                          >
-                            <input 
-                              type="checkbox"
-                              checked={selectedVoltages.includes(volt.name)}
-                              onChange={() => toggleVoltage(volt.name)}
-                              className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
-                            />
-                            <span className="flex-grow flex items-center justify-between">
-                              <span>{volt.name}</span>
-                              <span className="text-xs text-slate-600 font-mono">({volt.count})</span>
-                            </span>
-                          </label>
-                        ))}
+                    {dynamicVoltagesList.length > 0 && (
+                      <div>
+                        <span className="text-[10px] font-mono uppercase text-slate-500 font-bold tracking-wider block mb-1">
+                          Voltaje / Tensión
+                        </span>
+                        <div className="space-y-1 max-h-36 overflow-y-auto scrollbar-fine pr-1">
+                          {dynamicVoltagesList.map((volt) => (
+                            <label 
+                              key={volt.name}
+                              className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
+                            >
+                              <input 
+                                type="checkbox"
+                                checked={selectedVoltages.includes(volt.name)}
+                                onChange={() => toggleVoltage(volt.name)}
+                                className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 focus:ring-offset-0 h-4 w-4 accent-[#007BFF] cursor-pointer"
+                              />
+                              <span className="flex-grow flex items-center justify-between">
+                                <span className="truncate max-w-[140px]">{volt.name}</span>
+                                <span className="text-xs text-slate-600 font-mono">({volt.count})</span>
+                              </span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Stock Availability subgroup */}
                     <div className="border-t border-slate-800/65 pt-3.5">
@@ -440,7 +524,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         Disponibilidad
                       </span>
                       <div className="space-y-1">
-                        {AVAILABILITIES.map((avail) => (
+                        {dynamicAvailabilityList.map((avail) => (
                           <label 
                             key={avail.id}
                             className="flex items-center gap-3 cursor-pointer text-slate-400 hover:text-[#007BFF] text-sm my-2 transition-all"
@@ -454,7 +538,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                             <span className="flex-grow flex items-center justify-between">
                               <span>{avail.label}</span>
                               <span className="text-xs text-slate-600 font-mono">
-                                ({avail.id === "in-stock" ? products.filter(p => p.stock > 0).length : products.filter(p => p.stock === 0).length})
+                                ({avail.count})
                               </span>
                             </span>
                           </label>
@@ -471,7 +555,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         <input 
                           type="range"
                           min="1"
-                          max="1000"
+                          max={maxCatalogPrice}
                           value={priceRange}
                           onChange={(e) => setPriceRange(Number(e.target.value))}
                           className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
@@ -603,7 +687,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                         key={availId}
                         className="bg-slate-800 text-slate-300 text-xs py-1 px-3 rounded-full flex items-center gap-1.5 border border-slate-700 shadow-sm transition-all hover:bg-slate-750"
                       >
-                        <span>{AVAILABILITIES.find(a => a.id === availId)?.label}</span>
+                        <span>{dynamicAvailabilityList.find(a => a.id === availId)?.label}</span>
                         <button 
                           onClick={() => toggleAvailability(availId)}
                           className="hover:text-red-400 text-slate-500 transition-colors p-0.5 cursor-pointer"
@@ -615,11 +699,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     ))}
 
                     {/* Price Range chip */}
-                    {priceRange < 1000 && (
+                    {priceRange < maxCatalogPrice && (
                       <div className="bg-slate-800 text-slate-300 text-xs py-1 px-3 rounded-full flex items-center gap-1.5 border border-slate-700 shadow-sm transition-all hover:bg-slate-750">
                         <span>Menos de ${priceRange}</span>
                         <button 
-                          onClick={() => setPriceRange(1000)}
+                          onClick={() => setPriceRange(maxCatalogPrice)}
                           className="hover:text-red-400 text-slate-500 transition-colors p-0.5 cursor-pointer"
                           aria-label="Quitar límite de precio"
                         >
@@ -777,51 +861,61 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                   </ul>
                 </div>
 
-                {/* Brands */}
-                <div className="border-b border-slate-800 pb-4">
-                  <span className="block font-display text-xs font-bold uppercase tracking-wider text-slate-250 mb-3">
-                    Marcas Aliadas
-                  </span>
-                  <div className="space-y-3 pl-1">
-                    {BRANDS.map((brand) => (
-                      <label 
-                        key={brand}
-                        className="flex items-center gap-2.5 text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
-                      >
-                        <input 
-                          type="checkbox"
-                          checked={selectedBrands.includes(brand)}
-                          onChange={() => toggleBrand(brand)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
-                        />
-                        <span>{brand}</span>
-                      </label>
-                    ))}
+                {/* Brands (DYNAMIC) */}
+                {dynamicBrandsList.length > 0 && (
+                  <div className="border-b border-slate-800 pb-4">
+                    <span className="block font-display text-xs font-bold uppercase tracking-wider text-slate-250 mb-3">
+                      Marcas Aliadas
+                    </span>
+                    <div className="space-y-3 pl-1 max-h-48 overflow-y-auto scrollbar-fine pr-1">
+                      {dynamicBrandsList.map((brand) => (
+                        <label 
+                          key={brand.name}
+                          className="flex items-center justify-between text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input 
+                              type="checkbox"
+                              checked={selectedBrands.includes(brand.name)}
+                              onChange={() => toggleBrand(brand.name)}
+                              className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
+                            />
+                            <span>{brand.name}</span>
+                          </div>
+                          <span className="text-[10px] font-mono text-slate-600 font-bold">({brand.count})</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Voltages */}
-                <div className="border-b border-slate-800 pb-4">
-                  <span className="block font-display text-xs font-bold uppercase tracking-wider text-slate-250 mb-3">
-                    Voltaje / Tensión
-                  </span>
-                  <div className="space-y-3 pl-1">
-                    {VOLTAGES.map((volt) => (
-                      <label 
-                        key={volt}
-                        className="flex items-center gap-2.5 text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
-                      >
-                        <input 
-                          type="checkbox"
-                          checked={selectedVoltages.includes(volt)}
-                          onChange={() => toggleVoltage(volt)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
-                        />
-                        <span>{volt}</span>
-                      </label>
-                    ))}
+                {/* Voltages (DYNAMIC) */}
+                {dynamicVoltagesList.length > 0 && (
+                  <div className="border-b border-slate-800 pb-4">
+                    <span className="block font-display text-xs font-bold uppercase tracking-wider text-slate-250 mb-3">
+                      Voltaje / Tensión
+                    </span>
+                    <div className="space-y-3 pl-1 max-h-40 overflow-y-auto scrollbar-fine pr-1">
+                      {dynamicVoltagesList.map((volt) => (
+                        <label 
+                          key={volt.name}
+                          className="flex items-center justify-between text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input 
+                              type="checkbox"
+                              checked={selectedVoltages.includes(volt.name)}
+                              onChange={() => toggleVoltage(volt.name)}
+                              className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
+                            />
+                            <span>{volt.name}</span>
+                          </div>
+                          <span className="text-[10px] font-mono text-slate-600 font-bold">({volt.count})</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Max Price */}
                 <div className="border-b border-slate-800 pb-4">
@@ -832,7 +926,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     <input 
                       type="range"
                       min="1"
-                      max="1000"
+                      max={maxCatalogPrice}
                       value={priceRange}
                       onChange={(e) => setPriceRange(Number(e.target.value))}
                       className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
@@ -850,18 +944,21 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                     Disponibilidad
                   </span>
                   <div className="space-y-3 pl-1">
-                    {AVAILABILITIES.map((avail) => (
+                    {dynamicAvailabilityList.map((avail) => (
                       <label 
                         key={avail.id}
-                        className="flex items-center gap-2.5 text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
+                        className="flex items-center justify-between text-xs text-slate-400 hover:text-slate-200 cursor-pointer"
                       >
-                        <input 
-                          type="checkbox"
-                          checked={selectedAvailability.includes(avail.id)}
-                          onChange={() => toggleAvailability(avail.id)}
-                          className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
-                        />
-                        <span>{avail.label}</span>
+                        <div className="flex items-center gap-2.5">
+                          <input 
+                            type="checkbox"
+                            checked={selectedAvailability.includes(avail.id)}
+                            onChange={() => toggleAvailability(avail.id)}
+                            className="rounded border-slate-700 bg-slate-950 text-[#007BFF] focus:ring-0 h-4.5 w-4.5 accent-[#007BFF]"
+                          />
+                          <span>{avail.label}</span>
+                        </div>
+                        <span className="text-[10px] font-mono text-slate-600 font-bold">({avail.count})</span>
                       </label>
                     ))}
                   </div>

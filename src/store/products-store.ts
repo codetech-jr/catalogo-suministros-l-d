@@ -43,6 +43,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
           wholesale_enabled,
           wholesale_min_units,
           wholesale_price_usd,
+          category_id,
           categories (
             id,
             name,
@@ -66,10 +67,12 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
           }));
         }
 
-        // Handle possible array or single object for joined categories relation
-        const catObj = Array.isArray(dbProd.categories) ? dbProd.categories[0] : dbProd.categories;
-        const dbCatSlug = catObj?.slug || "luminaria-led";
-        const dbCatName = catObj?.name || "Luminaria LED";
+        // Handle possible array or single object for joined categories relation, with fallback to category_id
+        const joinedCat = Array.isArray(dbProd.categories) ? dbProd.categories[0] : dbProd.categories;
+        const fallbackCat = mappedCategories.find((c: any) => c.id === dbProd.category_id);
+        const catObj = joinedCat || fallbackCat;
+        const dbCatSlug = catObj?.slug || (mappedCategories[0]?.slug || "luminaria-led");
+        const dbCatName = catObj?.name || (mappedCategories[0]?.name || "Luminaria LED");
 
         // Normalize image paths if starting with products/ or similar, or fallback seed images to public assets
         let finalImage = dbProd.image_url || "";
