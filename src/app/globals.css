@@ -170,3 +170,70 @@ body {
   }
 }
 
+/* =========================================================
+   REGLAS DE IMPRESIÓN PROFESIONAL (PRESUPUESTO OFICIAL 1 PÁGINA)
+   ========================================================= */
+@media print {
+  html, body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ocultar componentes de la interfaz web */
+  header, 
+  footer, 
+  nav, 
+  aside, 
+  main, 
+  .glass-drawer, 
+  .no-print,
+  button,
+  [data-radix-portal] {
+    display: none !important;
+  }
+
+  /* El contenedor imprimible toma el control total en 1 sola hoja */
+  #printable-budget {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 6mm 10mm !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    z-index: 9999999 !important;
+    box-shadow: none !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  #printable-budget * {
+    visibility: visible !important;
+  }
+
+  #printable-budget table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  #printable-budget tr {
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: letter portrait;
+    margin: 6mm;
+  }
+}
+

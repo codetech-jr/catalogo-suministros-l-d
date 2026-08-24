@@ -1389,8 +1389,8 @@ export function CartDrawer() {
 
     {/* Printable Budget (A4 format) */}
     {items.length > 0 && (
-      <div className="hidden print:block fixed inset-0 bg-white text-black p-10 z-[100] font-sans">
-        <div className="max-w-[800px] mx-auto bg-white p-6">
+      <div id="printable-budget" className="hidden print:block font-sans text-slate-900 bg-white">
+        <div className="max-w-[760px] mx-auto bg-white">
           {/* Membrete Corporativo */}
           <div className="flex justify-between items-start border-b-2 border-slate-300 pb-4 mb-6">
             <div>
