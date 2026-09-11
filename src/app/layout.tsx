@@ -21,8 +21,37 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Suministros L&D — Ferretería Especializada en Iluminación y Electricidad",
-  description: "Tu aliado en iluminación LED, sistemas de control eléctrico (brekeras) y cableado pesado en los Valles del Tuy (Charallave, Cúa, Ocumare). Compra en línea, paga a cuotas con Cashea o tasa BCV, y retira hoy mismo.",
+  metadataBase: new URL("https://suministrosld.com"),
+  alternates: {
+    canonical: "/",
+  },
+  title:
+    "Materiales Eléctricos y Ferretería en Charallave | Suministros L&D",
+  description:
+    "Interruptores termomagnéticos, tubos PVC, reflectores LED y herramientas en Charallave. Precios a tasa BCV, compras al mayor y delivery en Valles del Tuy.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  openGraph: {
+    title:
+      "Materiales Eléctricos y Ferretería en Charallave | Suministros L&D",
+    description:
+      "Breakers Schneider, iluminación LED, tubería PVC y herramientas. Precios a tasa BCV, descuentos al mayor y delivery en los Valles del Tuy.",
+    url: "/",
+    type: "website",
+    locale: "es_VE",
+    siteName: "Suministros L&D 2023, C.A.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
@@ -47,8 +76,8 @@ export default function RootLayout({
         {children}
         <CartDrawer />
         <MobileDock />
+        <Analytics />
       </body>
     </html>
   );
 }
-

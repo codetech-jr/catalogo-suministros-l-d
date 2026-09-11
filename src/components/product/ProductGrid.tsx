@@ -9,6 +9,7 @@ interface ProductGridProps {
   searchQuery: string;
   categoryFilter?: string;
   onCategoryFilterChange?: (category: "all" | "iluminacion" | "control" | "cableado") => void;
+  limit?: number;
 }
 
 type CategoryFilter = "all" | "iluminacion" | "control" | "cableado";
@@ -34,7 +35,7 @@ const ProductCardSkeleton = () => (
   </div>
 );
 
-export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChange }: ProductGridProps) {
+export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChange, limit }: ProductGridProps) {
   const { products, isFetchingData } = useProductsStore();
   const [localCategory, setLocalCategory] = React.useState<CategoryFilter>("all");
 
@@ -57,7 +58,7 @@ export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChang
 
   // Filter products by search query and active category
   const filteredProducts = React.useMemo(() => {
-    return products.filter((product) => {
+    let result = products.filter((product) => {
       const matchesCategory =
         activeCategory === "all" || product.category === activeCategory;
       
@@ -70,7 +71,16 @@ export function ProductGrid({ searchQuery, categoryFilter, onCategoryFilterChang
 
       return matchesCategory && matchesSearch;
     });
-  }, [activeCategory, searchQuery, products]);
+
+    // Invertimos la lista para mostrar los más recientes de primero (asumiendo que los últimos agregados están al final de la DB)
+    result = [...result].reverse();
+
+    if (limit && limit > 0) {
+      result = result.slice(0, limit);
+    }
+
+    return result;
+  }, [activeCategory, searchQuery, products, limit]);
 
   if (isFetchingData) {
     return (

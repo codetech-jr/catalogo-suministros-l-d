@@ -129,23 +129,17 @@ export function Navbar({ onSearch }: NavbarProps) {
           <div className="flex flex-nowrap justify-between items-center gap-4">
             
             {/* Izquierda: Componente Logo L&D */}
-            <a href="/" className="flex items-center gap-2 flex-shrink-0 group">
-              <svg
-                className="h-7 w-7 text-slate-200 transition-transform duration-300 group-hover:scale-105"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg>
+            <a href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+              <img
+                src="/logo.png"
+                alt="Suministros L&D Logo"
+                className="h-12 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
               <div className="flex flex-col">
-                <span className="font-display text-sm font-bold leading-none tracking-tight text-slate-100">
+                <span className="font-display text-sm md:text-base font-bold leading-none tracking-tight text-slate-100">
                   SUMINISTROS L&D
                 </span>
-                <span className="text-[9px] text-slate-400 leading-none font-mono mt-0.5 uppercase tracking-wider">
+                <span className="text-[10px] text-slate-400 leading-none font-mono mt-1 uppercase tracking-wider">
                   Ferretería Especializada
                 </span>
               </div>

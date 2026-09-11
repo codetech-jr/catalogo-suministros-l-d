@@ -12,14 +12,12 @@ export function Footer() {
           
           {/* Columna 1: Marca y Confianza (Toma 2 fracciones) — centrada en móvil, izquierda en md+ */}
           <div className="lg:col-span-2 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
-            <div className="flex items-center justify-center md:justify-start gap-1.5 font-display font-bold text-lg text-white">
-              <svg
-                className="h-6 w-6 text-[#007BFF]"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-              </svg>
+            <div className="flex items-center justify-center md:justify-start gap-2.5 font-display font-bold text-lg text-white">
+              <img
+                src="/logo.png"
+                alt="Suministros L&D Logo"
+                className="h-12 md:h-14 w-auto object-contain"
+              />
               <span className="tracking-wide">SUMINISTROS L&D 2023, C.A.</span>
             </div>
             <span className="text-[10px] text-slate-500 font-mono tracking-widest leading-none">
@@ -28,7 +26,7 @@ export function Footer() {
             <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
               Expertos abasteciendo de soluciones eléctricas e iluminación a hogares, comercios y contratistas de Valles del Tuy.
             </p>
-            <div className="flex gap-4 mt-2 justify-center md:justify-start">
+            <div className="flex gap-4 mt-2 justify-center md:justify-start items-center">
               <a
                 href="https://www.instagram.com/suministros2023ld/"
                 target="_blank"
@@ -38,6 +36,17 @@ export function Footer() {
               >
                 <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                   <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.008 3.792.052 1.03.048 1.83.21 2.455.452a4.722 4.722 0 011.666 1.086 4.72 4.72 0 011.086 1.666c.242.624.404 1.424.452 2.454.044 1.008.052 1.362.052 3.792s-.008 2.784-.052 3.792c-.048 1.03-.21 1.83-.452 2.455a4.72 4.72 0 01-1.086 1.666 4.722 4.722 0 01-1.666 1.086c-.624.242-1.424.404-2.454.452-1.008.044-1.362.052-3.792.052s-2.784-.008-3.792-.052c-1.03-.048-1.83-.21-2.455-.452a4.72 4.72 0 01-1.666-1.086 4.72 4.72 0 01-1.086-1.666c-.242-.624-.404-1.424-.452-2.454C2.008 15.284 2 14.93 2 12.5s.008-2.784.052-3.792c.048-1.03.21-1.83.452-2.455a4.72 4.72 0 011.086-1.666 4.72 4.72 0 011.666-1.086c.624-.242 1.424-.404 2.454-.452C9.53 2.008 9.884 2 12.315 2zm-1.108 8.122A3 3 0 1013.07 15.02a3 3 0 00-1.863-4.898zm0-1.674a4.674 4.674 0 110 9.348 4.674 4.674 0 010-9.348zm5.883-1.207a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0z" clipRule="evenodd" />
+                </svg>
+              </a>
+              <a
+                href="https://www.tiktok.com/@suministrosld2023"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-[#007BFF] transition-colors"
+                aria-label="TikTok"
+              >
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
                 </svg>
               </a>
             </div>

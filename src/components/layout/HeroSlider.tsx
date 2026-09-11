@@ -65,14 +65,14 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
               <span>Suministros L&D — Valles del Tuy</span>
             </div>
 
-            {/* Main Headline */}
+            {/* Main Headline — SEO: keyword transaccional + geo */}
             <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-slate-100 max-w-2xl">
-              Tu aliado en iluminación y materiales eléctricos
+              Materiales Eléctricos y Ferretería Industrial en Charallave
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle — Beneficios concretos para B2C y B2B */}
             <p className="text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed">
-              Abastecemos ingenieros, contratistas, obras y hogares con insumos certificados. Compra en línea con tasa oficial BCV, paga en cuotas con Cashea y retira hoy mismo en Charallave.
+              Todo lo que necesitas para tu proyecto residencial o industrial, en un solo lugar. Desde interruptores termomagnéticos Schneider hasta reflectores LED de alta potencia — con precios a tasa BCV y delivery en los Valles del Tuy.
             </p>
 
             {/* Call To Actions de Alto Impacto */}
@@ -81,16 +81,16 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
                 onClick={handleScrollToCatalog}
                 className="bg-[#007BFF] hover:bg-[#1a8cff] text-slate-900 font-bold px-6 py-3 rounded-lg transition-all duration-200 active:scale-98 shadow-md shadow-blue-950/20 text-sm font-mono uppercase tracking-wider cursor-pointer"
               >
-                Explorar Catálogo
+                Ver Catálogo con Precios BCV
               </button>
               <a
-                href="https://wa.me/584141025386?text=Hola%20Suministros%20L%26D.%20Deseo%20obtener%20informaci%C3%B3n%20sobre%20el%20financiamiento%20con%20Cashea%20para%20mis%20compras."
+                href="https://wa.me/584141025386?text=Hola%20Suministros%20L%26D.%20Necesito%20asesor%C3%ADa%20para%20mi%20proyecto."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-slate-600 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-200 active:scale-98 font-medium cursor-pointer"
               >
                 <CreditCard className="h-4 w-4 text-slate-400" />
-                Financia con Cashea
+                Hablar con un Asesor
               </a>
             </div>
 
@@ -106,9 +106,9 @@ export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
               <div className="flex flex-col gap-1 md:border-l md:border-slate-800/80 md:pl-4 items-center text-center flex-1 min-w-[100px]">
                 <span className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">
                   <CreditCard className="h-3 w-3 text-slate-500" />
-                  Financiado
+                  Precios
                 </span>
-                <span className="text-xs text-slate-300">Paga con Cashea</span>
+                <span className="text-xs text-slate-300">Tasa BCV Oficial</span>
               </div>
               <div className="flex flex-col gap-1 md:border-l md:border-slate-800/80 md:pl-4 items-center text-center flex-1 min-w-[100px]">
                 <span className="flex items-center justify-center gap-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold">

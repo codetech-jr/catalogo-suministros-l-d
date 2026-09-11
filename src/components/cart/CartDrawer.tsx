@@ -234,6 +234,22 @@ export function CartDrawer() {
     closeDrawer();
   };
 
+  const handleZelleWhatsapp = () => {
+    const totalPaid = totals.totalUsd;
+    const itemsList = items
+      .map((item) => `• ${item.quantity}x ${item.product.name} (SKU: ${item.product.sku})`)
+      .join("\n");
+
+    const message = `👋 Hola Suministros L&D, mi lista va confirmada en app cart! Me dispongo y *Deseo consultar datos para el pago vía Zelle.* El resumen de mi pedido es:\n\n${itemsList}\n\n- Total Cart de factura: ${formatUSD(totalPaid)}`;
+
+    const encodedText = encodeURIComponent(message);
+    const link = `https://wa.me/${CORPORATE_WHATSAPP_PHONE}?text=${encodedText}`;
+
+    window.open(link, "_blank");
+    clearCart();
+    closeDrawer();
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -576,19 +592,6 @@ export function CartDrawer() {
                       <span className="text-xs font-bold text-slate-200">Pago Móvil</span>
                     </button>
 
-                    <button
-                      onClick={() => handleInputChange("paymentMethod", "zelle")}
-                      className={`group flex flex-col gap-1.5 p-3.5 rounded-xl border text-center items-center justify-center cursor-pointer transition-all duration-200 ${
-                        form.paymentMethod === "zelle"
-                          ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_12px_rgba(0,123,255,0.06)]"
-                          : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
-                      }`}
-                    >
-                      <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 fill-current" viewBox="0 0 48 48" aria-label="Zelle">
-                        <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
-                      </svg>
-                      <span className="text-xs font-bold text-slate-200">Zelle</span>
-                    </button>
 
                     <button
                       onClick={() => handleInputChange("paymentMethod", "binance")}
@@ -1056,7 +1059,7 @@ export function CartDrawer() {
                             className="bg-[#0b0e14] border border-[#1b212f] rounded px-1.5 py-1 text-xs text-text-primary focus:outline-none focus:border-blue-500 font-mono w-[110px]"
                           >
                             <option value="pago_movil">Pago Móvil</option>
-                            <option value="zelle">Zelle</option>
+
                             <option value="binance">Binance</option>
                             <option value="transferencia">Transferencia</option>
                             <option value="efectivo">Efectivo USD</option>
@@ -1308,15 +1311,26 @@ export function CartDrawer() {
                     Continuar al Checkout
                   </Button>
                   {!isQuoteOnly && (
-                    <button
-                      onClick={handleCasheaWhatsapp}
-                      className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
-                    >
-                      <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
-                        <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
-                      </svg>
-                      <span>Cashéalo vía WhatsApp ➔</span>
-                    </button>
+                    <>
+                      <button
+                        onClick={handleCasheaWhatsapp}
+                        className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
+                      >
+                        <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
+                          <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
+                        </svg>
+                        <span>Cashéalo vía WhatsApp ➔</span>
+                      </button>
+                      <button
+                        onClick={handleZelleWhatsapp}
+                        className="w-full bg-[#741ee8] hover:bg-[#5f18c2] text-white font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#741ee8]/30 shadow-none cursor-pointer"
+                      >
+                        <svg className="w-5 h-5 fill-white shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
+                          <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
+                        </svg>
+                        <span>Consultar pago con Zelle ➔</span>
+                      </button>
+                    </>
                   )}
                 </div>
               )}
@@ -1342,17 +1356,29 @@ export function CartDrawer() {
                       : "Revisar Resumen Final"}
                   </Button>
                   {!isQuoteOnly && (
-                    <button
-                      onClick={handleCasheaWhatsapp}
-                      className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
-                    >
-                      <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
-                        <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
-                      </svg>
-                      <span>Cashéalo vía WhatsApp ➔</span>
-                    </button>
+                    <>
+                      <button
+                        onClick={handleCasheaWhatsapp}
+                        className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
+                      >
+                        <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
+                          <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
+                        </svg>
+                        <span>Cashéalo vía WhatsApp ➔</span>
+                      </button>
+                      <button
+                        onClick={handleZelleWhatsapp}
+                        className="w-full bg-[#741ee8] hover:bg-[#5f18c2] text-white font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#741ee8]/30 shadow-none cursor-pointer"
+                      >
+                        <svg className="w-5 h-5 fill-white shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
+                          <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
+                        </svg>
+                        <span>Consultar pago con Zelle ➔</span>
+                      </button>
+                    </>
                   )}
                 </div>
+
               )}
               {step === 3 && (
                 <Button
