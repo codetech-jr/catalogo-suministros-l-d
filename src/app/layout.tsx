@@ -4,6 +4,7 @@ import "./globals.css";
 import MobileDock from "@/components/layout/MobileDock";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CurrencyHydrator from "@/components/layout/CurrencyHydrator";
+import Analytics from "@/components/analytics/Analytics";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
