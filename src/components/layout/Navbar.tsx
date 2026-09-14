@@ -119,6 +119,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                 width={56}
                 height={56}
                 className="h-12 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                unoptimized
               />
               <div className="flex flex-col">
                 <span className="font-display text-sm md:text-base font-bold leading-none tracking-tight text-slate-100">

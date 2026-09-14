@@ -20,6 +20,7 @@ export function Footer() {
                 width={56}
                 height={56}
                 className="h-12 md:h-14 w-auto object-contain"
+                unoptimized
               />
               <span className="tracking-wide">SUMINISTROS L&D 2023, C.A.</span>
             </div>
@@ -208,6 +209,7 @@ export function Footer() {
               width={100}
               height={28}
               className="h-7 w-auto object-contain grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300 cursor-default"
+              unoptimized
             />
             {/* Banco de Venezuela */}
             <Image
