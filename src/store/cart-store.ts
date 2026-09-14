@@ -4,7 +4,7 @@ import { CartItem } from "@/types/cart";
 import { ISuministrosProduct } from "@/types/product";
 import { useCurrencyStore } from "./currency-store";
 import { getStorePrices } from "@/lib/utils/pricing-engine";
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 
 export interface CartTotals {
   subtotalUsd: number;          // Pre-discount unit sum in USD
@@ -47,7 +47,7 @@ export const useCartStore = create<CartState>()(
             (item) => item.product.id === product.id
           );
 
-          let updatedItems = [...state.items];
+          const updatedItems = [...state.items];
 
           if (existingItemIndex > -1) {
             const existingItem = state.items[existingItemIndex];
@@ -145,14 +145,16 @@ export const useCartStore = create<CartState>()(
   )
 );
 
+const emptySubscribe = () => () => {};
+
 // Custom hook to prevent SSR/Hydration errors in Next.js 16+
 export function useCart<T>(selector: (state: CartState) => T): T {
   const store = useCartStore(selector);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   // Return selector applied to initial state if not mounted
   return mounted

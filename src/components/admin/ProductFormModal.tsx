@@ -12,85 +12,47 @@ interface ProductFormModalProps {
   product?: ISuministrosProduct | null;
 }
 
-
 export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalProps) {
+  if (!isOpen) return null;
+  return <ProductFormModalContent key={product?.id || "new"} onClose={onClose} product={product} />;
+}
+
+function ProductFormModalContent({ onClose, product }: { onClose: () => void; product?: ISuministrosProduct | null }) {
   const saveProduct = useProductsStore((s) => s.saveProduct);
   const categoriesList = useProductsStore((s) => s.categories);
   const isEditing = !!product;
 
-  const [name, setName] = React.useState("");
-  const [sku, setSku] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [category, setCategory] = React.useState("");
-  const [price, setPrice] = React.useState("");
-  const [stock, setStock] = React.useState("");
+  const [name, setName] = React.useState(product?.name || "");
+  const [sku, setSku] = React.useState(product?.sku || "");
+  const [description, setDescription] = React.useState(product?.description || "");
+  const [category, setCategory] = React.useState(product?.category || (categoriesList[0]?.slug || "luminaria-led"));
+  const [price, setPrice] = React.useState(product?.price != null ? product.price.toString() : "");
+  const [stock, setStock] = React.useState(product?.stock != null ? product.stock.toString() : "");
 
   // Volume Discount State
-  const [isVolumeDiscountEnabled, setIsVolumeDiscountEnabled] = React.useState(false);
-  const [discountThreshold, setDiscountThreshold] = React.useState("");
-  const [discountPrice, setDiscountPrice] = React.useState("");
+  const [isVolumeDiscountEnabled, setIsVolumeDiscountEnabled] = React.useState(!!product?.volumeDiscount);
+  const [discountThreshold, setDiscountThreshold] = React.useState(
+    product?.volumeDiscount?.threshold ? product.volumeDiscount.threshold.toString() : ""
+  );
+  const [discountPrice, setDiscountPrice] = React.useState(
+    product?.volumeDiscount?.discountPrice ? product.volumeDiscount.discountPrice.toString() : ""
+  );
 
   // Specs Generator State (Default 2 empty rows for new products)
-  const [specs, setSpecs] = React.useState<{ label: string; value: string }[]>([
-    { label: "", value: "" },
-    { label: "", value: "" },
-  ]);
+  const [specs, setSpecs] = React.useState<{ label: string; value: string }[]>(
+    product?.specs && product.specs.length > 0
+      ? product.specs.map((s) => ({ label: s.label, value: s.value }))
+      : [
+          { label: "", value: "" },
+          { label: "", value: "" },
+        ]
+  );
 
   // Fake drag and drop state
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [previewImage, setPreviewImage] = React.useState<string | null>(null);
+  const [previewImage, setPreviewImage] = React.useState<string | null>(product?.image || null);
   const [isSaving, setIsSaving] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-
-  // Populate form when editing or opening
-  React.useEffect(() => {
-    if (isOpen) {
-      setErrorMessage(null);
-      if (product) {
-        setName(product.name);
-        setSku(product.sku);
-        setDescription(product.description || "");
-        setCategory(product.category || (categoriesList[0]?.slug || "luminaria-led"));
-        setPrice(product.price.toString());
-        setStock(product.stock.toString());
-        setPreviewImage(product.image || null);
-        
-        if (product.volumeDiscount) {
-          setIsVolumeDiscountEnabled(true);
-          setDiscountThreshold(product.volumeDiscount.threshold.toString());
-          setDiscountPrice(product.volumeDiscount.discountPrice.toString());
-        } else {
-          setIsVolumeDiscountEnabled(false);
-          setDiscountThreshold("");
-          setDiscountPrice("");
-        }
-
-        setSpecs(
-          product.specs && product.specs.length > 0
-            ? product.specs.map((s) => ({ label: s.label, value: s.value }))
-            : [
-                { label: "", value: "" },
-                { label: "", value: "" },
-              ]
-        );
-      } else {
-        setName("");
-        setSku("");
-        setDescription("");
-        setCategory(categoriesList[0]?.slug || "luminaria-led");
-        setPrice("");
-        setStock("");
-        setPreviewImage(null);
-        setIsVolumeDiscountEnabled(false);
-        setDiscountThreshold("");
-        setDiscountPrice("");
-        setSpecs([
-          { label: "", value: "" },
-          { label: "", value: "" },
-        ]);
-      }
-    }
-  }, [product, isOpen, categoriesList]);
 
   const handleAddSpec = () => {
     setSpecs((prev) => [...prev, { label: "", value: "" }]);
@@ -105,14 +67,20 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
     field: "label" | "value",
     val: string
   ) => {
-    setSpecs((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, [field]: val } : s))
-    );
+    setSpecs((prev) => {
+      const next = [...prev];
+      next[index][field] = val;
+      return next;
+    });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("La imagen excede el límite de 2MB");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
@@ -139,48 +107,53 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
     setErrorMessage(null);
+
+    // Basic Validations
+    if (!name.trim()) return setErrorMessage("El nombre del producto es obligatorio.");
+    if (!sku.trim()) return setErrorMessage("El SKU es obligatorio.");
+    if (!category.trim()) return setErrorMessage("Debes asignar una categoría.");
     
+    const parsedPrice = parseFloat(price);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return setErrorMessage("El precio base en USD debe ser mayor a 0.");
+    }
+
+    const parsedStock = parseInt(stock, 10);
+    if (isNaN(parsedStock) || parsedStock < 0) {
+      return setErrorMessage("El inventario debe ser un entero mayor o igual a 0.");
+    }
+
+    let volumeDiscount = undefined;
+    if (isVolumeDiscountEnabled) {
+      const threshold = parseInt(discountThreshold, 10);
+      const discPrice = parseFloat(discountPrice);
+
+      if (isNaN(threshold) || threshold <= 1) {
+        return setErrorMessage("El umbral mayorista debe ser al menos de 2 unidades.");
+      }
+      if (isNaN(discPrice) || discPrice <= 0 || discPrice >= parsedPrice) {
+        return setErrorMessage("El precio mayorista debe ser menor al precio regular.");
+      }
+
+      volumeDiscount = {
+        threshold,
+        discountPrice: discPrice,
+        label: `paquete a partir de ${threshold} unidades`,
+      };
+    }
+
+    // Filter out empty specs
+    const filteredSpecs = specs.filter(
+      (s) => s.label.trim() !== "" || s.value.trim() !== ""
+    );
+
     try {
-      const parsedPrice = parseFloat(price);
-      const parsedStock = parseInt(stock, 10);
-
-      if (isNaN(parsedPrice) || parsedPrice < 0) {
-        throw new Error("Ingresa un precio base válido.");
-      }
-      if (isNaN(parsedStock) || parsedStock < 0) {
-        throw new Error("Ingresa un stock válido.");
-      }
-
-      const filteredSpecs = specs.filter((s) => s.label.trim() !== "" && s.value.trim() !== "");
-
-      let volumeDiscount = undefined;
-      if (isVolumeDiscountEnabled) {
-        const threshold = parseInt(discountThreshold, 10);
-        const dPrice = parseFloat(discountPrice);
-
-        if (isNaN(threshold) || threshold < 1) {
-          throw new Error("Ingresa una cantidad mínima válida para el descuento mayorista.");
-        }
-        if (isNaN(dPrice) || dPrice < 0) {
-          throw new Error("Ingresa un precio mayorista válido.");
-        }
-        if (dPrice > parsedPrice) {
-          throw new Error("El precio mayorista debe ser menor o igual al precio base.");
-        }
-
-        volumeDiscount = {
-          threshold,
-          discountPrice: dPrice,
-          label: `paquete a partir de ${threshold} unidades`,
-        };
-      }
-
+      setIsSaving(true);
       await saveProduct({
         id: product?.id,
-        sku: sku.trim(),
         name: name.trim(),
+        sku: sku.trim().toUpperCase(),
         description: description.trim(),
         category: category,
         price: parsedPrice,
@@ -192,14 +165,13 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
 
       setIsSaving(false);
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al guardar el producto:", err);
-      setErrorMessage(err.message || "Error al conectar con la base de datos.");
+      const errorMsg = err instanceof Error ? err.message : "Error al conectar con la base de datos.";
+      setErrorMessage(errorMsg);
       setIsSaving(false);
     }
   };
-
-  if (!isOpen) return null;
 
   const inputStyle =
     "bg-slate-800/50 border border-slate-700 text-sm p-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#007BFF] text-white w-full placeholder:text-slate-500 transition-colors";
@@ -359,12 +331,13 @@ export function ProductFormModal({ isOpen, onClose, product }: ProductFormModalP
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={handleFileChange}
+                  onChange={handleImageFile}
                   accept="image/jpeg,image/png,image/webp"
                   className="hidden"
                 />
                 {previewImage ? (
                   <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={previewImage} alt="Vista previa del insumo" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                       <Upload className="h-8 w-8 text-white" />

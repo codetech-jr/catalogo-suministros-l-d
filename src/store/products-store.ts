@@ -1,10 +1,26 @@
 import { create } from "zustand";
 import { supabase } from "@/lib/supabase/client";
-import { Product } from "@/types/product";
+import { Product, Category } from "@/types/product";
+
+interface DbProductRow {
+  id: string;
+  sku: string;
+  name: string;
+  description: string | null;
+  base_price_usd: number | string;
+  stock_quantity: number | string;
+  image_url: string | null;
+  specs: unknown;
+  wholesale_enabled: boolean | null;
+  wholesale_min_units: number | string | null;
+  wholesale_price_usd: number | string | null;
+  category_id: string | null;
+  categories: Category | Category[] | null;
+}
 
 export interface ProductsState {
   products: Product[];
-  categories: any[];
+  categories: Category[];
   isFetchingData: boolean;
   error: string | null;
   fetchProductsAndCategories: () => Promise<void>;
@@ -53,15 +69,15 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
 
       if (prodError) throw prodError;
 
-      const mappedCategories = dbCategories || [];
+      const mappedCategories: Category[] = (dbCategories as Category[]) || [];
 
       // 4. Map products to frontend structure
-      const mappedProducts: Product[] = (dbProducts || []).map((dbProd: any) => {
+      const mappedProducts: Product[] = ((dbProducts || []) as unknown as DbProductRow[]).map((dbProd) => {
         let mappedSpecs: { label: string; value: string }[] = [];
         if (Array.isArray(dbProd.specs)) {
-          mappedSpecs = dbProd.specs;
+          mappedSpecs = dbProd.specs as { label: string; value: string }[];
         } else if (dbProd.specs && typeof dbProd.specs === "object") {
-          mappedSpecs = Object.entries(dbProd.specs).map(([key, val]) => ({
+          mappedSpecs = Object.entries(dbProd.specs as Record<string, unknown>).map(([key, val]) => ({
             label: key.charAt(0).toUpperCase() + key.slice(1),
             value: String(val),
           }));
@@ -69,7 +85,7 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
 
         // Handle possible array or single object for joined categories relation, with fallback to category_id
         const joinedCat = Array.isArray(dbProd.categories) ? dbProd.categories[0] : dbProd.categories;
-        const fallbackCat = mappedCategories.find((c: any) => c.id === dbProd.category_id);
+        const fallbackCat = mappedCategories.find((c) => c.id === dbProd.category_id);
         const catObj = joinedCat || fallbackCat;
         const dbCatSlug = catObj?.slug || (mappedCategories[0]?.slug || "luminaria-led");
         const dbCatName = catObj?.name || (mappedCategories[0]?.name || "Luminaria LED");
@@ -112,11 +128,14 @@ export const useProductsStore = create<ProductsState>((set, get) => ({
         categories: mappedCategories,
         isFetchingData: false,
       });
-    } catch (err: any) {
-      console.error("Error al cargar productos y categorías desde Supabase:", err);
+    } catch (err: unknown) {
+      const errorMsg =
+        (err as { message?: string })?.message ||
+        (err instanceof Error ? err.message : "Falla al conectar con base de datos Supabase.");
+      console.warn("Aviso: No se pudieron cargar productos desde Supabase:", errorMsg);
       set({
         isFetchingData: false,
-        error: err.message || "Falla al conectar con base de datos Supabase.",
+        error: errorMsg,
       });
     }
   },

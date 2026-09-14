@@ -5,22 +5,20 @@ import { useBcvStore } from "@/store/bcv-store";
 import { Edit2, Check, X, RefreshCw } from "lucide-react";
 import { formatVES } from "@/lib/utils/format-currency";
 
+import { useMounted } from "@/lib/hooks/useMounted";
+
 export function BcvRateWidget() {
   const { rate, source, updatedAt, isLoading, fetchRate, setManualRate } = useBcvStore();
+  const mounted = useMounted();
   const [isEditing, setIsEditing] = React.useState(false);
   const [inputValue, setInputValue] = React.useState(rate.toString());
-  const [mounted, setMounted] = React.useState(false);
+  const [prevRate, setPrevRate] = React.useState(rate);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Keep input value in sync with rate when not editing
-  React.useEffect(() => {
-    if (!isEditing) {
-      setInputValue(rate.toString());
-    }
-  }, [rate, isEditing]);
+  // Keep input value in sync during render when not editing
+  if (!isEditing && prevRate !== rate) {
+    setPrevRate(rate);
+    setInputValue(rate.toString());
+  }
 
   // Fetch initial rate on load
   React.useEffect(() => {

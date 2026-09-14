@@ -7,6 +7,7 @@ import { useDrawerStore } from "@/store/drawer-store";
 import { useCommandPaletteStore } from "@/hooks/useCommandPalette";
 import { MobileNavigationDrawer } from "./MobileNavigationDrawer";
 import { usePathname } from "next/navigation";
+import { useMounted } from "@/lib/hooks/useMounted";
 
 const WHATSAPP_URL =
   "https://wa.me/584141025386?text=Hola%20Suministros%20L%26D.%20Necesito%20asesoría%20para%20mi%20proyecto.";
@@ -16,12 +17,8 @@ export function MobileDock() {
   const items = useCartStore((state) => state.items);
   const openDrawer = useDrawerStore((state) => state.openDrawer);
   const openPalette = useCommandPaletteStore((s) => s.openPalette);
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useMounted();
   const [isMobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const totalQty = items.reduce((acc, item) => acc + item.quantity, 0);
 

@@ -6,9 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/product/ProductCard";
 import { useProductsStore } from "@/store/products-store";
-import { useBcvStore } from "@/store/bcv-store";
-import { useCurrencyStore } from "@/store/currency-store";
-import { Product } from "@/types/product";
+import { Product, Category } from "@/types/product";
 import { calculateProductSearchScore } from "@/lib/search/smartSearch";
 import { 
   SlidersHorizontal, 
@@ -105,7 +103,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   const [sortBy, setSortBy] = React.useState("relevance");
 
   // Filtering states
-  const [selectedCategory, setSelectedCategory] = React.useState<string>(urlCategory);
+  const selectedCategory = urlCategory;
   const [selectedBrands, setSelectedBrands] = React.useState<string[]>(() => {
     const brandParam = resolvedSearchParams.brand;
     if (typeof brandParam === "string") return [brandParam];
@@ -114,7 +112,8 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   });
   const [selectedVoltages, setSelectedVoltages] = React.useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = React.useState<string[]>([]);
-  const [priceRange, setPriceRange] = React.useState<number>(10000);
+  const [userPriceRange, setUserPriceRange] = React.useState<number | null>(null);
+  const priceRange = userPriceRange ?? maxCatalogPrice;
 
   // Accordion toggle states
   const [accordions, setAccordions] = React.useState({
@@ -128,22 +127,6 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   // Mobile filters sidebar drawer visibility
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = React.useState(false);
 
-  // Sync state if URL category changes
-  React.useEffect(() => {
-    if (resolvedParams.category && resolvedParams.category.length > 0) {
-      setSelectedCategory(resolvedParams.category[0]);
-    } else {
-      setSelectedCategory("all");
-    }
-  }, [resolvedParams.category]);
-
-  // Set default priceRange once products are loaded
-  React.useEffect(() => {
-    if (maxCatalogPrice > 1000 && priceRange === 1000) {
-      setPriceRange(maxCatalogPrice);
-    }
-  }, [maxCatalogPrice, priceRange]);
-
   // Toggle single accordion
   const toggleAccordion = (key: keyof typeof accordions) => {
     setAccordions(prev => ({
@@ -154,7 +137,6 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
 
   // Handle category change from sidebar (updates URL and state)
   const handleCategoryChange = (cat: string) => {
-    setSelectedCategory(cat);
     if (cat === "all") {
       router.push("/catalogo");
     } else {
@@ -186,10 +168,11 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     setSelectedBrands([]);
     setSelectedVoltages([]);
     setSelectedAvailability([]);
-    setPriceRange(maxCatalogPrice);
+    setUserPriceRange(null);
     setSearchQuery("");
-    setSelectedCategory("all");
-    router.push("/catalogo");
+    if (urlCategory !== "all") {
+      router.push("/catalogo");
+    }
   };
 
   // Categories helper list with counts dynamically built from database
@@ -197,7 +180,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
     const list = [
       { id: "all", label: "Todos los Suministros", count: products.length }
     ];
-    (dbCategories || []).forEach((cat: any) => {
+    (dbCategories || []).forEach((cat: Category) => {
       const count = products.filter(
         (p) => p.category === cat.slug || p.category === cat.id
       ).length;
@@ -213,7 +196,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
   // Dynamic Base Products for facet counting (contextual to the selected category)
   const baseCategoryProducts = React.useMemo(() => {
     if (selectedCategory === "all") return products;
-    const catMatch = dbCategories?.find((c: any) => c.slug === selectedCategory);
+    const catMatch = dbCategories?.find((c: Category) => c.slug === selectedCategory);
     return products.filter(
       (p) => p.category === selectedCategory || (catMatch && p.category === catMatch.id)
     );
@@ -262,7 +245,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
 
   // Filter products by specifications, search query, category, and price range with smart search engine
   const filteredProducts = React.useMemo(() => {
-    const catMatch = dbCategories?.find((c: any) => c.slug === selectedCategory);
+    const catMatch = dbCategories?.find((c: Category) => c.slug === selectedCategory);
     const query = searchQuery.trim();
 
     const matched = products
@@ -557,7 +540,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                           min="1"
                           max={maxCatalogPrice}
                           value={priceRange}
-                          onChange={(e) => setPriceRange(Number(e.target.value))}
+                          onChange={(e) => setUserPriceRange(Number(e.target.value))}
                           className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
                         />
                         <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
@@ -703,7 +686,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                       <div className="bg-slate-800 text-slate-300 text-xs py-1 px-3 rounded-full flex items-center gap-1.5 border border-slate-700 shadow-sm transition-all hover:bg-slate-750">
                         <span>Menos de ${priceRange}</span>
                         <button 
-                          onClick={() => setPriceRange(maxCatalogPrice)}
+                          onClick={() => setUserPriceRange(null)}
                           className="hover:text-red-400 text-slate-500 transition-colors p-0.5 cursor-pointer"
                           aria-label="Quitar límite de precio"
                         >
@@ -928,7 +911,7 @@ export default function CatalogPage({ params, searchParams }: PageProps) {
                       min="1"
                       max={maxCatalogPrice}
                       value={priceRange}
-                      onChange={(e) => setPriceRange(Number(e.target.value))}
+                      onChange={(e) => setUserPriceRange(Number(e.target.value))}
                       className="w-full h-1 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-[#007BFF]"
                     />
                     <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">

@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, Zap, Lightbulb, Cable, X, Layers, ShieldCheck, Cpu } from "lucide-react";
+import { Search, ArrowRight, Lightbulb, Cable, X, Layers, ShieldCheck, Cpu } from "lucide-react";
 import { useCommandPaletteStore } from "@/hooks/useCommandPalette";
 import { useProductsStore } from "@/store/products-store";
 import { useBcvStore } from "@/store/bcv-store";
@@ -20,7 +21,7 @@ const QUICK_ITEMS = [
 export function CommandPalette() {
   const router = useRouter();
   const { isOpen, closePalette } = useCommandPaletteStore();
-  const { products, categories: dbCategories } = useProductsStore();
+  const products = useProductsStore((state) => state.products);
   const rate = useBcvStore((state) => state.rate);
   const [search, setSearch] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -62,27 +63,18 @@ export function CommandPalette() {
     return [];
   }, [search, products]);
 
-  // Reset state when opening/closing
-  React.useEffect(() => {
-    if (isOpen) {
-      setSearch("");
-      setSelectedIndex(0);
-      // Delay focus to allow animation
-      requestAnimationFrame(() => {
-        inputRef.current?.focus();
-      });
-    }
-  }, [isOpen]);
+  const safeIndex = selectedIndex < filtered.length ? selectedIndex : 0;
 
-  // Reset selected index when filtered items change
-  React.useEffect(() => {
-    setSelectedIndex(0);
-  }, [filtered.length]);
-
-  // Lock body scroll when open
+  // Lock body scroll and focus when opening
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      const raf = requestAnimationFrame(() => {
+        setSearch("");
+        setSelectedIndex(0);
+        inputRef.current?.focus();
+      });
+      return () => cancelAnimationFrame(raf);
     } else {
       document.body.style.overflow = "";
     }
@@ -103,7 +95,7 @@ export function CommandPalette() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (filtered.length > 0) {
-      handleSelect(filtered[selectedIndex]);
+      handleSelect(filtered[safeIndex]);
     } else if (search.trim()) {
       closePalette();
       router.push(`/catalogo?q=${encodeURIComponent(search.trim())}`);
@@ -155,7 +147,10 @@ export function CommandPalette() {
               className="flex-1 bg-transparent py-5 text-base text-slate-100 placeholder:text-slate-500 outline-none font-sans"
               placeholder="Buscar material, marca o SKU..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setSelectedIndex(0);
+              }}
               onKeyDown={handleKeyDown}
               autoComplete="off"
               spellCheck={false}
@@ -163,7 +158,10 @@ export function CommandPalette() {
             {search && (
               <button
                 type="button"
-                onClick={() => setSearch("")}
+                onClick={() => {
+                  setSearch("");
+                  setSelectedIndex(0);
+                }}
                 className="text-slate-500 hover:text-slate-300 transition-colors p-1 cursor-pointer"
               >
                 <X className="h-4 w-4" />
@@ -183,20 +181,23 @@ export function CommandPalette() {
                 <li
                   key={item.label + idx}
                   role="option"
-                  aria-selected={idx === selectedIndex}
+                  aria-selected={idx === safeIndex}
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors duration-100 ${
-                    idx === selectedIndex
+                    idx === safeIndex
                       ? "bg-[#007BFF]/15"
                       : "hover:bg-slate-800/60"
                   }`}
                 >
                   {item.isProduct && item.image ? (
-                    <img 
+                    <Image 
                       src={item.image} 
                       alt={item.label}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 object-cover rounded-lg bg-slate-950 border border-slate-800 shrink-0" 
+                      unoptimized
                     />
                   ) : (
                     <span className="flex-shrink-0 p-2 rounded-lg bg-slate-800/80 border border-slate-700/50">
@@ -235,7 +236,7 @@ export function CommandPalette() {
 
                   <ArrowRight
                     className={`h-3.5 w-3.5 flex-shrink-0 transition-all duration-150 ${
-                      idx === selectedIndex
+                      idx === safeIndex
                         ? "text-[#007BFF] translate-x-0 opacity-100"
                         : "text-slate-600 -translate-x-1 opacity-0"
                     }`}

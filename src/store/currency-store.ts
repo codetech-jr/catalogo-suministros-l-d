@@ -59,7 +59,7 @@ export const useCurrencyStore = create<CurrencyState>((set) => ({
         .single();
 
       if (error) {
-        console.error("Error al obtener tasas desde Supabase:", error);
+        console.warn("Aviso: No se pudieron obtener tasas desde Supabase:", error.message || error);
         return;
       }
 
@@ -76,7 +76,7 @@ export const useCurrencyStore = create<CurrencyState>((set) => ({
         }
       }
     } catch (err) {
-      console.error("Falla de red/conexión al hidratar tasas de cambio:", err);
+      console.warn("Aviso: Falla de red al hidratar tasas de cambio:", err);
     }
   },
 }));

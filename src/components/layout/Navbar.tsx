@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { ShoppingCart, LayoutGrid, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils/cn";
 import { useCartStore } from "@/store/cart-store";
 import { useDrawerStore } from "@/store/drawer-store";
 import { useProductsStore } from "@/store/products-store";
@@ -15,7 +15,8 @@ import BcvRateWidget from "../shared/BcvRateWidget";
 import { useCommandPaletteKeyboard } from "@/hooks/useCommandPalette";
 import CommandPalette from "./CommandPalette";
 import WholesaleB2BModal from "./WholesaleB2BModal";
-import Image from "next/image";
+import { Category } from "@/types/product";
+import { useMounted } from "@/lib/hooks/useMounted";
 
 interface NavbarProps {
   onSearch?: (query: string) => void;
@@ -23,10 +24,15 @@ interface NavbarProps {
 
 export function Navbar({ onSearch }: NavbarProps) {
   const router = useRouter();
-  const [scrolled, setScrolled] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useMounted();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("q") || params.get("search") || "";
+    }
+    return "";
+  });
   const [isSearchFocused, setIsSearchFocused] = React.useState(false);
   const [isWholesaleModalOpen, setIsWholesaleModalOpen] = React.useState(false);
 
@@ -42,7 +48,7 @@ export function Navbar({ onSearch }: NavbarProps) {
   // Dynamic categories list for the dropdown
   const categoriesList = React.useMemo(() => {
     if (dbCategories && dbCategories.length > 0) {
-      return dbCategories.map((cat: any) => ({
+      return dbCategories.map((cat: Category) => ({
         label: cat.name,
         href: `/catalogo/${cat.slug}`,
         count: products.filter((p) => p.category === cat.slug || p.category === cat.id).length,
@@ -65,14 +71,6 @@ export function Navbar({ onSearch }: NavbarProps) {
   const menuRef = React.useRef<HTMLDivElement>(null);
   const searchWrapperRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get("q") || params.get("search") || "";
-      setSearchQuery(q);
-    }
-  }, []);
-
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const query = searchQuery.trim();
@@ -83,21 +81,6 @@ export function Navbar({ onSearch }: NavbarProps) {
       router.push(`/catalogo?q=${encodeURIComponent(query)}`);
     }
   };
-
-  React.useEffect(() => {
-    setMounted(true);
-    
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -117,7 +100,7 @@ export function Navbar({ onSearch }: NavbarProps) {
     <>
       {/* Cashea Top Ribbon (Cinta superior) */}
       <div className="w-full bg-[#FDFA3D] py-1.5 px-4 text-center text-xs md:text-sm font-bold text-black tracking-wide border-b-2 border-[#D2D020] select-none print:hidden flex items-center justify-center gap-2">
-        <img src="/Cashea-Icono-Negro.svg" alt="Cashea" className="w-4.5 h-4.5 object-contain" />
+        <Image src="/Cashea-Icono-Negro.svg" alt="Cashea" width={18} height={18} className="w-4.5 h-4.5 object-contain" unoptimized />
         <span>¡Cashéalo Online! Cuotas sin Interés</span>
       </div>
 
@@ -129,10 +112,12 @@ export function Navbar({ onSearch }: NavbarProps) {
           <div className="flex flex-nowrap justify-between items-center gap-4">
             
             {/* Izquierda: Componente Logo L&D */}
-            <a href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-              <img
+            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+              <Image
                 src="/logo.png"
                 alt="Suministros L&D Logo"
+                width={56}
+                height={56}
                 className="h-12 md:h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
               <div className="flex flex-col">
@@ -143,7 +128,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                   Ferretería Especializada
                 </span>
               </div>
-            </a>
+            </Link>
 
             {/* Centro (Mega-Buscador B2B) — oculto en móvil, visible en md+ */}
             <div 
@@ -295,12 +280,15 @@ export function Navbar({ onSearch }: NavbarProps) {
                           className="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-slate-800/70 border border-transparent hover:border-slate-700/60 transition-all cursor-pointer group"
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-11 h-11 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shrink-0 flex items-center justify-center p-1">
+                            <div className="w-11 h-11 rounded-lg overflow-hidden bg-slate-950 border border-slate-800 shrink-0 flex items-center justify-center p-1 relative">
                               {prod.image ? (
-                                <img
+                                <Image
                                   src={prod.image}
                                   alt={prod.name}
+                                  width={44}
+                                  height={44}
                                   className="w-full h-full object-cover rounded"
+                                  unoptimized
                                 />
                               ) : (
                                 <div className="w-full h-full bg-slate-800 flex items-center justify-center text-[9px] text-slate-500 font-mono">

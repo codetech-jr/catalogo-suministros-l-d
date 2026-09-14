@@ -4,7 +4,7 @@ import * as React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
-import { ChevronDown, MessageSquare, ArrowLeft } from "lucide-react";
+import { ChevronDown, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface FaqItemProps {

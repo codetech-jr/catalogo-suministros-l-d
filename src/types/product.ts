@@ -23,3 +23,9 @@ export interface ISuministrosProduct {
 }
 
 export type Product = ISuministrosProduct;
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}

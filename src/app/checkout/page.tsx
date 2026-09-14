@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CreditCard, Store, Truck, MapPin, Send, ShieldCheck, CheckCircle2, Zap, FileText } from "lucide-react";
+import { ArrowLeft, Store, Truck, MapPin, Send, ShieldCheck, CheckCircle2, Zap, FileText } from "lucide-react";
 import { useCart } from "@/store/cart-store";
 import { useBcvStore } from "@/store/bcv-store";
 import { useCurrencyStore } from "@/store/currency-store";
@@ -10,7 +11,7 @@ import { CheckoutForm } from "@/types/checkout";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/utils/build-whatsapp-message";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { useMounted } from "@/lib/hooks/useMounted";
 
 const CORPORATE_WHATSAPP_PHONE = "584141025386";
 
@@ -22,10 +23,10 @@ export default function CheckoutPage() {
   const rateBcv = useCurrencyStore((s) => s.rateBcv);
 
   const [step, setStep] = React.useState(1);
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useMounted();
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [isQuoteOnly, setIsQuoteOnly] = React.useState(false);
-  const budgetCode = React.useMemo(() => Math.floor(100000 + Math.random() * 900000), []);
+  const [budgetCode] = React.useState(() => Math.floor(100000 + Math.random() * 900000));
   
   // Checkout Form State
   const [form, setForm] = React.useState<CheckoutForm>({
@@ -39,7 +40,6 @@ export default function CheckoutPage() {
   });
 
   React.useEffect(() => {
-    setMounted(true);
     fetchRate();
   }, [fetchRate]);
 
@@ -420,6 +420,27 @@ export default function CheckoutPage() {
                   </div>
                 </button>
 
+                {/* Transferencia */}
+                <button
+                  type="button"
+                  onClick={() => handleInputChange("paymentMethod", "transferencia")}
+                  className={`group flex items-start gap-4 p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
+                    form.paymentMethod === "transferencia"
+                      ? "bg-slate-900/50 border-[#007BFF] text-slate-100 shadow-[0_0_15px_rgba(0,123,255,0.08)]"
+                      : "bg-slate-800 border-slate-700/60 text-slate-400 hover:bg-slate-800/80 hover:border-slate-700"
+                  }`}
+                >
+                  <svg className="w-8 h-8 text-slate-200 opacity-90 transition-all duration-200 group-hover:scale-110 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <div>
+                    <div className="text-sm font-bold text-slate-200">Transferencia Bancaria</div>
+                    <div className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                      Transferencia directa a cuentas Banesco o Banco de Venezuela.
+                    </div>
+                  </div>
+                </button>
+
                 {/* Efectivo Bs */}
                 <button
                   type="button"
@@ -476,9 +497,9 @@ export default function CheckoutPage() {
                   <span className="font-mono text-[10px] text-accent-electric uppercase font-bold tracking-wider">Cuentas Receptoras de Suministros L&D</span>
                   {form.paymentMethod === "pago_movil" && (
                     <div className="grid grid-cols-2 gap-2 text-text-secondary leading-relaxed">
-                      <div><span className="text-text-muted">Banco:</span> Banesco (0134)</div>
-                      <div><span className="text-text-muted">Teléfono:</span> +58 414-1025386</div>
-                      <div><span className="text-text-muted">RIF:</span> J-50367899-0</div>
+                      <div><span className="text-text-muted">Banco:</span> Banco de Venezuela</div>
+                      <div><span className="text-text-muted">Teléfono:</span> 04141025386</div>
+                      <div><span className="text-text-muted">RIF:</span> J-50453100-6</div>
                       <div><span className="text-text-muted">Monto a transferir:</span> <strong className="text-accent-amber">{formatVES(totalVES)} Bs.</strong></div>
                     </div>
                   )}
@@ -494,6 +515,25 @@ export default function CheckoutPage() {
                       <div><span className="text-text-muted">Binance Pay ID:</span> 987654321</div>
                       <div><span className="text-text-muted">Alias:</span> SuministrosLD</div>
                       <div><span className="text-text-muted">Monto a transferir:</span> <strong className="text-accent-electric font-mono tracking-tight tabular-nums">{formatUSD(totals.totalUsd)} USDT</strong></div>
+                    </div>
+                  )}
+                  {form.paymentMethod === "transferencia" && (
+                    <div className="flex flex-col gap-3 text-text-secondary leading-relaxed">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="border border-slate-800 p-2 rounded-lg bg-slate-900/50">
+                          <div className="font-bold text-slate-300 mb-1">Banesco (0134)</div>
+                          <div><span className="text-text-muted">Cuenta:</span> <span className="font-mono">01340215942151061341</span></div>
+                          <div><span className="text-text-muted">Titular:</span> Suministros L&D 2023, C.A.</div>
+                          <div><span className="text-text-muted">RIF:</span> J-50453100-6</div>
+                        </div>
+                        <div className="border border-slate-800 p-2 rounded-lg bg-slate-900/50">
+                          <div className="font-bold text-slate-300 mb-1">Banco de Venezuela (0102)</div>
+                          <div><span className="text-text-muted">Cuenta:</span> <span className="font-mono">01020169170000653017</span></div>
+                          <div><span className="text-text-muted">Titular:</span> Suministros L&D 2023, C.A.</div>
+                          <div><span className="text-text-muted">RIF:</span> J-50453100-6</div>
+                        </div>
+                      </div>
+                      <div><span className="text-text-muted">Monto a transferir:</span> <strong className="text-accent-amber">{formatVES(totalVES)} Bs.</strong></div>
                     </div>
                   )}
                 </div>
@@ -846,9 +886,11 @@ export default function CheckoutPage() {
             {/* Signature Area */}
             <div className="grid grid-cols-2 gap-10 mt-8 pt-4 border-t border-slate-200">
               <div className="text-center flex flex-col items-center justify-end">
-                <img
+                <Image
                   src="/sello-cotizacion.jpeg"
                   alt="Sello y Firma Suministros L&D"
+                  width={144}
+                  height={80}
                   className="w-36 h-auto object-contain mb-1 mix-blend-multiply opacity-95"
                 />
                 <div className="h-0 border-b border-slate-400 w-[200px] mx-auto" />

@@ -4,7 +4,6 @@ import * as React from "react";
 import { use } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/product/ProductCard";
@@ -32,8 +31,7 @@ import {
   Zap, 
   Lightbulb, 
   Package, 
-  Info,
-  Copy
+  Info
 } from "lucide-react";
 
 interface PageProps {
@@ -43,7 +41,6 @@ interface PageProps {
 export default function ProductDetailPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const slugParam = resolvedParams.slug;
-  const router = useRouter();
 
   // Global state integrations
   const { products: storeProducts, isFetchingData } = useProductsStore();
@@ -77,8 +74,6 @@ export default function ProductDetailPage({ params }: PageProps) {
   }, [product, storeProducts]);
 
   // ── Pricing Engine Calculations ──
-  const unitPrices = product ? getStorePrices(product.price, rateBcv, rateBinance) : null;
-  
   // Volume discount evaluation
   const isVolumeEligible = Boolean(
     product?.volumeDiscount && quantity >= (product.volumeDiscount.threshold || 1)

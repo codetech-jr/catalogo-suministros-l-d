@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { X, ChevronDown, ChevronRight, Zap, Lightbulb, Cable, Hammer, LayoutGrid, Layers, ShieldCheck, Cpu } from "lucide-react";
+import { X, ChevronDown, ChevronRight, Lightbulb, Cable, Hammer, LayoutGrid, Layers, ShieldCheck, Cpu } from "lucide-react";
 import { useProductsStore } from "@/store/products-store";
 import WholesaleB2BModal from "./WholesaleB2BModal";
+import { Category } from "@/types/product";
 
 interface MobileNavigationDrawerProps {
   isOpen: boolean;
@@ -28,11 +29,11 @@ function getCategoryIcon(slug: string, name: string) {
   const s = (slug + " " + name).toLowerCase();
   if (s.includes("led") || s.includes("ilumin")) return <Lightbulb className="h-5 w-5 text-[#007BFF]" />;
   if (s.includes("protecc") || s.includes("breaker")) return <ShieldCheck className="h-5 w-5 text-emerald-400" />;
-  if (s.includes("control") || s.includes("auto") || s.includes("instru")) return <Cpu className="h-5 w-5 text-amber-400" />;
-  if (s.includes("cable") || s.includes("tub") || s.includes("conex")) return <Cable className="h-5 w-5 text-cyan-400" />;
-  if (s.includes("herramient")) return <Hammer className="h-5 w-5 text-slate-300" />;
-  if (s.includes("cinta") || s.includes("adhes")) return <Layers className="h-5 w-5 text-indigo-400" />;
-  return <Zap className="h-5 w-5 text-slate-400" />;
+  if (s.includes("auto") || s.includes("control")) return <Cpu className="h-5 w-5 text-amber-400" />;
+  if (s.includes("herr") || s.includes("pinza")) return <Hammer className="h-5 w-5 text-slate-300" />;
+  if (s.includes("cinta") || s.includes("teipe")) return <Layers className="h-5 w-5 text-indigo-400" />;
+  if (s.includes("cable") || s.includes("tubo")) return <Cable className="h-5 w-5 text-cyan-400" />;
+  return <LayoutGrid className="h-5 w-5 text-slate-400" />;
 }
 
 export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDrawerProps) {
@@ -42,7 +43,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
 
   const dynamicCategories = React.useMemo(() => {
     if (dbCategories && dbCategories.length > 0) {
-      return dbCategories.map((cat: any) => ({
+      return dbCategories.map((cat: Category) => ({
         label: cat.name,
         href: `/catalogo/${cat.slug}`,
         icon: getCategoryIcon(cat.slug, cat.name),
@@ -59,13 +60,17 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
     ];
   }, [dbCategories, products]);
 
-  // Lock body scroll when open
+  // Lock body scroll when open and reset accordion asynchronously when closed
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
-      setIsCatOpen(false); // reset accordion on close
+      const timer = setTimeout(() => setIsCatOpen(false), 300);
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = "";
+      };
     }
     return () => {
       document.body.style.overflow = "";
@@ -105,7 +110,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
         {/* ── Header del Drawer ── */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800 flex-shrink-0">
           {/* Mini logo */}
-          <a href="/" onClick={onClose} className="flex items-center gap-2 group">
+          <Link href="/" onClick={onClose} className="flex items-center gap-2 group">
             <svg
               className="h-6 w-6 text-[#007BFF]"
               viewBox="0 0 24 24"
@@ -120,7 +125,7 @@ export function MobileNavigationDrawer({ isOpen, onClose }: MobileNavigationDraw
             <span className="font-display text-sm font-bold text-slate-100 leading-none tracking-tight">
               SUMINISTROS L&D
             </span>
-          </a>
+          </Link>
           {/* Close button */}
           <button
             onClick={onClose}

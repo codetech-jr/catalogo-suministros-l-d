@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 
@@ -13,9 +14,11 @@ export function Footer() {
           {/* Columna 1: Marca y Confianza (Toma 2 fracciones) — centrada en móvil, izquierda en md+ */}
           <div className="lg:col-span-2 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
             <div className="flex items-center justify-center md:justify-start gap-2.5 font-display font-bold text-lg text-white">
-              <img
+              <Image
                 src="/logo.png"
                 alt="Suministros L&D Logo"
+                width={56}
+                height={56}
                 className="h-12 md:h-14 w-auto object-contain"
               />
               <span className="tracking-wide">SUMINISTROS L&D 2023, C.A.</span>
@@ -189,7 +192,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-center md:justify-between items-center text-center md:text-left py-6 mt-12 border-t border-slate-800/60 gap-6 text-xs text-slate-500 w-full">
           <div className="flex flex-col gap-1 text-center md:text-left">
             <span>
-              © 2026 Suministros L&D 2023, C.A. Todos los derechos reservados.
+              © {currentYear} Suministros L&D 2023, C.A. Todos los derechos reservados.
             </span>
             <span className="text-[10px] text-slate-600">
               Hecho por Codetech Jr / Desarrollador Web
@@ -199,22 +202,30 @@ export function Footer() {
           {/* Hack Psicológico B2B (Modalidades de Pago) */}
           <div className="flex flex-wrap items-center justify-center gap-3.5 select-none">
             {/* Banesco */}
-            <img
+            <Image
               src="/banesco-logo.png"
               alt="Banesco"
+              width={100}
+              height={28}
               className="h-7 w-auto object-contain grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300 cursor-default"
             />
             {/* Banco de Venezuela */}
-            <img
+            <Image
               src="/bdv-banco-de-venezuela.svg"
               alt="Banco de Venezuela"
+              width={120}
+              height={64}
               className="h-16 w-auto object-contain grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300 cursor-default"
+              unoptimized
             />
             {/* Zelle */}
-            <img
+            <Image
               src="/zelle-1.svg"
               alt="Zelle"
+              width={60}
+              height={20}
               className="h-5 w-auto object-contain grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300 cursor-default"
+              unoptimized
             />
             {/* Pago Móvil */}
             <svg className="h-5 w-auto text-slate-300 fill-current opacity-60 hover:opacity-100 transition-all duration-300 cursor-default" viewBox="0 0 100 24" aria-label="Pago Móvil">

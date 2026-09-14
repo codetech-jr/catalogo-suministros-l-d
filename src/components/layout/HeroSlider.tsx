@@ -1,14 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, Shield, Compass, CreditCard, UploadCloud, FileText, Check, ArrowRight } from "lucide-react";
+import { Sparkles, Shield, Compass, CreditCard, UploadCloud, Check, ArrowRight } from "lucide-react";
 
-interface HeroSliderProps {
-  searchQuery?: string;
-  onSearch?: (query: string) => void;
-}
-
-export function HeroSlider({ searchQuery = "", onSearch }: HeroSliderProps) {
+export function HeroSlider() {
   const [fileName, setFileName] = React.useState<string | null>(null);
   const [fileSize, setFileSize] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);

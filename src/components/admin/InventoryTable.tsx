@@ -59,8 +59,9 @@ export function InventoryTable() {
     if (confirm(`¿Estás seguro de que deseas eliminar "${product.name}"?`)) {
       try {
         await deleteProduct(product.id);
-      } catch (err: any) {
-        alert("Error al eliminar producto: " + (err.message || "Falla en base de datos."));
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : "Falla en base de datos.";
+        alert("Error al eliminar producto: " + errorMsg);
       }
     }
   };

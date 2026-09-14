@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X,
@@ -9,7 +10,6 @@ import {
   Plus,
   Trash2,
   MapPin,
-  CreditCard,
   Store,
   Truck,
   Send,
@@ -17,7 +17,6 @@ import {
   Percent,
   Copy,
   Camera,
-  Zap
 } from "lucide-react";
 import { useCart } from "@/store/cart-store";
 import { usePathname } from "next/navigation";
@@ -28,16 +27,16 @@ import { CheckoutForm, PaymentMethod } from "@/types/checkout";
 import { formatUSD, formatVES } from "@/lib/utils/format-currency";
 import { buildWhatsAppMessage, getWhatsAppLink } from "@/lib/utils/build-whatsapp-message";
 import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
+import { useMounted } from "@/lib/hooks/useMounted";
 
 // Teléfono WhatsApp Business corporativo
 const CORPORATE_WHATSAPP_PHONE = "584120000000";
 
 const MOCK_ACCOUNTS = {
   pago_movil: {
-    bank: "Banesco (0134)",
+    bank: "Banco de Venezuela",
     phone: "04141025386",
-    id: "J-50367899-0",
+    id: "J-50453100-6",
   },
   zelle: {
     email: "pagos@suministroslyd.com",
@@ -47,12 +46,20 @@ const MOCK_ACCOUNTS = {
     payId: "987654321",
     alias: "SuministrosLD",
   },
-  transferencia: {
-    bank: "Banco Ficticio",
-    number: "0134-1234-56-1234567890",
-    holder: "Suministros L&D 2023, C.A.",
-    id: "J-50367899-0",
-  },
+  transferencias: [
+    {
+      bank: "Banesco",
+      number: "01340215942151061341",
+      holder: "Suministros L&D 2023, C.A.",
+      id: "J-50453100-6",
+    },
+    {
+      bank: "Bco. Venezuela",
+      number: "01020169170000653017",
+      holder: "Suministros L&D 2023, C.A.",
+      id: "J-50453100-6",
+    }
+  ],
 };
 
 export function CartDrawer() {
@@ -66,13 +73,9 @@ export function CartDrawer() {
   const [step, setStep] = React.useState(1);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [copiedField, setCopiedField] = React.useState<string | null>(null);
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useMounted();
   const [isQuoteOnly, setIsQuoteOnly] = React.useState(false);
-  const budgetCode = React.useMemo(() => Math.floor(100000 + Math.random() * 900000), []);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [budgetCode] = React.useState(() => Math.floor(100000 + Math.random() * 900000));
 
   // Multi-payment / split payment states
   const [splitPayments, setSplitPayments] = React.useState<{ method: PaymentMethod; amountUsd: number; ref: string }[]>([]);
@@ -99,47 +102,37 @@ export function CartDrawer() {
     }, 2000);
   };
 
-  // Resetear estados al cerrar o cambiar método
-  React.useEffect(() => {
-    if (!isOpen) {
-      setStep(1);
-      setErrors({});
-      setCopiedField(null);
-      setSplitPayments([]);
-      setNewSplitAmount("");
-      setNewSplitRef("");
-      setIsQuoteOnly(false);
-    }
-  }, [isOpen]);
-
-  React.useEffect(() => {
-    if (form.paymentMethod !== "mixto") {
-      setSplitPayments([]);
-    }
-  }, [form.paymentMethod]);
+  const handleCloseDrawer = React.useCallback(() => {
+    setStep(1);
+    setErrors({});
+    setCopiedField(null);
+    setSplitPayments([]);
+    setNewSplitAmount("");
+    setNewSplitRef("");
+    setIsQuoteOnly(false);
+    closeDrawer();
+  }, [closeDrawer]);
 
   const totals = getTotals();
   const totalVES = totals.totalVES;
 
-  const isPaymentRefValid = React.useMemo(() => {
-    if (isQuoteOnly) return true;
-    if (form.paymentMethod === "efectivo" || form.paymentMethod === "efectivo_bs") return true;
-    if (form.paymentMethod === "mixto") {
-      const totalPaid = splitPayments.reduce((sum, p) => sum + p.amountUsd, 0);
-      const isBalanced = Math.abs(totals.totalUsd - totalPaid) < 0.01;
-      const allRefsValid = splitPayments.length > 0 && splitPayments.every(
-        (p) => p.method === "efectivo" || p.method === "efectivo_bs" || p.ref.trim().length >= 6
-      );
-      return isBalanced && allRefsValid;
-    }
-    return form.paymentReference.trim().length === 6;
-  }, [form.paymentMethod, form.paymentReference, splitPayments, totals.totalUsd, isQuoteOnly]);
+  const isPaymentRefValid = isQuoteOnly || (
+    (form.paymentMethod === "efectivo" || form.paymentMethod === "efectivo_bs") ? true :
+    form.paymentMethod === "mixto" ? (
+      Math.abs(totals.totalUsd - splitPayments.reduce((sum, p) => sum + p.amountUsd, 0)) < 0.01 &&
+      splitPayments.length > 0 &&
+      splitPayments.every((p) => p.method === "efectivo" || p.method === "efectivo_bs" || p.ref.trim().length >= 6)
+    ) : (form.paymentReference.trim().length === 6)
+  );
 
   if (!mounted) return null;
   if (pathname.startsWith("/admin") || pathname === "/login") return null;
 
   const handleInputChange = (field: keyof CheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "paymentMethod" && value !== "mixto") {
+      setSplitPayments([]);
+    }
     if (errors[field]) {
       setErrors((prev) => {
         const copy = { ...prev };
@@ -215,7 +208,7 @@ export function CartDrawer() {
     window.open(link, "_blank");
 
     clearCart();
-    closeDrawer();
+    handleCloseDrawer();
   };
 
   const handleCasheaWhatsapp = () => {
@@ -231,7 +224,7 @@ export function CartDrawer() {
 
     window.open(link, "_blank");
     clearCart();
-    closeDrawer();
+    handleCloseDrawer();
   };
 
   const handleZelleWhatsapp = () => {
@@ -247,7 +240,7 @@ export function CartDrawer() {
 
     window.open(link, "_blank");
     clearCart();
-    closeDrawer();
+    handleCloseDrawer();
   };
 
   return (
@@ -260,7 +253,7 @@ export function CartDrawer() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeDrawer}
+          onClick={handleCloseDrawer}
           className="fixed inset-0 bg-black/40 backdrop-blur-md cursor-pointer transition-opacity duration-200 z-[200]"
         />
 
@@ -291,7 +284,7 @@ export function CartDrawer() {
               </h2>
             </div>
             <button
-              onClick={closeDrawer}
+              onClick={handleCloseDrawer}
               className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-blue-500 transition-colors cursor-pointer"
               aria-label="Cerrar carrito"
             >
@@ -326,7 +319,7 @@ export function CartDrawer() {
                       Agrega productos del catálogo para poder cotizar y enviar a WhatsApp.
                     </p>
                     <Button
-                      onClick={closeDrawer}
+                      onClick={handleCloseDrawer}
                       variant="outline"
                       className="mt-5 border-[#e2e8f0] hover:bg-[#e2e8f0]/10 hover:text-white font-bold"
                     >
@@ -798,67 +791,71 @@ export function CartDrawer() {
                       )}
 
                       {form.paymentMethod === "transferencia" && (
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center justify-between text-text-secondary">
-                            <span><span className="text-text-muted">Banco:</span> {MOCK_ACCOUNTS.transferencia.bank}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.bank, "trans-bank")}
-                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
-                            >
-                              <Copy size={14} />
-                              {copiedField === "trans-bank" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
-                                  ¡Copiado!
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between text-text-secondary">
-                            <span><span className="text-text-muted">Cuenta:</span> <span className="font-mono">{MOCK_ACCOUNTS.transferencia.number}</span></span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.number, "trans-number")}
-                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
-                            >
-                              <Copy size={14} />
-                              {copiedField === "trans-number" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
-                                  ¡Copiado!
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between text-text-secondary">
-                            <span><span className="text-text-muted">Titular:</span> {MOCK_ACCOUNTS.transferencia.holder}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.holder, "trans-holder")}
-                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
-                            >
-                              <Copy size={14} />
-                              {copiedField === "trans-holder" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
-                                  ¡Copiado!
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between text-text-secondary">
-                            <span><span className="text-text-muted">RIF:</span> {MOCK_ACCOUNTS.transferencia.id}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(MOCK_ACCOUNTS.transferencia.id, "trans-id")}
-                              className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
-                            >
-                              <Copy size={14} />
-                              {copiedField === "trans-id" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
-                                  ¡Copiado!
-                                </span>
-                              )}
-                            </button>
-                          </div>
+                        <div className="flex flex-col gap-4">
+                          {MOCK_ACCOUNTS.transferencias.map((acc, idx) => (
+                            <div key={idx} className="flex flex-col gap-2 border-b border-[#1b212f] pb-3 last:border-0 last:pb-0">
+                              <div className="flex items-center justify-between text-text-secondary">
+                                <span><span className="text-text-muted">Banco:</span> {acc.bank}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(acc.bank, `trans-bank-${idx}`)}
+                                  className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
+                                >
+                                  <Copy size={14} />
+                                  {copiedField === `trans-bank-${idx}` && (
+                                    <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                      ¡Copiado!
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                              <div className="flex items-center justify-between text-text-secondary">
+                                <span><span className="text-text-muted">Cuenta:</span> <span className="font-mono">{acc.number}</span></span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(acc.number, `trans-number-${idx}`)}
+                                  className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
+                                >
+                                  <Copy size={14} />
+                                  {copiedField === `trans-number-${idx}` && (
+                                    <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                      ¡Copiado!
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                              <div className="flex items-center justify-between text-text-secondary">
+                                <span><span className="text-text-muted">Titular:</span> {acc.holder}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(acc.holder, `trans-holder-${idx}`)}
+                                  className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
+                                >
+                                  <Copy size={14} />
+                                  {copiedField === `trans-holder-${idx}` && (
+                                    <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                      ¡Copiado!
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                              <div className="flex items-center justify-between text-text-secondary">
+                                <span><span className="text-text-muted">RIF:</span> {acc.id}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(acc.id, `trans-id-${idx}`)}
+                                  className="relative p-1 text-text-muted hover:text-blue-500 transition-colors"
+                                >
+                                  <Copy size={14} />
+                                  {copiedField === `trans-id-${idx}` && (
+                                    <span className="absolute bottom-full right-0 mb-1 px-1.5 py-0.5 text-[9px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-10">
+                                      ¡Copiado!
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -1023,20 +1020,24 @@ export function CartDrawer() {
                           </div>
                         )}
                         {newSplitMethod === "transferencia" && (
-                          <div className="flex items-center justify-between">
-                            <span>{MOCK_ACCOUNTS.transferencia.bank} - Cta: {MOCK_ACCOUNTS.transferencia.number} - RIF: {MOCK_ACCOUNTS.transferencia.id}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopy(`${MOCK_ACCOUNTS.transferencia.bank} ${MOCK_ACCOUNTS.transferencia.number} ${MOCK_ACCOUNTS.transferencia.id}`, "mixto-trans")}
-                              className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
-                            >
-                              <Copy size={12} />
-                              {copiedField === "mixto-trans" && (
-                                <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
-                                  ¡Copiado!
-                                </span>
-                              )}
-                            </button>
+                          <div className="flex flex-col gap-2">
+                            {MOCK_ACCOUNTS.transferencias.map((acc, idx) => (
+                              <div key={idx} className="flex items-center justify-between">
+                                <span>{acc.bank} - Cta: {acc.number} - RIF: {acc.id}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCopy(`${acc.bank} ${acc.number} ${acc.id}`, `mixto-trans-${idx}`)}
+                                  className="relative p-0.5 text-text-muted hover:text-blue-500 transition-colors"
+                                >
+                                  <Copy size={12} />
+                                  {copiedField === `mixto-trans-${idx}` && (
+                                    <span className="absolute bottom-full right-0 mb-1 px-1 py-0.5 text-[8px] bg-blue-600 text-black font-bold rounded shadow-lg whitespace-nowrap z-20">
+                                      ¡Copiado!
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         )}
                         {newSplitMethod === "efectivo" && (
@@ -1393,7 +1394,7 @@ export function CartDrawer() {
 
               {step === 1 ? (
                 <button
-                  onClick={closeDrawer}
+                  onClick={handleCloseDrawer}
                   className="text-center text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 >
                   Seguir comprando
@@ -1523,9 +1524,11 @@ export function CartDrawer() {
           {/* Signature Area */}
           <div className="grid grid-cols-2 gap-10 mt-8 pt-4 border-t border-slate-200">
             <div className="text-center flex flex-col items-center justify-end">
-              <img
+              <Image
                 src="/sello-cotizacion.jpeg"
                 alt="Sello y Firma Suministros L&D"
+                width={144}
+                height={80}
                 className="w-36 h-auto object-contain mb-1 mix-blend-multiply opacity-95"
               />
               <div className="h-0 border-b border-slate-400 w-[200px] mx-auto" />

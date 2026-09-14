@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -13,9 +14,7 @@ import {
   Cable, 
   Hammer, 
   Layers, 
-  Zap, 
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useProductsStore } from "@/store/products-store";
@@ -526,10 +525,13 @@ export default function BrandsPageContent() {
                         {/* Logo Container con Alto Contraste */}
                         <div className="w-full h-24 bg-white/95 rounded-xl p-3 flex items-center justify-center border border-slate-700/50 shadow-inner group-hover:shadow-md transition-all mb-4">
                           {brand.logoSrc ? (
-                            <img
+                            <Image
                               src={brand.logoSrc}
                               alt={`Logo oficial de ${brand.name}`}
+                              width={120}
+                              height={56}
                               className="max-h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-sm"
+                              unoptimized
                             />
                           ) : (
                             <div className="flex flex-col items-center justify-center text-center">

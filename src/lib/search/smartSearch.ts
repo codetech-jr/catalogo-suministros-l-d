@@ -152,10 +152,8 @@ export function calculateProductSearchScore(product: Product, query: string): Sc
 
   // 3. Verificación de Tokens individuales en el Nombre
   let allTokensInName = true;
-  let tokensInNameCount = 0;
   for (const token of queryTokens) {
     if (normName.includes(token)) {
-      tokensInNameCount++;
       score += 120;
     } else {
       allTokensInName = false;

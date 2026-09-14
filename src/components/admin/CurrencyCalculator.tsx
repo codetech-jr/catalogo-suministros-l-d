@@ -12,20 +12,21 @@ export function CurrencyCalculator() {
   const rateBcv = useCurrencyStore((s) => s.rateBcv);
   const rateBinance = useCurrencyStore((s) => s.rateBinance);
   const lastUpdated = useCurrencyStore((s) => s.lastUpdated);
-  const setBothRates = useCurrencyStore((s) => s.setBothRates);
   const fetchRatesFromDB = useCurrencyStore((s) => s.fetchRatesFromDB);
 
   const [localBcv, setLocalBcv] = React.useState(rateBcv.toString());
   const [localBinance, setLocalBinance] = React.useState(rateBinance.toString());
+  const [prevRates, setPrevRates] = React.useState({ bcv: rateBcv, binance: rateBinance });
   const [saved, setSaved] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const [toastMsg, setToastMsg] = React.useState("");
 
-  // Sync local state when store changes externally
-  React.useEffect(() => {
+  // Sync local state during render when store changes externally (official React pattern)
+  if (prevRates.bcv !== rateBcv || prevRates.binance !== rateBinance) {
+    setPrevRates({ bcv: rateBcv, binance: rateBinance });
     setLocalBcv(rateBcv.toString());
     setLocalBinance(rateBinance.toString());
-  }, [rateBcv, rateBinance]);
+  }
 
   const handleSave = async () => {
     const bcv = parseFloat(localBcv) || 0;
@@ -37,7 +38,7 @@ export function CurrencyCalculator() {
 
     try {
       const now = new Date().toISOString();
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from("config_tasas")
         .update({
           rate_bcv: bcv,
@@ -70,7 +71,7 @@ export function CurrencyCalculator() {
       setTimeout(() => {
         setToastMsg("");
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error al actualizar las tasas cambiarias:", err);
       setToastMsg("Error de conexión: No se pudieron guardar las tasas.");
       setTimeout(() => {

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Product } from "@/types/product";
 import { useProductsStore } from "@/store/products-store";
 import { ProductCard } from "./ProductCard";
 

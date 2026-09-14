@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductGrid from "@/components/product/ProductGrid";
@@ -256,7 +257,7 @@ export default function HomePageClient() {
     <div className="print:hidden">
       <Navbar onSearch={handleSearch} />
 
-      <HeroSlider searchQuery={searchQuery} onSearch={handleSearch} />
+      <HeroSlider />
 
       {/* Marcas Aliadas — Marquee de Autoridad */}
       <section
@@ -278,9 +279,11 @@ export default function HomePageClient() {
                     key={`brand-1-${idx}`}
                     className="flex items-center justify-center h-8 md:h-12 w-24 md:w-32"
                   >
-                    <img
+                    <Image
                       src={brand.src}
                       alt={`Logo de ${brand.name}`}
+                      width={128}
+                      height={48}
                       className="object-contain w-auto h-12 grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-opacity duration-300"
                     />
                   </div>
@@ -296,9 +299,11 @@ export default function HomePageClient() {
                     key={`brand-2-${idx}`}
                     className="flex items-center justify-center h-8 md:h-12 w-24 md:w-32"
                   >
-                    <img
+                    <Image
                       src={brand.src}
                       alt={`Logo de ${brand.name}`}
+                      width={128}
+                      height={48}
                       className="object-contain w-auto h-12 grayscale brightness-0 invert opacity-60 hover:opacity-100 transition-opacity duration-300"
                     />
                   </div>
