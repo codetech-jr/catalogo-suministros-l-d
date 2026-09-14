@@ -168,11 +168,11 @@ export function Footer() {
                 <span>+58 (414) 102-5386</span>
               </a>
               <a
-                href="mailto:ventas@suministrosld.com.ve"
+                href="mailto:suministrosld2023@gmail.com"
                 className="flex items-center justify-center md:justify-start gap-2 hover:text-[#007BFF] transition-colors break-all w-full"
               >
                 <Mail className="h-4 w-4 text-sky-400 shrink-0" />
-                <span>ventas@suministrosld.com.ve</span>
+                <span>suministrosld2023@gmail.com</span>
               </a>
               <div className="mt-2 w-full flex justify-center md:justify-start">
                 <a
