@@ -17,6 +17,8 @@ import {
   Percent,
   Copy,
   Camera,
+  Printer,
+  ArrowRight,
 } from "lucide-react";
 import { useCart } from "@/store/cart-store";
 import { usePathname } from "next/navigation";
@@ -283,13 +285,27 @@ export function CartDrawer() {
                 {step === 3 && "Resumen y Confirmación"}
               </h2>
             </div>
-            <button
-              onClick={handleCloseDrawer}
-              className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-blue-500 transition-colors cursor-pointer"
-              aria-label="Cerrar carrito"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1.5">
+              {items.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-mono text-slate-400 hover:text-white hover:bg-[#1b212f] transition-colors border border-slate-800 cursor-pointer"
+                  title="Descargar o imprimir presupuesto (PDF)"
+                  aria-label="Descargar presupuesto"
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">PDF</span>
+                </button>
+              )}
+              <button
+                onClick={handleCloseDrawer}
+                className="rounded-lg p-1 text-text-secondary hover:bg-[#1b212f] hover:text-blue-500 transition-colors cursor-pointer"
+                aria-label="Cerrar carrito"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Body Content */}
@@ -1265,147 +1281,171 @@ export function CartDrawer() {
 
           {/* Footer Totals & Action CTA */}
           {items.length > 0 && (
-            <div className="border-t border-[#1b212f] bg-[#0e1420] px-4 pt-4 pb-12 flex flex-col gap-3 shadow-none">
-              {/* Pricing breakdown */}
-              <div className="flex flex-col gap-1.5 border-b border-[#1b212f]/50 pb-3">
+            <div
+              className="border-t border-[#1b212f] bg-[#0e1420] px-4 py-3 flex flex-col gap-2.5 shadow-none"
+              style={{ paddingBottom: "max(0.875rem, env(safe-area-inset-bottom, 0px))" }}
+            >
+              {/* Pricing breakdown compacto */}
+              <div className="flex flex-col gap-1 border-b border-[#1b212f]/60 pb-2">
                 {totals.savingsUsd > 0 && (
-                  <div className="flex justify-between text-xs text-blue-500 font-medium">
+                  <div className="flex justify-between text-[11px] text-blue-400 font-medium">
                     <span className="flex items-center gap-1"><Percent className="h-3 w-3" /> Ahorro Mayorista:</span>
                     <span className="font-mono tabular-nums">-{formatVES(totals.savingsUsd * rateBinance)}</span>
                   </div>
                 )}
 
-                <div className="flex flex-col gap-1.5 mt-1 border-t border-[#1b212f]/40 pt-3">
-                  <div className="flex justify-between items-center w-full">
-                    <span className="text-sm font-extrabold uppercase tracking-wider text-text-primary">
-                      {isQuoteOnly ? "TOTAL A COTIZAR:" : "TOTAL A PAGAR:"}
+                <div className="flex items-baseline justify-between w-full">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
+                      {isQuoteOnly ? "Total a cotizar:" : "Total a pagar:"}
                     </span>
-                    <span className="text-2xl font-black font-mono text-accent-amber tabular-nums animate-blur-pop">
-                      {formatVES(totalVES)}
+                    <span className="text-[10px] text-slate-500 font-mono">
+                      Tasa BCV: {formatVES(rateBcv)}/$
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500 text-center mt-1">
-                    Facturación sujeta a Tasa Oficial Banco Central BCV ({formatVES(rateBcv)}/$)
-                  </span>
+                  <div className="text-right">
+                    <span className="text-xl font-black font-mono text-accent-amber tabular-nums animate-blur-pop">
+                      {formatVES(totalVES)}
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-mono block leading-none mt-0.5">
+                      ~${totals.totalUsd.toFixed(2)} USD
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Botón Descargar / Imprimir Presupuesto (gris outline) */}
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="w-full py-2.5 border border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase transition-all duration-200 cursor-pointer shadow-none"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Descargar / Imprimir Presupuesto
-              </button>
-
-              {/* Actions */}
+              {/* Step 1: Carrito */}
               {step === 1 && (
                 <div className="flex flex-col gap-2 w-full">
                   <Button
                     onClick={handleProceedToStep2}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-black border border-blue-500/20 text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-blue-600/50 active:scale-98 shadow-none"
+                    className="w-full bg-[#007BFF] hover:bg-[#1a8cff] text-white text-xs font-bold uppercase tracking-wider py-2.5 flex items-center justify-center gap-1.5 shadow-md shadow-blue-950/20 active:scale-98 cursor-pointer rounded-lg border border-blue-500/30"
                   >
-                    Continuar al Checkout
+                    <span>Continuar al Checkout</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
+
                   {!isQuoteOnly && (
-                    <>
+                    <div className="grid grid-cols-2 gap-2">
                       <button
+                        type="button"
                         onClick={handleCasheaWhatsapp}
-                        className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
+                        className="py-1.5 px-2 rounded-lg bg-[#FDFA3D]/10 hover:bg-[#FDFA3D]/20 border border-[#FDFA3D]/30 text-[#FDFA3D] text-[10px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                        title="Cashéalo vía WhatsApp"
                       >
-                        <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
+                        <svg className="w-3.5 h-3.5 fill-[#FDFA3D] shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
                           <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
                         </svg>
-                        <span>Cashéalo vía WhatsApp ➔</span>
+                        <span className="truncate">Cashea Express</span>
                       </button>
                       <button
+                        type="button"
                         onClick={handleZelleWhatsapp}
-                        className="w-full bg-[#741ee8] hover:bg-[#5f18c2] text-white font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#741ee8]/30 shadow-none cursor-pointer"
+                        className="py-1.5 px-2 rounded-lg bg-[#741ee8]/15 hover:bg-[#741ee8]/25 border border-[#741ee8]/30 text-purple-300 hover:text-white text-[10px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                        title="Consultar pago con Zelle"
                       >
-                        <svg className="w-5 h-5 fill-white shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
+                        <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
                           <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
                         </svg>
-                        <span>Consultar pago con Zelle ➔</span>
+                        <span className="truncate">Pago Zelle</span>
                       </button>
-                    </>
+                    </div>
                   )}
+
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <button
+                      type="button"
+                      onClick={handleCloseDrawer}
+                      className="text-[11px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      Seguir comprando
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="text-[11px] text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+                    >
+                      <Printer className="h-3 w-3" />
+                      <span>Imprimir Presupuesto</span>
+                    </button>
+                  </div>
                 </div>
               )}
+
+              {/* Step 2: Datos del Pedido (Limpio y Ultra-compacto) */}
               {step === 2 && (
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col gap-1.5 w-full">
                   <Button
                     onClick={handleProceedToStep3}
                     disabled={!isPaymentRefValid}
-                    className={`w-full text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1 focus:ring-2 focus:ring-blue-600/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-blue-500/20 ${
-                      !isQuoteOnly && form.paymentMethod === "mixto"
-                        ? isPaymentRefValid
-                          ? "bg-blue-600 hover:bg-blue-500 text-black font-extrabold"
-                          : "bg-canvas-card text-slate-500 border-[#1b212f]"
-                        : "bg-blue-600 hover:bg-blue-500 text-black"
+                    className={`w-full text-xs font-bold uppercase tracking-wider py-2.5 flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-50 disabled:pointer-events-none rounded-lg cursor-pointer transition-all ${
+                      !isQuoteOnly && form.paymentMethod === "mixto" && !isPaymentRefValid
+                        ? "bg-slate-800 text-slate-500 border border-slate-700"
+                        : "bg-[#007BFF] hover:bg-[#1a8cff] text-white shadow-md shadow-blue-950/20 border border-blue-500/30"
                     }`}
                   >
-                    {isQuoteOnly
-                      ? "Revisar Resumen de Cotización"
-                      : form.paymentMethod === "mixto"
-                      ? isPaymentRefValid
-                        ? "FINALIZAR CÁLCULO AL CHAT"
-                        : "Debes cuadrar pago para procesar"
-                      : "Revisar Resumen Final"}
+                    <span>
+                      {isQuoteOnly
+                        ? "Revisar Resumen de Cotización"
+                        : form.paymentMethod === "mixto"
+                        ? isPaymentRefValid
+                          ? "Continuar al Resumen Final"
+                          : "Cuadra el pago para continuar"
+                        : "Revisar Resumen Final"}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
-                  {!isQuoteOnly && (
-                    <>
-                      <button
-                        onClick={handleCasheaWhatsapp}
-                        className="w-full bg-[#FDFA3D] hover:bg-[#e6e235] text-[#000000] font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#c4c120]/30 shadow-none cursor-pointer"
-                      >
-                        <svg className="w-5 h-5 fill-slate-900 shrink-0" viewBox="0 0 24 24" aria-label="Cashea">
-                          <path d="M10 20c-3.3 0-6-2.7-6-6s2.7-6 6-6V2c-6.6 0-12 5.4-12 12s5.4 12 12 12c6.6 0 12-5.4 12-12h-6c0 3.3-2.7 6-6 6z" transform="scale(0.8) translate(2, 3)" />
-                        </svg>
-                        <span>Cashéalo vía WhatsApp ➔</span>
-                      </button>
-                      <button
-                        onClick={handleZelleWhatsapp}
-                        className="w-full bg-[#741ee8] hover:bg-[#5f18c2] text-white font-mono text-xs font-bold uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-98 border border-[#741ee8]/30 shadow-none cursor-pointer"
-                      >
-                        <svg className="w-5 h-5 fill-white shrink-0" viewBox="0 0 48 48" aria-label="Zelle">
-                          <path d="M7 10h34v6L23.5 32H41v6H7v-6l17.5-16H7v-6z" />
-                        </svg>
-                        <span>Consultar pago con Zelle ➔</span>
-                      </button>
-                    </>
-                  )}
+
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-[11px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      ← Volver al carrito
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="text-[11px] text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+                    >
+                      <Printer className="h-3 w-3" />
+                      <span>Presupuesto</span>
+                    </button>
+                  </div>
                 </div>
-
               )}
+
+              {/* Step 3: Resumen y Confirmación */}
               {step === 3 && (
-                <Button
-                  onClick={handleConfirmOrder}
-                  disabled={!isPaymentRefValid}
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-black text-xs font-extrabold uppercase tracking-widest py-3 flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-blue-600/50 active:scale-98 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed shadow-none border border-blue-500/20"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  {isQuoteOnly ? "Enviar Presupuesto vía WhatsApp ↗" : "Confirmar por WhatsApp"}
-                </Button>
-              )}
+                <div className="flex flex-col gap-1.5 w-full">
+                  <Button
+                    onClick={handleConfirmOrder}
+                    disabled={!isPaymentRefValid}
+                    className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 text-xs font-black uppercase tracking-wider py-2.5 flex items-center justify-center gap-1.5 shadow-md shadow-emerald-950/20 active:scale-98 rounded-lg cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>{isQuoteOnly ? "Enviar Presupuesto vía WhatsApp ↗" : "Confirmar Pedido por WhatsApp"}</span>
+                  </Button>
 
-              {step === 1 ? (
-                <button
-                  onClick={handleCloseDrawer}
-                  className="text-center text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-                >
-                  Seguir comprando
-                </button>
-              ) : (
-                <button
-                  onClick={() => setStep((prev) => prev - 1)}
-                  className="text-center text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-                >
-                  Volver al paso anterior
-                </button>
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="text-[11px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      ← Corregir datos
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => window.print()}
+                      className="text-[11px] text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-1 cursor-pointer font-mono"
+                    >
+                      <Printer className="h-3 w-3" />
+                      <span>Descargar Presupuesto</span>
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           )}
